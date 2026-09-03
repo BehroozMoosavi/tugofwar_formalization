@@ -3,7 +3,12 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linarith
 
 /-!
 # Moments of Lebesgue measure on a Euclidean ball
