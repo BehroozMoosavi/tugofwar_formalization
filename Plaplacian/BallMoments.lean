@@ -162,4 +162,52 @@ lemma flip_mul_coord (i j : Fin d) (hij : i ≠ j) (z : EuclSpaceM d) :
   simp only [flipCoord_apply]
   simp [Ne.symm hij]
 
+
+/-! ### Off-diagonal second moments -/
+
+/-- The flip is a measurable embedding, being a homeomorphism. -/
+lemma measurableEmbedding_flipCoord (i : Fin d) :
+    MeasurableEmbedding (flipCoordEquiv (d := d) i) :=
+  (flipCoordEquiv (d := d) i).toHomeomorph.measurableEmbedding
+
+/-- The bundled equivalence agrees with the bare function. -/
+@[simp] lemma flipCoordEquiv_apply (i : Fin d) (z : EuclSpaceM d) :
+    (flipCoordEquiv (d := d) i) z = flipCoord i z := rfl
+
+/-- Change of variables under the flip: it preserves both `volume` and the
+centred ball, so the integral is unchanged. -/
+lemma integral_flip_mul_coord (i j : Fin d) (r : ℝ) :
+    (∫ z in ball (0 : EuclSpaceM d) r,
+        (flipCoord i z).ofLp i * (flipCoord i z).ofLp j)
+      = ∫ z in ball (0 : EuclSpaceM d) r, z.ofLp i * z.ofLp j := by
+  have hpre : (flipCoordEquiv (d := d) i) ⁻¹' (ball (0 : EuclSpaceM d) r)
+      = ball (0 : EuclSpaceM d) r := by
+    ext z; simp
+  have key := (measurePreserving_flipCoord i).setIntegral_preimage_emb
+    (measurableEmbedding_flipCoord i)
+    (fun w : EuclSpaceM d => w.ofLp i * w.ofLp j)
+    (ball (0 : EuclSpaceM d) r)
+  rw [hpre] at key
+  simpa using key
+
+/-- Oddness: for `j ≠ i` the integrand changes sign under the flip. -/
+lemma integral_flip_mul_coord_neg (i j : Fin d) (hij : i ≠ j) (r : ℝ) :
+    (∫ z in ball (0 : EuclSpaceM d) r,
+        (flipCoord i z).ofLp i * (flipCoord i z).ofLp j)
+      = -∫ z in ball (0 : EuclSpaceM d) r, z.ofLp i * z.ofLp j := by
+  rw [← integral_neg]
+  refine setIntegral_congr_fun measurableSet_ball fun z _ => ?_
+  exact flip_mul_coord i j hij z
+
+/-- **The off-diagonal second moments of a centred ball vanish.**
+
+Flipping the sign of the `i`-th coordinate preserves both Lebesgue measure and
+the ball, but negates `z i * z j` when `j ≠ i`. Hence the integral equals its
+own negative, so it is zero. -/
+theorem integral_mul_coord_ball_eq_zero (i j : Fin d) (hij : i ≠ j) (r : ℝ) :
+    (∫ z in ball (0 : EuclSpaceM d) r, z.ofLp i * z.ofLp j) = 0 := by
+  have h1 := integral_flip_mul_coord i j r
+  have h2 := integral_flip_mul_coord_neg i j hij r
+  linarith [h1, h2]
+
 end PLaplacian
