@@ -211,3 +211,57 @@ theorem integral_mul_coord_ball_eq_zero (i j : Fin d) (hij : i ≠ j) (r : ℝ) 
   linarith [h1, h2]
 
 end PLaplacian
+
+/-! ### Diagonal second moments
+
+No reflection helps here: `z i ^ 2` is even under every sign flip. Instead we
+sum over coordinates, use `∑ i, z i ^ 2 = ‖z‖ ^ 2`, compute the resulting radial
+integral with `integral_fun_norm_addHaar`, and divide by `d` using the
+coordinate symmetry supplied by `LinearIsometryEquiv.piLpCongrLeft`.
+
+The constant `1 / (d + 2)` originates in `integral_radial_sq` below.
+-/
+
+namespace Diagonal
+
+/-- Exponent arithmetic. `d - 1` is truncated natural subtraction, so this
+genuinely needs `0 < d` and cannot be closed by `ring`. -/
+lemma pow_sub_one_mul_sq {d : ℕ} (hd : 0 < d) (y : ℝ) :
+    y ^ (d - 1) * y ^ 2 = y ^ (d + 1) := by
+  rw [← pow_add]
+  congr 1
+  omega
+
+/-- Folding the radial weight into the cut-off indicator. -/
+lemma smul_indicator_sq {d : ℕ} (hd : 0 < d) (y : ℝ) :
+    y ^ (d - 1) • Set.indicator (Set.Iio (1:ℝ)) (fun t : ℝ => t ^ 2) y
+      = Set.indicator (Set.Iio (1:ℝ)) (fun t : ℝ => t ^ (d + 1)) y := by
+  by_cases h : y ∈ Set.Iio (1:ℝ)
+  · simp only [Set.indicator_of_mem h, smul_eq_mul]
+    exact pow_sub_one_mul_sq hd y
+  · simp only [Set.indicator_of_notMem h, smul_zero]
+
+/-- The one-dimensional value `∫_0^1 y ^ n dy = 1 / (n + 1)`, written with the
+cut-off as an indicator over `Ioi 0` --- the exact shape that
+`MeasureTheory.integral_fun_norm_addHaar` produces. -/
+lemma integral_Ioi_indicator_pow (n : ℕ) :
+    (∫ y in Set.Ioi (0:ℝ),
+        Set.indicator (Set.Iio (1:ℝ)) (fun t : ℝ => t ^ n) y)
+      = 1 / (n + 1 : ℝ) := by
+  rw [MeasureTheory.setIntegral_indicator measurableSet_Iio,
+      Set.Ioi_inter_Iio,
+      ← MeasureTheory.integral_Ioc_eq_integral_Ioo,
+      ← intervalIntegral.integral_of_le (by norm_num : (0:ℝ) ≤ 1),
+      integral_pow]
+  simp
+
+/-- **The radial integral behind the constant `1 / (d + 2)`.** -/
+theorem integral_radial_sq {d : ℕ} (hd : 0 < d) :
+    (∫ y in Set.Ioi (0:ℝ), y ^ (d - 1) •
+        Set.indicator (Set.Iio (1:ℝ)) (fun t : ℝ => t ^ 2) y)
+      = 1 / (d + 2 : ℝ) := by
+  rw [funext (smul_indicator_sq hd), integral_Ioi_indicator_pow]
+  push_cast
+  ring
+
+end Diagonal
