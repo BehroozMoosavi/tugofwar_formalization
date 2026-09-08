@@ -265,3 +265,134 @@ theorem integral_radial_sq {d : ℕ} (hd : 0 < d) :
   ring
 
 end Diagonal
+
+/-! ### Diagonal second moments: the coordinate symmetry and the constant
+
+The pieces are assembled here into the statement of the paper:
+`⨍_{B₁} z i ^ 2 = 1 / (d + 2)`.
+-/
+
+namespace Diagonal
+
+variable {d : ℕ}
+
+lemma integrableOn_sq_coord (i : Fin d) (r : ℝ) :
+    MeasureTheory.IntegrableOn (fun z : EuclSpaceM d => (z.ofLp i) ^ 2)
+      (Metric.ball (0 : EuclSpaceM d) r) :=
+  (ContinuousOn.integrableOn_compact (isCompact_closedBall _ _)
+    (by fun_prop)).mono_set Metric.ball_subset_closedBall
+
+lemma sum_sq_coord (z : EuclSpaceM d) : ∑ i, (z.ofLp i) ^ 2 = ‖z‖ ^ 2 := by
+  rw [EuclideanSpace.norm_eq, Real.sq_sqrt (by positivity)]
+  simp [sq_abs]
+
+lemma integral_sum_sq_coord (r : ℝ) :
+    (∫ z in Metric.ball (0 : EuclSpaceM d) r, ‖z‖ ^ 2)
+      = ∑ i : Fin d, ∫ z in Metric.ball (0 : EuclSpaceM d) r, (z.ofLp i) ^ 2 := by
+  rw [← MeasureTheory.integral_finsetSum Finset.univ
+        fun i _ => integrableOn_sq_coord i r]
+  refine MeasureTheory.setIntegral_congr_fun measurableSet_ball fun z _ => ?_
+  exact (sum_sq_coord z).symm
+
+/-- Coordinate permutation as a linear isometry. Unlike `flipCoordEquiv`, this
+comes free from `LinearIsometryEquiv.piLpCongrLeft`. -/
+noncomputable def permEquiv (σ : Equiv.Perm (Fin d)) :
+    EuclSpaceM d ≃ₗᵢ[ℝ] EuclSpaceM d :=
+  LinearIsometryEquiv.piLpCongrLeft 2 ℝ ℝ σ
+
+lemma measurePreserving_perm (σ : Equiv.Perm (Fin d)) :
+    MeasureTheory.MeasurePreserving (permEquiv (d := d) σ) volume volume :=
+  LinearIsometryEquiv.measurePreserving _
+
+@[simp] lemma permEquiv_apply (σ : Equiv.Perm (Fin d)) (z : EuclSpaceM d)
+    (i : Fin d) : (permEquiv σ z).ofLp i = z.ofLp (σ.symm i) := by
+  simp [permEquiv, LinearIsometryEquiv.piLpCongrLeft]
+
+lemma measurableEmbedding_perm (σ : Equiv.Perm (Fin d)) :
+    MeasurableEmbedding (permEquiv (d := d) σ) :=
+  (permEquiv (d := d) σ).toHomeomorph.measurableEmbedding
+
+/-- All coordinates have the same second moment, by the swap permutation. -/
+lemma integral_sq_coord_eq (i j : Fin d) (r : ℝ) :
+    (∫ z in Metric.ball (0 : EuclSpaceM d) r, (z.ofLp i) ^ 2)
+      = ∫ z in Metric.ball (0 : EuclSpaceM d) r, (z.ofLp j) ^ 2 := by
+  have hpre : (permEquiv (d := d) (Equiv.swap i j)) ⁻¹'
+      (Metric.ball (0 : EuclSpaceM d) r) = Metric.ball (0 : EuclSpaceM d) r := by
+    ext z; simp [Metric.mem_ball, dist_zero_right]
+  have key := (measurePreserving_perm (Equiv.swap i j)).setIntegral_preimage_emb
+    (measurableEmbedding_perm _)
+    (fun w : EuclSpaceM d => (w.ofLp i) ^ 2)
+    (Metric.ball (0 : EuclSpaceM d) r)
+  rw [hpre] at key
+  rw [← key]
+  refine MeasureTheory.setIntegral_congr_fun measurableSet_ball fun z _ => ?_
+  simp [Equiv.swap_apply_def]
+
+/-- The sum collapses: `∫ ‖z‖ ^ 2 = d * ∫ z i ^ 2`. -/
+theorem integral_normSq_eq_nsmul (i : Fin d) (r : ℝ) :
+    (∫ z in Metric.ball (0 : EuclSpaceM d) r, ‖z‖ ^ 2)
+      = (d : ℝ) * ∫ z in Metric.ball (0 : EuclSpaceM d) r, (z.ofLp i) ^ 2 := by
+  rw [integral_sum_sq_coord,
+      Finset.sum_congr rfl fun j _ => integral_sq_coord_eq j i r]
+  simp [Finset.sum_const, Finset.card_univ]
+
+/-! #### The radial side -/
+
+lemma mem_unitBall_iff (z : EuclSpaceM d) :
+    z ∈ Metric.ball (0 : EuclSpaceM d) 1 ↔ ‖z‖ < 1 := by
+  simp [Metric.mem_ball, dist_zero_right]
+
+lemma integral_ball_eq_integral_indicator (g : ℝ → ℝ) :
+    (∫ z in Metric.ball (0 : EuclSpaceM d) 1, g ‖z‖)
+      = ∫ z : EuclSpaceM d, Set.indicator (Set.Iio (1:ℝ)) g ‖z‖ := by
+  rw [← MeasureTheory.integral_indicator measurableSet_ball]
+  refine MeasureTheory.integral_congr_ae
+    (Filter.Eventually.of_forall fun z => ?_)
+  by_cases h : ‖z‖ < 1
+  · simp [Set.indicator_of_mem, (mem_unitBall_iff z).2 h, h]
+  · simp [Set.indicator_of_notMem, h]
+
+/-- The radial computation on the unit ball. -/
+theorem integral_normSq_unitBall [Nontrivial (EuclSpaceM d)] (hd : 0 < d) :
+    (∫ z in Metric.ball (0 : EuclSpaceM d) 1, ‖z‖ ^ 2)
+      = (d : ℝ) * (volume.real (Metric.ball (0 : EuclSpaceM d) 1))
+          * (1 / (d + 2 : ℝ)) := by
+  rw [integral_ball_eq_integral_indicator (fun t : ℝ => t ^ 2),
+      MeasureTheory.integral_fun_norm_addHaar volume
+        (Set.indicator (Set.Iio (1:ℝ)) (fun t : ℝ => t ^ 2)),
+      finrank_euclideanSpace_fin, integral_radial_sq hd]
+  simp [nsmul_eq_mul, smul_eq_mul]
+  ring
+
+/-! #### Cancellation -/
+
+lemma volumeReal_unitBall_pos [Nontrivial (EuclSpaceM d)] :
+    0 < volume.real (Metric.ball (0 : EuclSpaceM d) 1) := by
+  have h1 : volume (Metric.ball (0 : EuclSpaceM d) 1) ≠ 0 :=
+    (measure_ball_pos volume 0 one_pos).ne'
+  have h2 : volume (Metric.ball (0 : EuclSpaceM d) 1) ≠ ⊤ :=
+    measure_ball_lt_top.ne
+  simp only [MeasureTheory.Measure.real]
+  exact ENNReal.toReal_pos h1 h2
+
+theorem integral_sq_coord_unitBall [Nontrivial (EuclSpaceM d)] (hd : 0 < d)
+    (i : Fin d) :
+    (∫ z in Metric.ball (0 : EuclSpaceM d) 1, (z.ofLp i) ^ 2)
+      = volume.real (Metric.ball (0 : EuclSpaceM d) 1) / (d + 2 : ℝ) := by
+  have hdne : (d : ℝ) ≠ 0 := Nat.cast_ne_zero.2 hd.ne'
+  have h := (integral_normSq_eq_nsmul i 1).symm.trans
+    (integral_normSq_unitBall hd)
+  field_simp at h ⊢
+  linarith [h]
+
+/-- **The diagonal second moment of the unit ball: the `1/(d+2)` of the
+asymptotic expansion.** -/
+theorem setAverage_sq_coord_unitBall [Nontrivial (EuclSpaceM d)] (hd : 0 < d)
+    (i : Fin d) :
+    (⨍ z in Metric.ball (0 : EuclSpaceM d) 1, (z.ofLp i) ^ 2)
+      = 1 / (d + 2 : ℝ) := by
+  rw [MeasureTheory.setAverage_eq, integral_sq_coord_unitBall hd i, smul_eq_mul]
+  have hpos := volumeReal_unitBall_pos (d := d)
+  field_simp
+
+end Diagonal
