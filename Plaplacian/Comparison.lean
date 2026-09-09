@@ -134,4 +134,66 @@ theorem ae_eq_of_setAverage_eq_max
   · exact absurd (inv_eq_zero.1 h) hvol
   · exact h
 
+
+
+/-! ### The propagation step
+
+LPS conclude by showing that the set `G` where `v - u` attains its maximum
+propagates: if `x ∈ G` then `|B ε x \ G| = 0`, and hence `G` contains a point
+displaced from `x` by roughly `ε/2` in any fixed direction. Iterating produces
+points of `G` with unbounded first coordinate, contradicting boundedness of
+`Ω`.
+
+The ingredients are collected here. The measure-theoretic core is
+`nonempty_inter_of_ae_full`: a set of full measure in a ball must meet every
+positive-measure subset of that ball.
+-/
+
+/-- The displaced small ball sits inside the big one. -/
+theorem ball_displaced_subset (x : EuclSpace d) {ε : ℝ} (hε : 0 < ε)
+    (e : EuclSpace d) (he : ‖e‖ = 1) :
+    ball (x + (ε/2) • e) (ε/4) ⊆ ball x ε := by
+  intro y hy
+  rw [mem_ball, dist_eq_norm] at hy ⊢
+  have h1 : ‖y - x‖ ≤ ‖y - (x + (ε/2) • e)‖ + ‖(ε/2 : ℝ) • e‖ := by
+    have hrw : y - x = (y - (x + (ε/2) • e)) + (ε/2 : ℝ) • e := by abel
+    rw [hrw]
+    exact norm_add_le _ _
+  have h2 : ‖(ε/2 : ℝ) • e‖ = ε/2 := by
+    rw [norm_smul, he, Real.norm_eq_abs, abs_of_nonneg (by linarith), mul_one]
+  linarith
+
+/-- **A set of full measure in a ball meets every positive-measure subset.** -/
+theorem nonempty_inter_of_ae_full (G : Set (EuclSpace d)) (x : EuclSpace d)
+    {ε : ℝ} (hfull : volume (ball x ε \ G) = 0)
+    (S : Set (EuclSpace d)) (hS : S ⊆ ball x ε) (hSpos : 0 < volume S) :
+    (G ∩ S).Nonempty := by
+  by_contra hcon
+  rw [Set.not_nonempty_iff_eq_empty] at hcon
+  have hsub : S ⊆ ball x ε \ G := by
+    intro y hy
+    refine ⟨hS hy, fun hyG => ?_⟩
+    have hmem : y ∈ G ∩ S := ⟨hyG, hy⟩
+    rw [hcon] at hmem
+    exact hmem
+  have hle : volume S ≤ volume (ball x ε \ G) := measure_mono hsub
+  rw [hfull, nonpos_iff_eq_zero] at hle
+  exact hSpos.ne' hle
+
+/-- A unit vector exists in dimension at least one; needed to fix a marching
+direction. -/
+theorem exists_unit_vector (hd : 0 < d) : ∃ e : EuclSpace d, ‖e‖ = 1 := by
+  refine ⟨EuclideanSpace.single (⟨0, hd⟩ : Fin d) (1 : ℝ), ?_⟩
+  simp
+
+/-- **The propagation step.** If `G` has full measure in `B ε x`, it contains a
+point displaced from `x` by `ε/2` in the direction `e`, up to `ε/4`. -/
+theorem exists_mem_displaced (G : Set (EuclSpace d)) (x : EuclSpace d)
+    {ε : ℝ} (hε : 0 < ε) (e : EuclSpace d) (he : ‖e‖ = 1)
+    (hfull : volume (ball x ε \ G) = 0) :
+    (G ∩ ball (x + (ε/2) • e) (ε/4)).Nonempty :=
+  nonempty_inter_of_ae_full G x hfull _
+    (ball_displaced_subset x hε e he)
+    (measure_ball_pos volume _ (by linarith))
+
 end PLaplacian
