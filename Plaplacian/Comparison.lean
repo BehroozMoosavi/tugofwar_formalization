@@ -340,4 +340,55 @@ theorem ae_eq_max_on_ball (p ε : ℝ) (hp : 2 ≤ p) (hε : 0 < ε)
   ae_eq_of_setAverage_eq_max x hε ((hv.sub hu).integrableOn_ball x ε) hMle
     (ae_full_of_attains p ε hp hε hpd hu hv hMle hMx hfix)
 
+
+
+/-! ### From a.e. statements to null sets
+
+`ae_eq_max_on_ball` produces an `EventuallyEq` on the restricted measure, while
+`exists_mem_displaced` consumes `volume (ball x ε \ G) = 0`. These two lemmas
+bridge the gap.
+-/
+
+/-- From `=ᵐ 0` for the deficit to pointwise membership in the maximum set. -/
+theorem ae_mem_max_set {f : EuclSpace d → ℝ} {M : ℝ} (x : EuclSpace d) {ε : ℝ}
+    (h : (fun y => M - f y) =ᵐ[volume.restrict (ball x ε)] 0) :
+    ∀ᵐ y ∂(volume.restrict (ball x ε)), f y = M := by
+  filter_upwards [h] with y hy
+  simp only [Pi.zero_apply] at hy
+  linarith [hy]
+
+/-- From a.e. membership to a null set difference. -/
+theorem measure_diff_eq_zero_of_ae_mem (G : Set (EuclSpace d))
+    (x : EuclSpace d) {ε : ℝ} (hG : MeasurableSet G)
+    (h : ∀ᵐ y ∂(volume.restrict (ball x ε)), y ∈ G) :
+    volume (ball x ε \ G) = 0 := by
+  rw [MeasureTheory.ae_iff] at h
+  have hcompl : {a : EuclSpace d | a ∉ G} = Gᶜ := rfl
+  rw [hcompl, MeasureTheory.Measure.restrict_apply₀
+      hG.compl.nullMeasurableSet] at h
+  have hset : (Gᶜ : Set (EuclSpace d)) ∩ ball x ε = ball x ε \ G := by
+    ext y
+    simp [and_comm]
+  rwa [hset] at h
+
+/-- The maximum set is measurable, being a level set of a measurable
+function. -/
+theorem measurableSet_max_set {u v : EuclSpace d → ℝ} (hu : BddMeas u)
+    (hv : BddMeas v) (M : ℝ) :
+    MeasurableSet {y : EuclSpace d | v y - u y = M} :=
+  measurableSet_eq_fun (hv.meas.sub hu.meas) measurable_const
+
+/-- **Propagation, in the form `exists_mem_displaced` consumes.** At an
+attained maximum, the maximum set has full measure in the ball. -/
+theorem measure_diff_max_set (p ε : ℝ) (hp : 2 ≤ p) (hε : 0 < ε)
+    (hpd : 0 < p + (d : ℝ))
+    {u v : EuclSpace d → ℝ} (hu : BddMeas u) (hv : BddMeas v)
+    {M : ℝ} (hMle : ∀ y, v y - u y ≤ M)
+    {x : EuclSpace d} (hMx : v x - u x = M)
+    (hfix : tugOfWarOp p ε v x - tugOfWarOp p ε u x = v x - u x) :
+    volume (ball x ε \ {y : EuclSpace d | v y - u y = M}) = 0 :=
+  measure_diff_eq_zero_of_ae_mem _ x (measurableSet_max_set hu hv M)
+    (ae_mem_max_set x
+      (ae_eq_max_on_ball p ε hp hε hpd hu hv hMle hMx hfix))
+
 end PLaplacian
