@@ -173,4 +173,85 @@ lemma setAverage_normSq_nonneg {ε : ℝ} (hε : 0 < ε) :
   exact setAverage_mono_ball 0 integrableOn_const (integrableOn_normSq ε)
     (fun z => by positivity)
 
+
+/-! ### Translation, and the average of the squared norm
+
+The moment results of `Plaplacian.BallMoments` are stated for *centred* balls,
+while the step operator averages over `ball x ε`. This section supplies the
+translation and uses it to compute the average of `‖y‖ ^ 2` over a ball centred
+at an arbitrary point. The linear term vanishes by the odd moments, so the
+average exceeds `‖x‖ ^ 2` by exactly the second moment of the centred ball ---
+the quantitative gap the comparison principle needs.
+-/
+
+lemma volumeReal_ball_center (x : EuclSpace d) (ε : ℝ) :
+    volume.real (ball x ε) = volume.real (ball (0 : EuclSpace d) ε) := by
+  simp only [MeasureTheory.Measure.real]
+  rw [Measure.addHaar_ball_center volume x ε]
+
+/-- Translation of a set integral over a ball. -/
+theorem setIntegral_ball_translate (f : EuclSpace d → ℝ) (x : EuclSpace d)
+    (ε : ℝ) :
+    (∫ y in ball x ε, f y) = ∫ z in ball (0 : EuclSpace d) ε, f (x + z) := by
+  have hpre : (fun z : EuclSpace d => x + z) ⁻¹' (ball x ε)
+      = ball (0 : EuclSpace d) ε := by
+    ext z; simp [Metric.mem_ball, dist_eq_norm]
+  have key := (measurePreserving_add_left volume x).setIntegral_preimage_emb
+    (measurableEmbedding_addLeft x) f (ball x ε)
+  rw [hpre] at key
+  exact key.symm
+
+/-- Translation of the average over a ball. Uses that ball volume does not
+depend on the centre. -/
+theorem setAverage_ball_translate (f : EuclSpace d → ℝ) (x : EuclSpace d)
+    (ε : ℝ) :
+    (⨍ y in ball x ε, f y) = ⨍ z in ball (0 : EuclSpace d) ε, f (x + z) := by
+  rw [MeasureTheory.setAverage_eq, MeasureTheory.setAverage_eq,
+      setIntegral_ball_translate f x ε, volumeReal_ball_center x ε]
+
+lemma integrableOn_inner (x : EuclSpace d) (ε : ℝ) :
+    IntegrableOn (fun z : EuclSpace d => 2 * inner ℝ x z)
+      (ball (0 : EuclSpace d) ε) := by
+  have h : Continuous (fun z : EuclSpace d => 2 * inner ℝ x z) := by fun_prop
+  exact (h.continuousOn.integrableOn_compact
+    (isCompact_closedBall _ _)).mono_set ball_subset_closedBall
+
+lemma setAverage_inner_eq_zero (x : EuclSpace d) (ε : ℝ) :
+    (⨍ z in ball (0 : EuclSpace d) ε, 2 * inner ℝ x z) = (0 : ℝ) := by
+  rw [MeasureTheory.setAverage_eq, integral_const_mul,
+      integral_inner_ball_eq_zero x ε]
+  simp
+
+/-- Splitting the average of the expanded square. -/
+theorem setAverage_expand (x : EuclSpace d) {ε : ℝ} (hε : 0 < ε) :
+    (⨍ z in ball (0 : EuclSpace d) ε,
+        (‖x‖ ^ 2 + 2 * inner ℝ x z + ‖z‖ ^ 2))
+      = ‖x‖ ^ 2 + ⨍ z in ball (0 : EuclSpace d) ε, ‖z‖ ^ 2 := by
+  have hc : IntegrableOn (fun _ : EuclSpace d => ‖x‖ ^ 2)
+      (ball (0 : EuclSpace d) ε) := integrableOn_const
+  have hi := integrableOn_inner x ε
+  have hn := integrableOn_normSq (d := d) ε
+  have h1 : (fun z : EuclSpace d => ‖x‖ ^ 2 + 2 * inner ℝ x z + ‖z‖ ^ 2)
+      = ((fun _ : EuclSpace d => ‖x‖ ^ 2)
+          + (fun z : EuclSpace d => 2 * inner ℝ x z))
+        + (fun z : EuclSpace d => ‖z‖ ^ 2) := by
+    funext z; simp
+  rw [h1, MeasureTheory.setAverage_add (hc.add hi) hn,
+      MeasureTheory.setAverage_add hc hi,
+      setAverage_const_ball (‖x‖ ^ 2) 0 hε, setAverage_inner_eq_zero x ε]
+  ring
+
+/-- **The average of the squared norm over a ball centred at `x`.** -/
+theorem setAverage_normSq_ball (x : EuclSpace d) {ε : ℝ} (hε : 0 < ε) :
+    (⨍ y in ball x ε, ‖y‖ ^ 2)
+      = ‖x‖ ^ 2 + ⨍ z in ball (0 : EuclSpace d) ε, ‖z‖ ^ 2 := by
+  rw [setAverage_ball_translate (fun y => ‖y‖ ^ 2) x ε]
+  have hcongr : (⨍ z in ball (0 : EuclSpace d) ε, ‖x + z‖ ^ 2)
+      = ⨍ z in ball (0 : EuclSpace d) ε,
+          (‖x‖ ^ 2 + 2 * inner ℝ x z + ‖z‖ ^ 2) := by
+    congr 1
+    funext z
+    exact norm_add_sq_real x z
+  rw [hcongr, setAverage_expand x hε]
+
 end PLaplacian
