@@ -269,4 +269,75 @@ theorem not_bddAbove_inner (G : Set (EuclSpace d)) {ε : ℝ} (hε : 0 < ε)
           exact mul_lt_mul_of_pos_right hk hq
   linarith
 
+
+
+/-! ### Rigidity at an attained maximum
+
+If the difference attains its supremum at a point where both functions solve
+the dynamic programming principle, the key estimate forces the *average* to
+attain the supremum too, and hence by `ae_eq_of_setAverage_eq_max` the
+difference equals the supremum almost everywhere on the ball. This is the
+propagation property required by `exists_mem_displaced`.
+
+The step where `α + β = 1` and `β > 0` are both essential: from
+`M ≤ α · sup + β · avg` with `sup ≤ M`, one concludes `avg ≥ M` only because
+the weights sum to one and the average carries positive weight.
+-/
+
+/-- At a point where the difference attains its supremum and both functions are
+fixed by the operator, the average over the ball also attains the supremum. -/
+theorem ae_full_of_attains (p ε : ℝ) (hp : 2 ≤ p) (hε : 0 < ε)
+    (hpd : 0 < p + (d : ℝ))
+    {u v : EuclSpace d → ℝ} (hu : BddMeas u) (hv : BddMeas v)
+    {M : ℝ} (hMle : ∀ y, v y - u y ≤ M)
+    {x : EuclSpace d} (hMx : v x - u x = M)
+    (hfix : tugOfWarOp p ε v x - tugOfWarOp p ε u x = v x - u x) :
+    (⨍ y in ball x ε, (v y - u y)) = M := by
+  have hkey := key_estimate p ε hp hε hpd hu hv x
+  rw [hfix, hMx] at hkey
+  have hsup : sSup ((fun y => v y - u y) '' ball x ε) ≤ M := by
+    refine csSup_le ⟨v x - u x, x, mem_ball_self hε, rfl⟩ ?_
+    rintro a ⟨y, -, rfl⟩
+    exact hMle y
+  have havgle : (⨍ y in ball x ε, (v y - u y)) ≤ M := by
+    have h0 : (⨍ _y in ball x ε, M) = M := setAverage_const_ball M x hε
+    rw [← h0]
+    exact setAverage_mono_ball x
+      ((hv.sub hu).integrableOn_ball x ε) integrableOn_const hMle
+  have hα : 0 ≤ (p - 2) / (p + (d : ℝ)) := div_nonneg (by linarith) hpd.le
+  have hβ : 0 < ((d : ℝ) + 2) / (p + (d : ℝ)) := by positivity
+  have hab : (p - 2) / (p + (d : ℝ)) + ((d : ℝ) + 2) / (p + (d : ℝ)) = 1 :=
+    alpha_add_beta p hpd
+  refine le_antisymm havgle ?_
+  by_contra hcon
+  push Not at hcon
+  have hstep : (p - 2) / (p + (d : ℝ)) * sSup ((fun y => v y - u y) '' ball x ε)
+      ≤ (p - 2) / (p + (d : ℝ)) * M :=
+    mul_le_mul_of_nonneg_left hsup hα
+  have hstep2 : ((d : ℝ) + 2) / (p + (d : ℝ))
+        * (⨍ y in ball x ε, (v y - u y))
+      < ((d : ℝ) + 2) / (p + (d : ℝ)) * M :=
+    mul_lt_mul_of_pos_left hcon hβ
+  have hsum : (p - 2) / (p + (d : ℝ)) * M
+      + ((d : ℝ) + 2) / (p + (d : ℝ)) * M = M := by
+    calc (p - 2) / (p + (d : ℝ)) * M + ((d : ℝ) + 2) / (p + (d : ℝ)) * M
+        = ((p - 2) / (p + (d : ℝ)) + ((d : ℝ) + 2) / (p + (d : ℝ))) * M := by
+          ring
+      _ = 1 * M := by rw [hab]
+      _ = M := one_mul M
+  linarith [hkey, hstep, hstep2, hsum]
+
+/-- **The propagation property.** Combining rigidity of the average with the
+a.e.-equality step: at an attained maximum, the difference equals `M` almost
+everywhere on the ball, i.e. the maximum set has full measure there. -/
+theorem ae_eq_max_on_ball (p ε : ℝ) (hp : 2 ≤ p) (hε : 0 < ε)
+    (hpd : 0 < p + (d : ℝ))
+    {u v : EuclSpace d → ℝ} (hu : BddMeas u) (hv : BddMeas v)
+    {M : ℝ} (hMle : ∀ y, v y - u y ≤ M)
+    {x : EuclSpace d} (hMx : v x - u x = M)
+    (hfix : tugOfWarOp p ε v x - tugOfWarOp p ε u x = v x - u x) :
+    (fun y => M - (v y - u y)) =ᵐ[volume.restrict (ball x ε)] 0 :=
+  ae_eq_of_setAverage_eq_max x hε ((hv.sub hu).integrableOn_ball x ε) hMle
+    (ae_full_of_attains p ε hp hε hpd hu hv hMle hMx hfix)
+
 end PLaplacian
