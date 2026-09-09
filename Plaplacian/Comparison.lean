@@ -391,4 +391,65 @@ theorem measure_diff_max_set (p ε : ℝ) (hp : 2 ≤ p) (hε : 0 < ε)
     (ae_mem_max_set x
       (ae_eq_max_on_ball p ε hp hε hpd hu hv hMle hMx hfix))
 
+
+
+/-! ### The contradiction, and the comparison principle
+
+Assembling everything: if the difference of two solutions attains a maximum
+`M`, the maximum set propagates by `measure_diff_max_set` and is therefore
+unbounded by `not_bddAbove_inner`. A solution of the `ε`-Dirichlet problem
+lives on a bounded domain, so this is a contradiction unless the maximum is
+attained only on the boundary strip, where the data controls it.
+-/
+
+/-- **The maximum set is unbounded.** If `v - u` attains its maximum `M` at
+some point and the dynamic programming principle holds wherever the maximum is
+attained, then the maximum set extends arbitrarily far in any fixed
+direction. -/
+theorem max_set_unbounded (p ε : ℝ) (hp : 2 ≤ p) (hε : 0 < ε)
+    (hpd : 0 < p + (d : ℝ))
+    (e : EuclSpace d) (he : ‖e‖ = 1)
+    {u v : EuclSpace d → ℝ} (hu : BddMeas u) (hv : BddMeas v)
+    {M : ℝ} (hMle : ∀ y, v y - u y ≤ M)
+    (hfix : ∀ y, v y - u y = M →
+      tugOfWarOp p ε v y - tugOfWarOp p ε u y = v y - u y)
+    {x₀ : EuclSpace d} (hx₀ : v x₀ - u x₀ = M) (R : ℝ) :
+    ∃ y, v y - u y = M ∧ R < inner ℝ e y := by
+  set G := {y : EuclSpace d | v y - u y = M} with hG
+  have hprop : ∀ y ∈ G, volume (ball y ε \ G) = 0 := fun y hy =>
+    measure_diff_max_set p ε hp hε hpd hu hv hMle hy (hfix y hy)
+  obtain ⟨y, hyG, hy⟩ :=
+    not_bddAbove_inner G hε e he hprop (show x₀ ∈ G from hx₀) R
+  exact ⟨y, hyG, hy⟩
+
+/-- **The comparison principle, contradiction form.** Under the hypotheses of
+`max_set_unbounded`, the maximum set cannot be contained in a bounded set. This
+is the form in which the principle is applied: for two solutions of the
+`ε`-Dirichlet problem on a bounded `Ω`, the maximum of `v - u` cannot be
+attained in `Ω`, so it is controlled by the boundary data. -/
+theorem not_bounded_max_set (p ε : ℝ) (hp : 2 ≤ p) (hε : 0 < ε)
+    (hpd : 0 < p + (d : ℝ))
+    (e : EuclSpace d) (he : ‖e‖ = 1)
+    {u v : EuclSpace d → ℝ} (hu : BddMeas u) (hv : BddMeas v)
+    {M : ℝ} (hMle : ∀ y, v y - u y ≤ M)
+    (hfix : ∀ y, v y - u y = M →
+      tugOfWarOp p ε v y - tugOfWarOp p ε u y = v y - u y)
+    {x₀ : EuclSpace d} (hx₀ : v x₀ - u x₀ = M)
+    {S : Set (EuclSpace d)} (hS : Bornology.IsBounded S)
+    (hsub : {y : EuclSpace d | v y - u y = M} ⊆ S) :
+    False := by
+  obtain ⟨R, hR⟩ := hS.subset_closedBall 0
+  obtain ⟨y, hyG, hy⟩ :=
+    max_set_unbounded p ε hp hε hpd e he hu hv hMle hfix hx₀ R
+  have hmem : y ∈ closedBall (0 : EuclSpace d) R := hR (hsub hyG)
+  have hnorm : ‖y‖ ≤ R := by
+    rw [Metric.mem_closedBall, dist_zero_right] at hmem
+    exact hmem
+  have hip : inner ℝ e y ≤ R := by
+    calc inner ℝ e y ≤ |inner ℝ e y| := le_abs_self _
+      _ ≤ ‖e‖ * ‖y‖ := abs_real_inner_le_norm e y
+      _ = ‖y‖ := by rw [he, one_mul]
+      _ ≤ R := hnorm
+  linarith
+
 end PLaplacian
