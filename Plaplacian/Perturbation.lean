@@ -141,21 +141,29 @@ theorem setAverage_psi (R : ℝ) (x : EuclSpace d) {ε : ℝ} (hε : 0 < ε) :
       setAverage_normSq_ball x hε]
   ring
 
-/-! ### The gap -/
+/-! ### The gap: withdrawn
 
-/-- **The quantitative gap: `ψ` is strictly superharmonic for `T_ε`.**
+An earlier version proved
+`ψ x - T_ε ψ x = α ε ^ 2 + β * (second moment)`,
+combining `sSup_add_sInf_psi` with the definition of `tugOfWarOp`. That is no
+longer available, for two independent reasons.
 
-`ψ x - T_ε ψ x = α ε ^ 2 + β m ε`. This is what upgrades nonexpansiveness to a
-strict inequality in the comparison argument. -/
-theorem psi_sub_tugOfWarOp (p R : ℝ) {x : EuclSpace d} (hx : x ≠ 0) {ε : ℝ}
-    (hε : 0 < ε) (hle : ε ≤ ‖x‖) (hpd : 0 < p + (d : ℝ)) :
-    psi R x - tugOfWarOp p ε (psi R) x
-      = (p - 2) / (p + (d : ℝ)) * ε ^ 2
-        + ((d : ℝ) + 2) / (p + (d : ℝ))
-            * ⨍ z in ball (0 : EuclSpace d) ε, ‖z‖ ^ 2 := by
-  unfold tugOfWarOp
-  rw [sSup_add_sInf_psi R hx hε.le hle, setAverage_psi R x hε]
-  field_simp
-  ring
+* `tugOfWarOp` now takes its extreme values over OPEN balls (forced by
+  measurability; see `Plaplacian.Measurability`). Over an open ball the extreme
+  values of `ψ` are approached but not attained, so `isGreatest_psi` and
+  `isLeast_psi` below --- which are about `closedBall` --- do not convert to
+  `sSup`/`sInf` of the open-ball image via `IsGreatest.csSup_eq`.
+
+* More fundamentally, the gap does not lead anywhere. `T_ε` is neither sub-
+  nor superadditive: the supremum is subadditive and the infimum is
+  superadditive, so the pair `sup + inf` is neither. Hence one cannot split
+  `T_ε (u + δψ) ≤ T_ε u + δ T_ε ψ`, which is the step a
+  "perturb and split" comparison proof requires.
+
+The comparison principle is instead obtained by the game-free argument of
+Luiro--Parviainen--Saksman, which uses no perturbation at all. The material
+retained above (extreme values of `ψ` on a closed ball, and the average of
+`ψ` over a ball) is correct and self-contained, and is kept for the record.
+-/
 
 end PLaplacian

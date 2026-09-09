@@ -91,19 +91,25 @@ lemma BddMeas.integrableOn_ball {v : EuclSpace d → ℝ} (hv : BddMeas v)
 
 /-- Without this the `sSup` in the operator is a junk value. -/
 lemma BddMeas.bddAbove_image {v : EuclSpace d → ℝ} (hv : BddMeas v)
-    (x : EuclSpace d) (ε : ℝ) : BddAbove (v '' closedBall x ε) := by
+    (s : Set (EuclSpace d)) : BddAbove (v '' s) := by
   obtain ⟨C, hC⟩ := hv.bound
   exact ⟨C, by rintro a ⟨y, -, rfl⟩; exact (abs_le.1 (hC y)).2⟩
 
 /-- Without this the `sInf` in the operator is a junk value. -/
 lemma BddMeas.bddBelow_image {v : EuclSpace d → ℝ} (hv : BddMeas v)
-    (x : EuclSpace d) (ε : ℝ) : BddBelow (v '' closedBall x ε) := by
+    (s : Set (EuclSpace d)) : BddBelow (v '' s) := by
   obtain ⟨C, hC⟩ := hv.bound
   exact ⟨-C, by rintro a ⟨y, -, rfl⟩; exact (abs_le.1 (hC y)).1⟩
 
 lemma nonempty_closedBall (x : EuclSpace d) {ε : ℝ} (hε : 0 ≤ ε) :
     (closedBall x ε : Set (EuclSpace d)).Nonempty :=
   ⟨x, mem_closedBall_self hε⟩
+
+/-- The OPEN ball is nonempty for `0 < ε`. This is what the operator needs;
+see `Plaplacian.Measurability` for why the balls must be open. -/
+lemma nonempty_ball (x : EuclSpace d) {ε : ℝ} (hε : 0 < ε) :
+    (ball x ε : Set (EuclSpace d)).Nonempty :=
+  ⟨x, mem_ball_self hε⟩
 
 /-! ### Monotonicity of the extreme values -/
 
@@ -128,7 +134,7 @@ lemma sInf_image_mono {u v : EuclSpace d → ℝ} {s : Set (EuclSpace d)}
 /-- **The tug-of-war step operator.** -/
 def tugOfWarOp (p ε : ℝ) (v : EuclSpace d → ℝ) (x : EuclSpace d) : ℝ :=
   (p - 2) / (p + (d : ℝ)) / 2 *
-      (sSup (v '' closedBall x ε) + sInf (v '' closedBall x ε))
+      (sSup (v '' ball x ε) + sInf (v '' ball x ε))
     + ((d : ℝ) + 2) / (p + (d : ℝ)) * (⨍ y in ball x ε, v y)
 
 /-- The weights are a partition of unity: `α + β = 1`. -/
@@ -150,9 +156,9 @@ theorem tugOfWarOp_monotone (p ε : ℝ) (hp : 2 ≤ p) (hd : 0 < d) (hε : 0 < 
     apply div_nonneg (div_nonneg (by linarith) hpd.le)
     norm_num
   have hβ : 0 ≤ ((d : ℝ) + 2) / (p + (d : ℝ)) := by positivity
-  have hne := nonempty_closedBall x hε.le
-  have hsup := sSup_image_mono (u := u) (v := v) hne (hv.bddAbove_image x ε) h
-  have hinf := sInf_image_mono (u := u) (v := v) hne (hu.bddBelow_image x ε) h
+  have hne := nonempty_ball x hε
+  have hsup := sSup_image_mono (u := u) (v := v) hne (hv.bddAbove_image (ball x ε)) h
+  have hinf := sInf_image_mono (u := u) (v := v) hne (hu.bddBelow_image (ball x ε)) h
   have havg := setAverage_mono_ball x (hu.integrableOn_ball x ε)
     (hv.integrableOn_ball x ε) h
   unfold tugOfWarOp
@@ -221,12 +227,12 @@ theorem tugOfWarOp_add_const (p ε : ℝ) (hε : 0 < ε)
     {v : EuclSpace d → ℝ} (hv : BddMeas v) (K : ℝ) (x : EuclSpace d)
     (hpd : 0 < p + (d : ℝ)) :
     tugOfWarOp p ε (fun y => v y + K) x = tugOfWarOp p ε v x + K := by
-  have hne : (v '' closedBall x ε).Nonempty :=
-    ⟨v x, x, mem_closedBall_self hε.le, rfl⟩
-  have hab := hv.bddAbove_image x ε
-  have hbb := hv.bddBelow_image x ε
-  have himg : (fun y => v y + K) '' closedBall x ε
-      = (fun r => r + K) '' (v '' closedBall x ε) := by
+  have hne : (v '' ball x ε).Nonempty :=
+    ⟨v x, x, mem_ball_self hε, rfl⟩
+  have hab := hv.bddAbove_image (ball x ε)
+  have hbb := hv.bddBelow_image (ball x ε)
+  have himg : (fun y => v y + K) '' ball x ε
+      = (fun r => r + K) '' (v '' ball x ε) := by
     rw [Set.image_image]
   have havg : (⨍ y in ball x ε, (v y + K))
       = (⨍ y in ball x ε, v y) + K := by
