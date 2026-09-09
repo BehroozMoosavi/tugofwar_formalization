@@ -140,7 +140,7 @@ theorem ae_eq_of_setAverage_eq_max
 
 LPS conclude by showing that the set `G` where `v - u` attains its maximum
 propagates: if `x ∈ G` then `|B ε x \ G| = 0`, and hence `G` contains a point
-displaced from `x` by roughly `ε/2` in any fixed direction. Iterating produces
+displaced from `x` by roughly `ε / 2` in any fixed direction. Iterating produces
 points of `G` with unbounded first coordinate, contradicting boundedness of
 `Ω`.
 
@@ -152,14 +152,14 @@ positive-measure subset of that ball.
 /-- The displaced small ball sits inside the big one. -/
 theorem ball_displaced_subset (x : EuclSpace d) {ε : ℝ} (hε : 0 < ε)
     (e : EuclSpace d) (he : ‖e‖ = 1) :
-    ball (x + (ε/2) • e) (ε/4) ⊆ ball x ε := by
+    ball (x + (ε / 2) • e) (ε / 4) ⊆ ball x ε := by
   intro y hy
   rw [mem_ball, dist_eq_norm] at hy ⊢
-  have h1 : ‖y - x‖ ≤ ‖y - (x + (ε/2) • e)‖ + ‖(ε/2 : ℝ) • e‖ := by
-    have hrw : y - x = (y - (x + (ε/2) • e)) + (ε/2 : ℝ) • e := by abel
+  have h1 : ‖y - x‖ ≤ ‖y - (x + (ε / 2) • e)‖ + ‖(ε / 2 : ℝ) • e‖ := by
+    have hrw : y - x = (y - (x + (ε / 2) • e)) + (ε / 2 : ℝ) • e := by abel
     rw [hrw]
     exact norm_add_le _ _
-  have h2 : ‖(ε/2 : ℝ) • e‖ = ε/2 := by
+  have h2 : ‖(ε / 2 : ℝ) • e‖ = ε / 2 := by
     rw [norm_smul, he, Real.norm_eq_abs, abs_of_nonneg (by linarith), mul_one]
   linarith
 
@@ -187,13 +187,86 @@ theorem exists_unit_vector (hd : 0 < d) : ∃ e : EuclSpace d, ‖e‖ = 1 := by
   simp
 
 /-- **The propagation step.** If `G` has full measure in `B ε x`, it contains a
-point displaced from `x` by `ε/2` in the direction `e`, up to `ε/4`. -/
+point displaced from `x` by `ε / 2` in the direction `e`, up to `ε / 4`. -/
 theorem exists_mem_displaced (G : Set (EuclSpace d)) (x : EuclSpace d)
     {ε : ℝ} (hε : 0 < ε) (e : EuclSpace d) (he : ‖e‖ = 1)
     (hfull : volume (ball x ε \ G) = 0) :
-    (G ∩ ball (x + (ε/2) • e) (ε/4)).Nonempty :=
+    (G ∩ ball (x + (ε / 2) • e) (ε / 4)).Nonempty :=
   nonempty_inter_of_ae_full G x hfull _
     (ball_displaced_subset x hε e he)
     (measure_ball_pos volume _ (by linarith))
+
+
+
+/-! ### The unboundedness contradiction
+
+Each propagation step advances `⟪e, ·⟫` by at least `ε / 4`, since the
+displacement is `ε / 2` and the ball has radius `ε / 4`. Iterating shows `G` is
+unbounded in the direction `e`, which contradicts `G ⊆ Ω` for bounded `Ω`.
+This closes the comparison principle of Luiro--Parviainen--Saksman.
+-/
+
+/-- Each step advances the inner product with `e` by at least `ε / 4`. -/
+theorem inner_advance (x y : EuclSpace d)
+    (e : EuclSpace d) (he : ‖e‖ = 1) {ε : ℝ}
+    (hy : y ∈ ball (x + (ε / 2) • e) (ε / 4)) :
+    inner ℝ e x + ε / 4 ≤ inner ℝ e y := by
+  have hd : ‖y - (x + (ε / 2) • e)‖ < ε / 4 := by
+    rw [← dist_eq_norm]; exact mem_ball.1 hy
+  have hip : inner ℝ e (y - (x + (ε / 2) • e)) ≥ -(ε / 4) := by
+    have h1 := abs_real_inner_le_norm e (y - (x + (ε / 2) • e))
+    rw [he, one_mul] at h1
+    have h2 := abs_le.1 h1
+    linarith [h2.1]
+  have hexp : inner ℝ e (y - (x + (ε / 2) • e))
+      = inner ℝ e y - inner ℝ e x - (ε / 2) := by
+    have hee : inner ℝ e e = (1 : ℝ) := by
+      rw [real_inner_self_eq_norm_sq, he, one_pow]
+    rw [inner_sub_right, inner_add_right, real_inner_smul_right, hee]
+    ring
+  linarith [hip, hexp]
+
+/-- One step of the march. -/
+theorem exists_advance (G : Set (EuclSpace d)) {ε : ℝ} (hε : 0 < ε)
+    (e : EuclSpace d) (he : ‖e‖ = 1)
+    (hprop : ∀ x ∈ G, volume (ball x ε \ G) = 0)
+    {x : EuclSpace d} (hx : x ∈ G) :
+    ∃ y ∈ G, inner ℝ e x + ε / 4 ≤ inner ℝ e y := by
+  obtain ⟨y, hyG, hyB⟩ := exists_mem_displaced G x hε e he (hprop x hx)
+  exact ⟨y, hyG, inner_advance x y e he hyB⟩
+
+/-- **`G` is unbounded in the direction `e`.** -/
+theorem exists_far (G : Set (EuclSpace d)) {ε : ℝ} (hε : 0 < ε)
+    (e : EuclSpace d) (he : ‖e‖ = 1)
+    (hprop : ∀ x ∈ G, volume (ball x ε \ G) = 0)
+    {x₀ : EuclSpace d} (hx₀ : x₀ ∈ G) (k : ℕ) :
+    ∃ y ∈ G, inner ℝ e x₀ + k * (ε / 4) ≤ inner ℝ e y := by
+  induction k with
+  | zero => exact ⟨x₀, hx₀, by simp⟩
+  | succ n ih =>
+      obtain ⟨y, hyG, hy⟩ := ih
+      obtain ⟨z, hzG, hz⟩ := exists_advance G hε e he hprop hyG
+      refine ⟨z, hzG, ?_⟩
+      push_cast
+      linarith
+
+/-- **The contradiction.** A non-empty set with the propagation property
+cannot have `⟪e, ·⟫` bounded above, so it cannot be contained in a bounded
+set. -/
+theorem not_bddAbove_inner (G : Set (EuclSpace d)) {ε : ℝ} (hε : 0 < ε)
+    (e : EuclSpace d) (he : ‖e‖ = 1)
+    (hprop : ∀ x ∈ G, volume (ball x ε \ G) = 0)
+    {x₀ : EuclSpace d} (hx₀ : x₀ ∈ G) (R : ℝ) :
+    ∃ y ∈ G, R < inner ℝ e y := by
+  obtain ⟨k, hk⟩ := exists_nat_gt ((R - inner ℝ e x₀) / (ε / 4))
+  obtain ⟨y, hyG, hy⟩ := exists_far G hε e he hprop hx₀ k
+  refine ⟨y, hyG, ?_⟩
+  have hq : 0 < ε / 4 := by linarith
+  have hk' : R - inner ℝ e x₀ < (k : ℝ) * (ε / 4) := by
+    calc R - inner ℝ e x₀
+        = ((R - inner ℝ e x₀) / (ε / 4)) * (ε / 4) := by field_simp
+      _ < (k : ℝ) * (ε / 4) := by
+          exact mul_lt_mul_of_pos_right hk hq
+  linarith
 
 end PLaplacian
