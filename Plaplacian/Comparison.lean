@@ -84,4 +84,54 @@ theorem key_estimate (p ε : ℝ) (hp : 2 ≤ p) (hε : 0 < ε)
   rw [← havg]
   nlinarith [hsup, hinf, hα]
 
+
+
+/-! ### The a.e.-equality step
+
+LPS deduce from `key_estimate` that if `v - u` attains its maximum `M` at `x`,
+then `v - u = M` almost everywhere on `B ε x`. The mechanism is that a function
+bounded above by `M` whose average equals `M` must equal `M` a.e., which
+reduces via `M - f` to the standard fact that a nonnegative integrable function
+with vanishing integral is zero a.e.
+-/
+
+/-- A nonnegative integrable function with vanishing integral is zero a.e. -/
+lemma ae_eq_zero_of_setIntegral_eq_zero
+    {g : EuclSpace d → ℝ} {s : Set (EuclSpace d)}
+    (hint : MeasureTheory.IntegrableOn g s) (hnn : ∀ y, 0 ≤ g y)
+    (hzero : (∫ y in s, g y) = 0) :
+    g =ᵐ[volume.restrict s] 0 := by
+  refine (MeasureTheory.setIntegral_eq_zero_iff_of_nonneg_ae ?_ hint).1 hzero
+  exact Filter.Eventually.of_forall hnn
+
+/-- **The a.e.-equality step.** A function bounded above by `M` whose average
+over a ball equals `M` is equal to `M` almost everywhere on that ball. -/
+theorem ae_eq_of_setAverage_eq_max
+    {f : EuclSpace d → ℝ} {M : ℝ} (x : EuclSpace d) {ε : ℝ} (hε : 0 < ε)
+    (hint : MeasureTheory.IntegrableOn f (ball x ε))
+    (hle : ∀ y, f y ≤ M)
+    (havg : (⨍ y in ball x ε, f y) = M) :
+    (fun y => M - f y) =ᵐ[volume.restrict (ball x ε)] 0 := by
+  have hcint : MeasureTheory.IntegrableOn (fun _ : EuclSpace d => M)
+      (ball x ε) := integrableOn_const
+  have hgint : MeasureTheory.IntegrableOn (fun y => M - f y) (ball x ε) :=
+    hcint.sub hint
+  refine ae_eq_zero_of_setIntegral_eq_zero hgint
+    (fun y => by linarith [hle y]) ?_
+  have hsub : (⨍ y in ball x ε, (M - f y)) = 0 := by
+    rw [show (fun y : EuclSpace d => M - f y)
+          = (fun _ : EuclSpace d => M) - f from rfl,
+        MeasureTheory.setAverage_sub hcint hint,
+        setAverage_const_ball M x hε, havg, sub_self]
+  rw [MeasureTheory.setAverage_eq] at hsub
+  have hvol : volume.real (ball x ε) ≠ 0 := by
+    have h1 : volume (ball x ε) ≠ 0 := measure_ball_ne_zero x hε
+    have h2 : volume (ball x ε) ≠ ⊤ := measure_ball_lt_top.ne
+    simp only [MeasureTheory.Measure.real]
+    exact ne_of_gt (ENNReal.toReal_pos h1 h2)
+  rw [smul_eq_mul, mul_eq_zero] at hsub
+  rcases hsub with h | h
+  · exact absurd (inv_eq_zero.1 h) hvol
+  · exact h
+
 end PLaplacian
