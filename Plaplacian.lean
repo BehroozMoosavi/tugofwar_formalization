@@ -5,6 +5,7 @@ import Plaplacian.Comparison
 import Plaplacian.Domain
 import Plaplacian.ExtremeValues
 import Plaplacian.Invariance
+import Plaplacian.Iteration
 import Plaplacian.Measurability
 import Plaplacian.Perturbation
 import Plaplacian.StepOperator
