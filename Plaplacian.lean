@@ -3,10 +3,11 @@ import Plaplacian.BallMoments
 import Plaplacian.Basic
 import Plaplacian.Comparison
 import Plaplacian.Domain
+import Plaplacian.DppOperator
 import Plaplacian.ExtremeValues
 import Plaplacian.Invariance
 import Plaplacian.Iteration
 import Plaplacian.Measurability
 import Plaplacian.Perturbation
 import Plaplacian.StepOperator
-import Plaplacian.DppOperator
+import Plaplacian.UniformConvergence
