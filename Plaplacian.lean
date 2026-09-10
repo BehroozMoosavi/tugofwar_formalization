@@ -5,6 +5,7 @@ import Plaplacian.Comparison
 import Plaplacian.Domain
 import Plaplacian.DppOperator
 import Plaplacian.ExtremeValues
+import Plaplacian.IndexSelection
 import Plaplacian.Invariance
 import Plaplacian.Iteration
 import Plaplacian.Measurability
