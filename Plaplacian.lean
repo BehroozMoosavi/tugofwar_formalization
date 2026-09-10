@@ -9,3 +9,4 @@ import Plaplacian.Iteration
 import Plaplacian.Measurability
 import Plaplacian.Perturbation
 import Plaplacian.StepOperator
+import Plaplacian.DppOperator
