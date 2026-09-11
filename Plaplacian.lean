@@ -1,6 +1,7 @@
 import Plaplacian.Average
 import Plaplacian.BallMoments
 import Plaplacian.Basic
+import Plaplacian.Bounds
 import Plaplacian.Comparison
 import Plaplacian.DeficitMono
 import Plaplacian.Domain
