@@ -4,6 +4,7 @@ import Plaplacian.Basic
 import Plaplacian.Comparison
 import Plaplacian.DeficitMono
 import Plaplacian.Domain
+import Plaplacian.DomainBounds
 import Plaplacian.Dominated
 import Plaplacian.DppOperator
 import Plaplacian.ExtremeValues

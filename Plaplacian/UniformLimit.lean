@@ -37,8 +37,7 @@ variable {d : ℕ}
 If the deficit sups converge to `M`, and for every `δ > 0` one can produce the
 three bounds of `unif_arith`, then `M ≤ 0` --- i.e. the convergence is
 uniform. This isolates the quantifier structure from the analysis. -/
-theorem deficitLimit_le_zero {_S : Set (EuclSpace d)}
-    {_u : EuclSpace d → ℝ} {_w : ℕ → EuclSpace d → ℝ} {M α β : ℝ}
+theorem deficitLimit_le_zero {M α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 < β) (hab : α + β = 1)
     (hkey : ∀ δ > 0, ∃ A S', M - 2 * δ ≤ α * S' + β * A
       ∧ S' ≤ M + δ ∧ β * A ≤ δ) :
