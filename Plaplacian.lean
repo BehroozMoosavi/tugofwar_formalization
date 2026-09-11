@@ -3,6 +3,7 @@ import Plaplacian.BallMoments
 import Plaplacian.Basic
 import Plaplacian.Comparison
 import Plaplacian.Domain
+import Plaplacian.Dominated
 import Plaplacian.DppOperator
 import Plaplacian.ExtremeValues
 import Plaplacian.IndexSelection
