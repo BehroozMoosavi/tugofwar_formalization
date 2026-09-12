@@ -18,6 +18,7 @@ import Plaplacian.Measurability
 import Plaplacian.Perturbation
 import Plaplacian.Selection
 import Plaplacian.StepOperator
+import Plaplacian.UnifContinuity
 import Plaplacian.UniformConvergence
 import Plaplacian.UniformIteration
 import Plaplacian.UniformLimit
