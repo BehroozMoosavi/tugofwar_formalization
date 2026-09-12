@@ -3,12 +3,14 @@ import Plaplacian.BallMoments
 import Plaplacian.Basic
 import Plaplacian.Bounds
 import Plaplacian.Comparison
+import Plaplacian.ComparisonFinal
 import Plaplacian.DeficitMono
 import Plaplacian.Discharge
 import Plaplacian.Domain
 import Plaplacian.DomainBounds
 import Plaplacian.Dominated
 import Plaplacian.DppOperator
+import Plaplacian.Existence
 import Plaplacian.ExtremeValues
 import Plaplacian.IndexSelection
 import Plaplacian.Invariance
