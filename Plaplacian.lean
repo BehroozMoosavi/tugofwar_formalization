@@ -12,6 +12,7 @@ import Plaplacian.ExtremeValues
 import Plaplacian.IndexSelection
 import Plaplacian.Invariance
 import Plaplacian.Iteration
+import Plaplacian.LimitMeas
 import Plaplacian.Measurability
 import Plaplacian.Perturbation
 import Plaplacian.StepOperator
