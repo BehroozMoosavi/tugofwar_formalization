@@ -4,6 +4,7 @@ import Plaplacian.Basic
 import Plaplacian.Bounds
 import Plaplacian.Comparison
 import Plaplacian.DeficitMono
+import Plaplacian.Discharge
 import Plaplacian.Domain
 import Plaplacian.DomainBounds
 import Plaplacian.Dominated
