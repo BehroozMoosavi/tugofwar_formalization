@@ -17,6 +17,7 @@ import Plaplacian.Invariance
 import Plaplacian.Iteration
 import Plaplacian.LimitMeas
 import Plaplacian.Measurability
+import Plaplacian.Operator
 import Plaplacian.Perturbation
 import Plaplacian.Selection
 import Plaplacian.StepOperator
