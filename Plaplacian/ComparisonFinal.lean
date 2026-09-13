@@ -1,4 +1,31 @@
+/-
+Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Behrooz Moosavi
+-/
 import Plaplacian.UnifContinuity
+
+/-!
+# The comparison principle for the epsilon-Dirichlet problem
+
+The components of Theorem 2.2 of Luiro-Parviainen-Saksman, proved in
+`Plaplacian.Comparison`, assembled for solutions of the epsilon-Dirichlet
+problem. At a point where the difference of two solutions attains its maximum,
+both equal their operator values, so the difference is preserved by the
+operator; that supplies the fixed-point hypothesis of
+`not_bounded_max_set`, and boundedness of the domain gives the contradiction.
+
+The hypothesis that the maximum is attained only inside the domain is stated
+rather than derived. In the intended application it holds because the data
+satisfies `v <= u` on the boundary strip, so a positive maximum cannot occur
+there; but the epsilon-Dirichlet problem constrains nothing outside the
+epsilon-closure, so it cannot be deduced without a further assumption on
+behaviour at infinity.
+
+## Main results
+
+- `comparison_of_attained`, `not_attained_pos`
+-/
 
 open MeasureTheory Metric Set Filter
 
