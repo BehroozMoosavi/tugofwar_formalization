@@ -1,4 +1,28 @@
+/-
+Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Behrooz Moosavi
+-/
 import Plaplacian.UnifContinuity
+
+/-!
+# Existence of a solution of the dynamic programming principle
+
+Theorem 2.1 of Luiro-Parviainen-Saksman, assembled. From an admissible
+subsolution the Perron iteration converges to an admissible fixed point of the
+step operator.
+
+The fixed-point property is obtained by passing the operator through the limit.
+`T` of the limit is within `eta` of `T` of the `N`-th iterate by
+nonexpansiveness, and `T` of the `N`-th iterate is the `(N+1)`-st, which is
+within `eta` of the limit by uniform convergence. So the difference is at most
+`2 eta` for every positive `eta`, hence zero. Uniform, rather than pointwise,
+convergence is what makes this work; see `Plaplacian.UnifContinuity`.
+
+## Main results
+
+- `exists_fixedPoint`
+-/
 
 open MeasureTheory Metric Set Filter
 
