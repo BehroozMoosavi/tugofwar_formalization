@@ -1,4 +1,29 @@
+/-
+Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Behrooz Moosavi
+-/
 import Plaplacian.Selection
+
+/-!
+# Uniform continuity of the operator's three terms
+
+Under a uniform bound `|u - v| <= K` each of the three terms of the step
+operator changes by at most `K`: the supremum, the infimum and the average.
+This is what allows the operator to be passed through the uniform limit of the
+Perron iteration, and hence what makes the limit satisfy the dynamic
+programming principle.
+
+Pointwise convergence would not suffice. The extreme-value terms are suprema
+and infima over a ball, and a pointwise limit need not have the limit of the
+suprema as its supremum. Luiro-Parviainen-Saksman note that positivity of the
+averaging weight is needed both for uniform convergence and for the limit to
+satisfy the equation; these lemmas are where the second use appears.
+
+## Main results
+
+- `abs_sSup_sub_sSup_le`, `abs_sInf_sub_sInf_le`, `abs_setAverage_sub_le`
+-/
 
 open MeasureTheory Metric Set Filter
 
