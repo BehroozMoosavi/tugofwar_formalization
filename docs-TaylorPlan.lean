@@ -47,6 +47,15 @@ turns the Taylor extraction from a research problem into an exercise.
 
 ## Two routes
 
+Route 1 is closed. Inspection shows `HasFTaylorSeriesUpTo` has exactly three
+fields, `zero_eq`, `fderiv` and `cont`, none of which is a remainder estimate:
+the structure asserts that a tower of multilinear maps consists of the
+successive derivatives and is continuous, and says nothing about
+approximation. `HasFTaylorSeriesUpToOn.approx` and `taylorWithinEval_eq` do
+not exist. Mathlib carries the derivative-tower side of multivariable Taylor
+but not the approximation side, and only the one-dimensional
+`taylor_mean_remainder_lagrange` supplies a remainder at all.
+
 **Route 1, through the jet: CLOSED.** Take `ContDiff.ftaylorSeries`, specialise to
 `n = 2`, and unwind the `2`-jet with `iteratedFDeriv_two_apply`. The remainder
 estimate then comes from the definition of `HasFTaylorSeriesUpTo`, whose
