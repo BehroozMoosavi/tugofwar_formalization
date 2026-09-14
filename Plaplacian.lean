@@ -16,6 +16,7 @@ import Plaplacian.IndexSelection
 import Plaplacian.Invariance
 import Plaplacian.Iteration
 import Plaplacian.LimitMeas
+import Plaplacian.LineRestrict
 import Plaplacian.Measurability
 import Plaplacian.Operator
 import Plaplacian.Perturbation
