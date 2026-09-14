@@ -18,6 +18,7 @@ import Plaplacian.Invariance
 import Plaplacian.Iteration
 import Plaplacian.LimitMeas
 import Plaplacian.LineRestrict
+import Plaplacian.MaxSub
 import Plaplacian.Measurability
 import Plaplacian.Operator
 import Plaplacian.Perturbation
