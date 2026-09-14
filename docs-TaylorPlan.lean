@@ -47,7 +47,7 @@ turns the Taylor extraction from a research problem into an exercise.
 
 ## Two routes
 
-**Route 1, through the jet.** Take `ContDiff.ftaylorSeries`, specialise to
+**Route 1, through the jet: CLOSED.** Take `ContDiff.ftaylorSeries`, specialise to
 `n = 2`, and unwind the `2`-jet with `iteratedFDeriv_two_apply`. The remainder
 estimate then comes from the definition of `HasFTaylorSeriesUpTo`, whose
 higher-order fields give exactly the approximation statement. This is the
@@ -60,7 +60,7 @@ direct route and is preferred.
   `Dφ (x+z) = Dφ x + D²φ x z + o(‖z‖)`,
 
 then integrate along the segment from `x` to `x+z` using the mean value
-inequality. Avoids multilinear packaging, at the cost of a segment estimate.
+inequality. Avoids multilinear packaging, at the cost of a segment estimate. THIS IS THE ROUTE. Step one is proved (fderiv_isLittleO). The segment estimate is norm_image_sub_le_of_norm_deriv_le_segment, which exists. The remaining argument sets g t = phi (x + t z) - phi x - t Dphi x z - (t^2/2) D2phi x (z,z), notes g 0 = g' 0 = 0, and bounds g 1 by the supremum of g' on the unit interval, where g' t = (Dphi (x + t z) - Dphi x - t D2phi x z) z is controlled by step one as o(norm z) times norm z.
 
 **Fallback.** The average expansion of `average_expansion` below needs only an
 `O(‖z‖³)` remainder, which for a `C³` function follows from the
