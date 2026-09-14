@@ -23,6 +23,7 @@ import Plaplacian.Operator
 import Plaplacian.Perturbation
 import Plaplacian.SecondOrder
 import Plaplacian.Selection
+import Plaplacian.Stability
 import Plaplacian.StepOperator
 import Plaplacian.UnifContinuity
 import Plaplacian.UniformConvergence
