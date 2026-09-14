@@ -19,6 +19,7 @@ import Plaplacian.LimitMeas
 import Plaplacian.Measurability
 import Plaplacian.Operator
 import Plaplacian.Perturbation
+import Plaplacian.SecondOrder
 import Plaplacian.Selection
 import Plaplacian.StepOperator
 import Plaplacian.UnifContinuity
