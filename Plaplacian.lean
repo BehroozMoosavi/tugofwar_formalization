@@ -1,3 +1,4 @@
+import Plaplacian.AddSmooth
 import Plaplacian.Average
 import Plaplacian.BallMoments
 import Plaplacian.Basic
