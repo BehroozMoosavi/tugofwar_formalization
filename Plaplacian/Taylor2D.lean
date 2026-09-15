@@ -9,44 +9,29 @@ import Plaplacian.Taylor1D
 /-!
 # The second-order Taylor expansion in several variables
 
-For a twice continuously differentiable `φ` and any `x` and `z` there is `ξ`
-in the open unit interval with
+For a twice continuously differentiable function there is a point of the open
+unit interval at which the Lagrange remainder is attained:
 
-  `φ (x + z) = φ x + Dφ x z + (1/2) D²φ (x + ξ z) (z, z)`.
+  phi (x + z) = phi x + Dphi x z + (1/2) D2phi (x + xi z) (z, z).
 
 Mathlib does not provide this. Its several-variable Taylor API,
-`HasFTaylorSeriesUpTo`, has exactly three fields --- `zero_eq`, `fderiv` and
-`cont` --- none of which is a remainder estimate: the structure asserts that a
-tower of multilinear maps consists of the successive derivatives and is
-continuous, and says nothing about approximation. Neither
-`HasFTaylorSeriesUpToOn.approx` nor a second-order Peano form exists. Only the
-one-dimensional `taylor_mean_remainder_lagrange` supplies a remainder.
+HasFTaylorSeriesUpTo, has exactly three fields -- zero_eq, fderiv and cont --
+none of which is a remainder estimate. Only the one-dimensional
+taylor_mean_remainder_lagrange supplies a remainder. The expansion is
+therefore obtained by restriction to the line through x in direction z, using
+the machinery built for the multivariate second-order necessary condition in
+Plaplacian.LineRestrict.
 
-The expansion is therefore obtained by restriction to the line through `x` in
-direction `z`, using the machinery built for the multivariate second-order
-necessary condition in `Plaplacian.LineRestrict`. That the prerequisite for
-Layer 2 turned out to be the prerequisite for Layer 3 as well was not
-anticipated: our initial gap audit expected the `iteratedDeriv` against
-`iteratedFDeriv` translation to be the friction point of the whole
-development, and in the event the same line reduction served both, with
-`ContDiff.fderiv_right` and `iteratedFDeriv_two_apply` supplying the pieces we
-had expected to build by hand.
-
-## Lagrange rather than Peano
-
-The remainder is left in Lagrange form rather than converted to `o(‖z‖²)`.
-For the intended consumer --- the expansion of the average over a ball --- the
-explicit remainder is more useful, since integrating it against the moment
-computations of `Plaplacian.BallMoments` is more direct than manipulating a
-little-o under an integral sign. The point `ξ` depends on the integration
-variable, so the average expansion will bound the remainder using continuity
-of the Hessian (`continuous_hess`) rather than integrating it termwise.
+The remainder is left in Lagrange form rather than converted to little-o of
+norm z squared. For the intended consumer, the expansion of the average over
+a ball, the explicit remainder is more useful, since integrating it against
+the moment computations of Plaplacian.BallMoments is more direct than
+manipulating a little-o under an integral sign.
 
 ## Main results
 
-- `deriv_restrict`, `deriv_deriv_restrict`: the derivatives of the
-  restriction, as functions.
-- `taylor_two_lagrange`
+- deriv_restrict, deriv_deriv_restrict
+- taylor_two_lagrange
 -/
 
 open Set Topology Filter
