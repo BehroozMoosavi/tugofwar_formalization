@@ -28,6 +28,7 @@ import Plaplacian.SecondOrder
 import Plaplacian.Selection
 import Plaplacian.Stability
 import Plaplacian.StepOperator
+import Plaplacian.TaylorInfra
 import Plaplacian.UnifContinuity
 import Plaplacian.UniformConvergence
 import Plaplacian.UniformIteration
