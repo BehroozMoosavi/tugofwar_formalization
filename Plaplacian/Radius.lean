@@ -125,6 +125,59 @@ theorem integral_normSq_ball_eps [Nontrivial (EuclSpace d)] (hd : 0 < d)
   rw [finrank_euclideanSpace_fin, integral_radial_sq_eps hd hε]
   simp [mul_assoc]
 
+/-! ## The coordinate moment at arbitrary radius
+
+`Diagonal.integral_normSq_eq_nsmul` holds at arbitrary radius, so combining it
+with `integral_normSq_ball_eps` gives the coordinate moment. Converting to an
+average needs the ball volume, which scales as the `d`-th power of the radius,
+so the unit-ball volume cancels and only `ε ^ 2` survives.
+-/
+
+/-- **The coordinate second moment at radius `ε`.** -/
+theorem integral_sq_coord_ball_eps [Nontrivial (EuclSpace d)] (hd : 0 < d)
+    (i : Fin d) {ε : ℝ} (hε : 0 < ε) :
+    (∫ z in Metric.ball (0 : EuclSpace d) ε, (z.ofLp i) ^ 2)
+      = volume.real (Metric.ball (0 : EuclSpace d) 1)
+        * (ε ^ (d + 2) / (d + 2 : ℝ)) := by
+  have hdne : (d : ℝ) ≠ 0 := Nat.cast_ne_zero.2 hd.ne'
+  have hsum := Diagonal.integral_normSq_eq_nsmul i ε
+  have hnorm := integral_normSq_ball_eps hd hε
+  rw [hnorm] at hsum
+  field_simp at hsum ⊢
+  linarith [hsum]
+
+/-- The ball volume scales as the `d`-th power of the radius, in
+`Measure.real` form. -/
+theorem volumeReal_ball_eq [Nontrivial (EuclSpace d)] {ε : ℝ} (hε : 0 < ε) :
+    volume.real (Metric.ball (0 : EuclSpace d) ε)
+      = ε ^ d * volume.real (Metric.ball (0 : EuclSpace d) 1) := by
+  have h := Measure.addHaar_ball_of_pos volume (0 : EuclSpace d) hε
+  rw [finrank_euclideanSpace_fin] at h
+  simp only [MeasureTheory.Measure.real]
+  rw [h, ENNReal.toReal_mul, ENNReal.toReal_ofReal (by positivity)]
+
+theorem volumeReal_unitBall_pos' [Nontrivial (EuclSpace d)] :
+    (0 : ℝ) < volume.real (Metric.ball (0 : EuclSpace d) 1) := by
+  have h1 : volume (Metric.ball (0 : EuclSpace d) 1) ≠ 0 :=
+    measure_ball_ne_zero 0 (by norm_num)
+  have h2 : volume (Metric.ball (0 : EuclSpace d) 1) ≠ ⊤ :=
+    measure_ball_lt_top.ne
+  simp only [MeasureTheory.Measure.real]
+  exact ENNReal.toReal_pos h1 h2
+
+/-- **The coordinate second moment as an average.** -/
+theorem setAverage_sq_coord_ball_eps [Nontrivial (EuclSpace d)] (hd : 0 < d)
+    (i : Fin d) {ε : ℝ} (hε : 0 < ε) :
+    (⨍ z in Metric.ball (0 : EuclSpace d) ε, (z.ofLp i) ^ 2)
+      = ε ^ 2 / ((d : ℝ) + 2) := by
+  rw [MeasureTheory.setAverage_eq, integral_sq_coord_ball_eps hd i hε,
+      volumeReal_ball_eq hε, smul_eq_mul]
+  have hvol := volumeReal_unitBall_pos' (d := d)
+  have hεd : (0 : ℝ) < ε ^ d := by positivity
+  have hd2 : (0 : ℝ) < (d : ℝ) + 2 := by positivity
+  field_simp
+  ring
+
 end
 
 end Radius
