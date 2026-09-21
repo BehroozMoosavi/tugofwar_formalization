@@ -153,7 +153,7 @@ theorem integrableOn_inner_sum (X : EuclSpace d →L[ℝ] EuclSpace d →L[ℝ] 
       (fun z : EuclSpace d => ∑ j : Fin d, (z.ofLp i) * (z.ofLp j)
         * X (EuclideanSpace.single i (1:ℝ)) (EuclideanSpace.single j (1:ℝ)))
       (ball (0 : EuclSpace d) ε) :=
-  MeasureTheory.integrable_finset_sum _ fun j _ => integrableOn_term X i j ε
+  MeasureTheory.integrable_finsetSum _ fun j _ => integrableOn_term X i j ε
 
 /-! ## The quadratic average -/
 

@@ -1,5 +1,6 @@
 import Plaplacian.AddSmooth
 import Plaplacian.Average
+import Plaplacian.AvgTerms
 import Plaplacian.BallMoments
 import Plaplacian.Basic
 import Plaplacian.Bounds
