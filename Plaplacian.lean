@@ -16,6 +16,7 @@ import Plaplacian.DppOperator
 import Plaplacian.Existence
 import Plaplacian.ExtremeValues
 import Plaplacian.FinSup
+import Plaplacian.HessCont
 import Plaplacian.IndexSelection
 import Plaplacian.Invariance
 import Plaplacian.Iteration
