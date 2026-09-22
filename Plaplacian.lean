@@ -25,6 +25,7 @@ import Plaplacian.LineRestrict
 import Plaplacian.MaxSub
 import Plaplacian.Measurability
 import Plaplacian.Operator
+import Plaplacian.Order2
 import Plaplacian.Perturbation
 import Plaplacian.QuadAverage
 import Plaplacian.Radius
