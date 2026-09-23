@@ -26,6 +26,7 @@ import Plaplacian.Iteration
 import Plaplacian.IterFDeriv
 import Plaplacian.LimitMeas
 import Plaplacian.LineRestrict
+import Plaplacian.Localize
 import Plaplacian.MaxSub
 import Plaplacian.Measurability
 import Plaplacian.Operator
