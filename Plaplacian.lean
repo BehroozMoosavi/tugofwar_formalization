@@ -15,6 +15,7 @@ import Plaplacian.DomainBounds
 import Plaplacian.Dominated
 import Plaplacian.DppOperator
 import Plaplacian.Existence
+import Plaplacian.ExtremeAttain
 import Plaplacian.ExtremeValues
 import Plaplacian.FinSup
 import Plaplacian.HessCont
