@@ -8,6 +8,7 @@ import Plaplacian.Bounds
 import Plaplacian.Comparison
 import Plaplacian.ComparisonFinal
 import Plaplacian.Consistency
+import Plaplacian.Deficit
 import Plaplacian.DeficitMono
 import Plaplacian.Discharge
 import Plaplacian.Domain
