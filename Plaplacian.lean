@@ -18,6 +18,7 @@ import Plaplacian.Existence
 import Plaplacian.ExtremeAttain
 import Plaplacian.ExtremeValues
 import Plaplacian.FinSup
+import Plaplacian.GradDir
 import Plaplacian.HessCont
 import Plaplacian.IndexSelection
 import Plaplacian.Invariance
