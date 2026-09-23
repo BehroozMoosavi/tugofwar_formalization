@@ -20,6 +20,7 @@ import Plaplacian.HessCont
 import Plaplacian.IndexSelection
 import Plaplacian.Invariance
 import Plaplacian.Iteration
+import Plaplacian.IterFDeriv
 import Plaplacian.LimitMeas
 import Plaplacian.LineRestrict
 import Plaplacian.MaxSub
