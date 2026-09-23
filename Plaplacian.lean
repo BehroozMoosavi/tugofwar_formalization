@@ -36,6 +36,7 @@ import Plaplacian.StepOperator
 import Plaplacian.Taylor1D
 import Plaplacian.Taylor2D
 import Plaplacian.Taylor2D
+import Plaplacian.Taylor2Deriv
 import Plaplacian.TaylorInfra
 import Plaplacian.UnifContinuity
 import Plaplacian.UniformConvergence
