@@ -57,6 +57,7 @@ import Plaplacian.Sandwich
 import Plaplacian.SecondOrder
 import Plaplacian.Selection
 import Plaplacian.Singular
+import Plaplacian.Squeeze
 import Plaplacian.Stability
 import Plaplacian.StepOperator
 import Plaplacian.SupBound
