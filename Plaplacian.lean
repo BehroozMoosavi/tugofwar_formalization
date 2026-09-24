@@ -29,6 +29,7 @@ import Plaplacian.GradDir
 import Plaplacian.GradInner
 import Plaplacian.HessCont
 import Plaplacian.IndexSelection
+import Plaplacian.InfLower
 import Plaplacian.InfSide
 import Plaplacian.InfTransport
 import Plaplacian.InfUpper
