@@ -15,6 +15,7 @@ import Plaplacian.Discharge
 import Plaplacian.Domain
 import Plaplacian.DomainBounds
 import Plaplacian.Dominated
+import Plaplacian.Domination
 import Plaplacian.DppOperator
 import Plaplacian.ElimMax
 import Plaplacian.ErrDiff
