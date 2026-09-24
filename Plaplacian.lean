@@ -48,6 +48,7 @@ import Plaplacian.LocalizeDist
 import Plaplacian.LocalizeMax
 import Plaplacian.MaxSub
 import Plaplacian.Measurability
+import Plaplacian.OneDim
 import Plaplacian.OpenClosed
 import Plaplacian.Operator
 import Plaplacian.OpExpansion
