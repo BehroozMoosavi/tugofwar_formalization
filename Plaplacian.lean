@@ -18,6 +18,7 @@ import Plaplacian.DppOperator
 import Plaplacian.ErrDiff
 import Plaplacian.Existence
 import Plaplacian.ExtremeAttain
+import Plaplacian.ExtremeExpansion
 import Plaplacian.ExtremeValues
 import Plaplacian.FinSup
 import Plaplacian.GradDir
