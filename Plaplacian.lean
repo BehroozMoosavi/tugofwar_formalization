@@ -1,4 +1,5 @@
 import Plaplacian.AddSmooth
+import Plaplacian.AllOrders
 import Plaplacian.Average
 import Plaplacian.AvgExpansion
 import Plaplacian.AvgTerms
