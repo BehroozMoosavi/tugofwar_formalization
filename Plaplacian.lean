@@ -18,6 +18,7 @@ import Plaplacian.Dominated
 import Plaplacian.DppOperator
 import Plaplacian.ElimMax
 import Plaplacian.ErrDiff
+import Plaplacian.ErrNeg
 import Plaplacian.Existence
 import Plaplacian.ExtremeAttain
 import Plaplacian.ExtremeExpansion
