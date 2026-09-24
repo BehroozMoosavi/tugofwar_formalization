@@ -33,6 +33,7 @@ import Plaplacian.IterFDeriv
 import Plaplacian.LimitMeas
 import Plaplacian.LineRestrict
 import Plaplacian.Localize
+import Plaplacian.LocalizeDist
 import Plaplacian.LocalizeMax
 import Plaplacian.MaxSub
 import Plaplacian.Measurability
