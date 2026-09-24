@@ -28,6 +28,7 @@ import Plaplacian.GradInner
 import Plaplacian.HessCont
 import Plaplacian.IndexSelection
 import Plaplacian.InfSide
+import Plaplacian.InfTransport
 import Plaplacian.Invariance
 import Plaplacian.Iteration
 import Plaplacian.IterFDeriv
