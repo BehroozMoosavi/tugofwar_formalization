@@ -45,6 +45,7 @@ import Plaplacian.QuadBound
 import Plaplacian.QuadCompare
 import Plaplacian.QuadInf
 import Plaplacian.Radius
+import Plaplacian.Sandwich
 import Plaplacian.SecondOrder
 import Plaplacian.Selection
 import Plaplacian.Singular
