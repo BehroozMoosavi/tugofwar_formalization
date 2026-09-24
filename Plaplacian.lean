@@ -68,6 +68,8 @@ import Plaplacian.Taylor2D
 import Plaplacian.Taylor2Deriv
 import Plaplacian.TaylorBound
 import Plaplacian.TaylorInfra
+import Plaplacian.Thread
+import Plaplacian.Thread
 import Plaplacian.UnifContinuity
 import Plaplacian.UniformConvergence
 import Plaplacian.UniformIteration
