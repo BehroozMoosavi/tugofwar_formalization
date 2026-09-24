@@ -44,6 +44,7 @@ import Plaplacian.QuadInf
 import Plaplacian.Radius
 import Plaplacian.SecondOrder
 import Plaplacian.Selection
+import Plaplacian.Singular
 import Plaplacian.Stability
 import Plaplacian.StepOperator
 import Plaplacian.SupBound
