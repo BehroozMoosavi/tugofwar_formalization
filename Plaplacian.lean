@@ -9,6 +9,7 @@ import Plaplacian.Combine
 import Plaplacian.Comparison
 import Plaplacian.ComparisonFinal
 import Plaplacian.Consistency
+import Plaplacian.CubicBound
 import Plaplacian.Deficit
 import Plaplacian.DeficitMono
 import Plaplacian.Discharge
