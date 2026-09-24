@@ -34,6 +34,7 @@ import Plaplacian.Localize
 import Plaplacian.LocalizeMax
 import Plaplacian.MaxSub
 import Plaplacian.Measurability
+import Plaplacian.OpenClosed
 import Plaplacian.Operator
 import Plaplacian.Order2
 import Plaplacian.Perturbation
