@@ -39,6 +39,7 @@ import Plaplacian.Invariance
 import Plaplacian.Iteration
 import Plaplacian.IterFDeriv
 import Plaplacian.LimitMeas
+import Plaplacian.LineBounds
 import Plaplacian.LineDeriv
 import Plaplacian.LineRestrict
 import Plaplacian.Localize
