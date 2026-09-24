@@ -43,6 +43,7 @@ import Plaplacian.SecondOrder
 import Plaplacian.Selection
 import Plaplacian.Stability
 import Plaplacian.StepOperator
+import Plaplacian.SupBound
 import Plaplacian.Taylor1D
 import Plaplacian.Taylor2D
 import Plaplacian.Taylor2D
