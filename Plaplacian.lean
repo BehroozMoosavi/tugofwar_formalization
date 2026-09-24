@@ -11,6 +11,7 @@ import Plaplacian.Comparison
 import Plaplacian.ComparisonFinal
 import Plaplacian.Consistency
 import Plaplacian.CubicBound
+import Plaplacian.CubicTaylor
 import Plaplacian.Deficit
 import Plaplacian.DeficitMono
 import Plaplacian.Discharge
