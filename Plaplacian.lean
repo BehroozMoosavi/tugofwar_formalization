@@ -23,6 +23,7 @@ import Plaplacian.DppOperator
 import Plaplacian.ElimMax
 import Plaplacian.ErrDiff
 import Plaplacian.ErrNeg
+import Plaplacian.ErrRate
 import Plaplacian.Existence
 import Plaplacian.Expansion
 import Plaplacian.ExtremeAttain
