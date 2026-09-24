@@ -37,6 +37,7 @@ import Plaplacian.MaxSub
 import Plaplacian.Measurability
 import Plaplacian.OpenClosed
 import Plaplacian.Operator
+import Plaplacian.OpExpansion
 import Plaplacian.Order2
 import Plaplacian.Perturbation
 import Plaplacian.QuadAverage
