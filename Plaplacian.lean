@@ -28,6 +28,7 @@ import Plaplacian.ErrNeg
 import Plaplacian.ErrRate
 import Plaplacian.Existence
 import Plaplacian.Expansion
+import Plaplacian.ExtErrRate
 import Plaplacian.ExtremeAttain
 import Plaplacian.ExtremeExpansion
 import Plaplacian.ExtremeValues
