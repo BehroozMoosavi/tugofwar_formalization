@@ -16,6 +16,7 @@ import Plaplacian.CubicBound
 import Plaplacian.CubicTaylor
 import Plaplacian.Deficit
 import Plaplacian.DeficitMono
+import Plaplacian.DiffIneq
 import Plaplacian.Discharge
 import Plaplacian.Domain
 import Plaplacian.DomainBounds
