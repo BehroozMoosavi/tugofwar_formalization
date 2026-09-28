@@ -47,6 +47,7 @@ import Plaplacian.Iteration
 import Plaplacian.IterFDeriv
 import Plaplacian.KeyStep
 import Plaplacian.LimitMeas
+import Plaplacian.LimitPassage
 import Plaplacian.LineBounds
 import Plaplacian.LineDeriv
 import Plaplacian.LineRestrict
