@@ -33,6 +33,7 @@ import Plaplacian.ExtErrRate
 import Plaplacian.ExtremeAttain
 import Plaplacian.ExtremeExpansion
 import Plaplacian.ExtremeValues
+import Plaplacian.FilterChar
 import Plaplacian.FinSup
 import Plaplacian.GradDir
 import Plaplacian.GradInner
