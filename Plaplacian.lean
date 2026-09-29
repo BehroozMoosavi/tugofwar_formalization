@@ -74,6 +74,7 @@ import Plaplacian.Sandwich
 import Plaplacian.SecondOrder
 import Plaplacian.Selection
 import Plaplacian.Semicont
+import Plaplacian.SeqExtract
 import Plaplacian.Singular
 import Plaplacian.Squeeze
 import Plaplacian.Stability
