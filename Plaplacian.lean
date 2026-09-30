@@ -25,6 +25,7 @@ import Plaplacian.Dominated
 import Plaplacian.Domination
 import Plaplacian.DppOperator
 import Plaplacian.ElimMax
+import Plaplacian.Err2Bound
 import Plaplacian.Err2Comb
 import Plaplacian.Err2Deriv
 import Plaplacian.ErrDiff
