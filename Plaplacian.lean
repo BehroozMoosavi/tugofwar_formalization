@@ -65,6 +65,7 @@ import Plaplacian.OpBounded
 import Plaplacian.OpenClosed
 import Plaplacian.Operator
 import Plaplacian.OpExpansion
+import Plaplacian.OpLocal
 import Plaplacian.Order2
 import Plaplacian.Perturbation
 import Plaplacian.QuadAverage
