@@ -75,6 +75,7 @@ import Plaplacian.OpExpansion
 import Plaplacian.OpLocal
 import Plaplacian.Order2
 import Plaplacian.Perturbation
+import Plaplacian.PredForm
 import Plaplacian.QuadAverage
 import Plaplacian.QuadBound
 import Plaplacian.QuadCompare
