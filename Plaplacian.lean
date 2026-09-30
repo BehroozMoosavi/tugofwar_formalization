@@ -100,6 +100,7 @@ import Plaplacian.Thread
 import Plaplacian.UbarSub
 import Plaplacian.UbarSubEq
 import Plaplacian.UnifContinuity
+import Plaplacian.Uniform
 import Plaplacian.UniformConvergence
 import Plaplacian.UniformIteration
 import Plaplacian.UniformLimit
