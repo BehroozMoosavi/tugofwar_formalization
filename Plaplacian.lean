@@ -53,6 +53,7 @@ import Plaplacian.LimitPassage
 import Plaplacian.LineBounds
 import Plaplacian.LineDeriv
 import Plaplacian.LineRestrict
+import Plaplacian.LittleO
 import Plaplacian.LocalCmp
 import Plaplacian.Localize
 import Plaplacian.LocalizeDist
