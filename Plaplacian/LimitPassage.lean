@@ -85,7 +85,7 @@ theorem tendsto_err_quotient {K M : ℝ} (hM : 0 ≤ M) {E : ℝ → ℝ}
 
 /-- **The subsolution inequality in the limit**, stated with the hypothesis
 the rate supplies. -/
-theorem nonneg_of_rate {I : ℝ} {c : ℝ} {q : ℝ → ℝ}
+theorem nonneg_of_rate {I : ℝ} {q : ℝ → ℝ}
     (hq : Filter.Tendsto q (nhdsWithin (0 : ℝ) (Set.Ioi 0)) (nhds 0))
     (hle : ∀ᶠ ε in nhdsWithin (0 : ℝ) (Set.Ioi 0), q ε ≤ I) :
     0 ≤ I := by
