@@ -91,6 +91,7 @@ import Plaplacian.TaylorInfra
 import Plaplacian.Thread
 import Plaplacian.Thread
 import Plaplacian.UbarSub
+import Plaplacian.UbarSubEq
 import Plaplacian.UnifContinuity
 import Plaplacian.UniformConvergence
 import Plaplacian.UniformIteration
