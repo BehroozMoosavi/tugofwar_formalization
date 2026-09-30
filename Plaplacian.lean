@@ -8,6 +8,7 @@ import Plaplacian.AvgTerms
 import Plaplacian.BallMoments
 import Plaplacian.Basic
 import Plaplacian.Bounds
+import Plaplacian.C2Taylor
 import Plaplacian.Combine
 import Plaplacian.Comparison
 import Plaplacian.ComparisonFinal
