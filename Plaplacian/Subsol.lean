@@ -1,5 +1,31 @@
+/-
+Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Behrooz Moosavi
+-/
 import Mathlib
 import Plaplacian.Shift
+
+/-!
+# Towards the subsolution property
+
+The pieces of the subsolution argument: the differential inequality at a
+contact point at fixed parameter, the limit argument given the rate, and the
+upper semicontinuity of the upper relaxed limit.
+
+The chain runs from the frequent near-contact, through the comparison at a
+shifted test function, to the differential inequality, and the rate sends the
+error to zero.
+
+What is not yet here is the predicate itself, quantified over all test
+functions and contact points. That needs the frequent near-contact converted
+into the eventual bound the limit argument consumes, which is quantifier
+bookkeeping rather than analysis.
+
+## Main results
+
+- subsol_at, subsol_limit, ubar_usc
+-/
 
 open Set Topology Filter MeasureTheory Metric
 
@@ -27,11 +53,6 @@ assembled at a fixed parameter; the limit is taken by
 `nonneg_of_rate`.
 -/
 
-#check @frequently_near_max
-#check @dpp_comparison_shift
-#check @diff_inequality
-#check @nonneg_of_rate
-#check @upperSemicontinuous_ubar
 
 /-- **The subsolution inequality at a contact point, at fixed parameter.**
 
