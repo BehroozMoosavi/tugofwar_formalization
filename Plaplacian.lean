@@ -12,6 +12,7 @@ import Plaplacian.Combine
 import Plaplacian.Comparison
 import Plaplacian.ComparisonFinal
 import Plaplacian.Consistency
+import Plaplacian.ContactArg
 import Plaplacian.CubicBound
 import Plaplacian.CubicTaylor
 import Plaplacian.Deficit
