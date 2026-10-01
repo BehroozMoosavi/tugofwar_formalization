@@ -71,6 +71,7 @@ import Plaplacian.Measurability
 import Plaplacian.OneDim
 import Plaplacian.OpBounded
 import Plaplacian.OpCont
+import Plaplacian.OpContFull
 import Plaplacian.OpenClosed
 import Plaplacian.Operator
 import Plaplacian.OpExpansion
