@@ -120,6 +120,7 @@ import Plaplacian.TendProd
 import Plaplacian.TendZero
 import Plaplacian.Thread
 import Plaplacian.Thread
+import Plaplacian.Thread2
 import Plaplacian.ThreeRadii
 import Plaplacian.UbarSub
 import Plaplacian.UbarSubEq
