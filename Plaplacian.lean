@@ -45,6 +45,7 @@ import Plaplacian.ExtremeExpansion
 import Plaplacian.ExtremeValues
 import Plaplacian.FilterChar
 import Plaplacian.FinSup
+import Plaplacian.FreqGen
 import Plaplacian.FreqProj
 import Plaplacian.FreqRate
 import Plaplacian.GradDir
