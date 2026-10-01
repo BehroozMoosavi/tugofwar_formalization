@@ -19,6 +19,7 @@ import Plaplacian.C2Taylor
 import Plaplacian.Combine
 import Plaplacian.Comparison
 import Plaplacian.ComparisonFinal
+import Plaplacian.Compose
 import Plaplacian.Consistency
 import Plaplacian.ContactArg
 import Plaplacian.CubicBound
