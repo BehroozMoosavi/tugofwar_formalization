@@ -84,7 +84,7 @@ conclusion under time pressure, and caught the second only on reading it
 back. The guard is to write the quantifier order out before the proof, as
 above, and to check the dependency of each witness.
 
-## A further subtlety, not yet resolved
+## A further subtlety, now resolved
 
 Step 5 evaluates the operator at `y`, step 7 wants it at `x₀`. The
 intermediate step --- that `normPLapOf p (gradient φ y) (hess φ y)` tends to
@@ -92,7 +92,9 @@ intermediate step --- that `normPLapOf p (gradient φ y) (hess φ y)` tends to
 of `normPLapOf` in its arguments. That is true but it involves
 `infLaplacianOf`, which divides by the gradient norm, so it holds only where
 the gradient does not vanish. Since the regular case assumes exactly that, it
-is available, but it is a lemma to prove rather than a step to take.
+is available. That lemma is now proved as normPLapOf_continuousAt in
+Plaplacian.OpContFull, so every input to the assembly exists and what remains
+is the quantifier threading of step 6 alone.
 
 ## Statement
 
@@ -106,15 +108,6 @@ namespace PLaplacian
 noncomputable section
 
 variable {d : ℕ}
-
-/-- The continuity of the operator in its arguments, away from the singular
-set. The lemma identified in the discussion above as needed and not yet
-proved. -/
-theorem normPLapOf_continuousAt {p : ℝ} {φ : EuclSpace d → ℝ}
-    (hφ : ContDiff ℝ 2 φ) {x₀ : EuclSpace d} (hx : gradient φ x₀ ≠ 0) :
-    ContinuousAt (fun y => normPLapOf p (gradient φ y)
-      (fderiv ℝ (fderiv ℝ φ) y)) x₀ := by
-  sorry
 
 /-- **The regular field of the subsolution predicate.** -/
 theorem ubar_regular [Nontrivial (EuclSpace d)] (hd : 0 < d) {p : ℝ}
