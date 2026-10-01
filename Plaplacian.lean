@@ -1,5 +1,6 @@
 import Plaplacian.AddSmooth
 import Plaplacian.AllOrders
+import Plaplacian.Annulus
 import Plaplacian.ApproxCmp
 import Plaplacian.AsmCond
 import Plaplacian.AsmFreq
