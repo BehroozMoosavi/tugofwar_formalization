@@ -117,6 +117,7 @@ import Plaplacian.TaylorBound
 import Plaplacian.TaylorInfra
 import Plaplacian.Thread
 import Plaplacian.Thread
+import Plaplacian.ThreeRadii
 import Plaplacian.UbarSub
 import Plaplacian.UbarSubEq
 import Plaplacian.UnifContinuity
