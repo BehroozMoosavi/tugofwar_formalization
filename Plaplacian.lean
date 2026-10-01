@@ -134,6 +134,7 @@ import Plaplacian.ThreeRadii
 import Plaplacian.Transfer
 import Plaplacian.UbarSub
 import Plaplacian.UbarSubEq
+import Plaplacian.UnifBase
 import Plaplacian.UnifContinuity
 import Plaplacian.UnifEv
 import Plaplacian.Uniform
