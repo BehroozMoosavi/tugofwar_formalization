@@ -69,6 +69,7 @@ import Plaplacian.LocalMono
 import Plaplacian.LowerSemi
 import Plaplacian.MaxSub
 import Plaplacian.Measurability
+import Plaplacian.NearMin
 import Plaplacian.OneDim
 import Plaplacian.OpBounded
 import Plaplacian.OpCont
