@@ -110,6 +110,7 @@ import Plaplacian.Singular
 import Plaplacian.Squeeze
 import Plaplacian.Stability
 import Plaplacian.StepOperator
+import Plaplacian.Strict
 import Plaplacian.Subsol
 import Plaplacian.SupBound
 import Plaplacian.SuperForm
