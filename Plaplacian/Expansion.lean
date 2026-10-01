@@ -60,7 +60,7 @@ theorem tugOfWarOp_expansion_final [Nontrivial (EuclSpace d)] (hd : 0 < d)
             * normPLapOf p (gradient φ x) (fderiv ℝ (fderiv ℝ φ) x)
           + E := by
   obtain ⟨e₁, lo, hi, hS, hlo, hhi⟩ := extreme_avg_threaded hφ hx hε
-  have hA := setAverage_expansion hd hφ x hε
+  have hA := setAverage_expansion hd (hφ.of_le (by norm_num)) x hε
   refine ⟨(p - 2) / (p + (d : ℝ)) * e₁
     + ((d : ℝ) + 2) / (p + (d : ℝ))
         * (⨍ z in ball (0 : EuclSpace d) ε, taylorErr φ x z), ?_⟩

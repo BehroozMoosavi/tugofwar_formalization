@@ -53,7 +53,7 @@ theorem setAverage_taylorErr_le {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 3
   have hmono : (⨍ z in ball (0 : EuclSpace d) ε, taylorErr φ x z)
       ≤ ⨍ _z in ball (0 : EuclSpace d) ε, K * ε ^ 3 := by
     refine setAverage_mono measurableSet_ball
-      (integrableOn_taylorErr hφ x ε) integrableOn_const ?_
+      (integrableOn_taylorErr (hφ.of_le (by norm_num)) x ε) integrableOn_const ?_
     intro z hz
     have h := hK z hz
     exact le_of_abs_le h

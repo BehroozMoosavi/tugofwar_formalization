@@ -73,7 +73,7 @@ theorem integrableOn_quad (φ : EuclSpace d → ℝ) (x : EuclSpace d) (ε : ℝ
   ((continuous_quad_term φ x).continuousOn.integrableOn_compact
     (isCompact_closedBall _ _)).mono_set ball_subset_closedBall
 
-theorem continuous_taylorErr {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 3 φ)
+theorem continuous_taylorErr {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 2 φ)
     (x : EuclSpace d) :
     Continuous (fun z : EuclSpace d => taylorErr φ x z) := by
   unfold taylorErr
@@ -82,7 +82,7 @@ theorem continuous_taylorErr {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 3 φ
   exact ((h1.sub continuous_const).sub (continuous_linear_term φ x)).sub
     (continuous_quad_term φ x)
 
-theorem integrableOn_taylorErr {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 3 φ)
+theorem integrableOn_taylorErr {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 2 φ)
     (x : EuclSpace d) (ε : ℝ) :
     MeasureTheory.IntegrableOn (fun z => taylorErr φ x z)
       (ball (0 : EuclSpace d) ε) :=
@@ -101,7 +101,7 @@ moments.
 The error term is left as an average rather than estimated, so that the
 statement is exact. Bounding it is `setAverage_taylorErr_le` below. -/
 theorem setAverage_expansion [Nontrivial (EuclSpace d)] (hd : 0 < d)
-    {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 3 φ) (x : EuclSpace d) {ε : ℝ}
+    {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 2 φ) (x : EuclSpace d) {ε : ℝ}
     (hε : 0 < ε) :
     (⨍ y in ball x ε, φ y)
       = φ x + ε ^ 2 / (2 * ((d : ℝ) + 2)) * laplacianOf (hess φ x)
