@@ -131,5 +131,6 @@ import Plaplacian.Uniform
 import Plaplacian.UniformConvergence
 import Plaplacian.UniformIteration
 import Plaplacian.UniformLimit
+import Plaplacian.UpperEv
 import Plaplacian.Viscosity
 import Plaplacian.WeightErr
