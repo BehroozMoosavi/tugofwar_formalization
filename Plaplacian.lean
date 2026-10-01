@@ -82,6 +82,7 @@ import Plaplacian.LowerSemi
 import Plaplacian.MaxSub
 import Plaplacian.Measurability
 import Plaplacian.MinCmp
+import Plaplacian.NearFreq
 import Plaplacian.NearMin
 import Plaplacian.NearSup
 import Plaplacian.OneDim
