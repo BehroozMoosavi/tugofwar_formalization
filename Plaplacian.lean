@@ -101,6 +101,7 @@ import Plaplacian.Stability
 import Plaplacian.StepOperator
 import Plaplacian.Subsol
 import Plaplacian.SupBound
+import Plaplacian.SuperForm
 import Plaplacian.SupUpper
 import Plaplacian.Taylor1D
 import Plaplacian.Taylor2D
