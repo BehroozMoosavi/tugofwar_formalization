@@ -137,6 +137,7 @@ import Plaplacian.Transfer
 import Plaplacian.UbarSub
 import Plaplacian.UbarSubEq
 import Plaplacian.UnifBase
+import Plaplacian.UnifConst
 import Plaplacian.UnifContinuity
 import Plaplacian.UnifErr
 import Plaplacian.UnifEv
