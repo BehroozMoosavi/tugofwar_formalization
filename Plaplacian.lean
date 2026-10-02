@@ -10,6 +10,7 @@ import Plaplacian.AvgErrBound
 import Plaplacian.AvgExpansion
 import Plaplacian.AvgRate
 import Plaplacian.AvgTerms
+import Plaplacian.AvgUnif
 import Plaplacian.BallCont
 import Plaplacian.BallMoments
 import Plaplacian.Basic
