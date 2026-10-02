@@ -136,6 +136,7 @@ import Plaplacian.UbarSub
 import Plaplacian.UbarSubEq
 import Plaplacian.UnifBase
 import Plaplacian.UnifContinuity
+import Plaplacian.UnifErr
 import Plaplacian.UnifEv
 import Plaplacian.Uniform
 import Plaplacian.UniformConvergence

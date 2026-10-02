@@ -61,7 +61,7 @@ it is taken is larger.
 /-- A point of the segment from a base point near the maximum, with a small
 increment, lies in the large ball. -/
 theorem segment_mem_bigBall {x₀ y z : EuclSpace d} {R t : ℝ}
-    (hy : y ∈ closedBall x₀ R) (hz : ‖z‖ ≤ R) (ht : t ∈ Icc (0:ℝ) 1) :
+    (hy : y ∈ closedBall x₀ R) (hz : ‖z‖ ≤ R) (ht : t ∈ Icc (0 : ℝ) 1) :
     y + t • z ∈ closedBall x₀ (2 * R) := by
   rw [mem_closedBall, dist_eq_norm] at hy ⊢
   have htz : ‖t • z‖ ≤ ‖z‖ := by
