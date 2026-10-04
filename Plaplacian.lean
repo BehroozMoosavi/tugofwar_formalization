@@ -62,6 +62,7 @@ import Plaplacian.FreqRate
 import Plaplacian.GradDir
 import Plaplacian.GradInner
 import Plaplacian.HessCont
+import Plaplacian.HessCont2
 import Plaplacian.HessNorm
 import Plaplacian.IndexSelection
 import Plaplacian.InfAbs
