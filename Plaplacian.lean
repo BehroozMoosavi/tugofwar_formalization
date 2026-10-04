@@ -119,6 +119,7 @@ import Plaplacian.Stability
 import Plaplacian.StepOperator
 import Plaplacian.Strict
 import Plaplacian.Subsol
+import Plaplacian.SupAbs
 import Plaplacian.SupBound
 import Plaplacian.SuperForm
 import Plaplacian.SupErrUnif
