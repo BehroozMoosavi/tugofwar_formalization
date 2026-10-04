@@ -121,6 +121,7 @@ import Plaplacian.Strict
 import Plaplacian.Subsol
 import Plaplacian.SupBound
 import Plaplacian.SuperForm
+import Plaplacian.SupErrUnif
 import Plaplacian.SupFreq
 import Plaplacian.SupMax
 import Plaplacian.SupUpper
