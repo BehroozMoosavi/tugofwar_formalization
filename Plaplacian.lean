@@ -60,6 +60,7 @@ import Plaplacian.GradInner
 import Plaplacian.HessCont
 import Plaplacian.HessNorm
 import Plaplacian.IndexSelection
+import Plaplacian.InfAbs
 import Plaplacian.InfLower
 import Plaplacian.InfSide
 import Plaplacian.InfTransport
