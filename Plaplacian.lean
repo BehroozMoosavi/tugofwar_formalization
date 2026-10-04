@@ -128,6 +128,7 @@ import Plaplacian.Strict
 import Plaplacian.Subsol
 import Plaplacian.SupAbs
 import Plaplacian.SupBound
+import Plaplacian.Super
 import Plaplacian.SuperForm
 import Plaplacian.SupErrUnif
 import Plaplacian.SupFreq
