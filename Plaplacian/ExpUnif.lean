@@ -60,7 +60,7 @@ theorem expansion_uniform [Nontrivial (EuclSpace d)] (hd : 0 < d)
     {p : ℝ} (hp : 2 ≤ p) (hpd : 0 < p + (d : ℝ))
     {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 3 φ) {x₀ : EuclSpace d}
     (hx₀ : gradient φ x₀ ≠ 0) :
-    ∃ ρ > 0, ∃ H K Ka g : ℝ, 0 < g ∧ 0 ≤ K ∧
+    ∃ ρ > 0, ∃ H K Ka g : ℝ, 0 < g ∧ 0 ≤ K ∧ 0 ≤ H ∧ 0 ≤ Ka ∧
       ∀ y ∈ ball x₀ ρ, ∀ ε : ℝ, 0 < ε → ε ≤ ρ →
         ∃ E : ℝ,
           tugOfWarOp p ε φ y
@@ -78,12 +78,17 @@ theorem expansion_uniform [Nontrivial (EuclSpace d)] (hd : 0 < d)
     rw [hgdef]; linarith
   -- the uniform constants, on the closed ball of radius ρ
   obtain ⟨K₀, hK₀⟩ := taylorErr_le_cubic_uniform hφ x₀ ρ
-  obtain ⟨Ka, hKa⟩ := avgErr_uniform hφ x₀ ρ
-  obtain ⟨H, hH⟩ := hess_bound_uniform hφ x₀ ρ
+  obtain ⟨Ka₀, hKa₀⟩ := avgErr_uniform hφ x₀ ρ
+  obtain ⟨H₀, hH₀⟩ := hess_bound_uniform hφ x₀ ρ
+  set H := max H₀ 0 with hHdef
+  set Ka := max Ka₀ 0 with hKadef
+  have hHnn : 0 ≤ H := le_max_right _ _
+  have hKann : 0 ≤ Ka := le_max_right _ _
   set K := max K₀ 0 with hKdef
   have hK : 0 ≤ K := le_max_right _ _
   have hKge : K₀ ≤ K := le_max_left _ _
-  refine ⟨ρ, hρ, H, K, Ka, g, hg, hK, fun y hy ε hε hερ => ?_⟩
+  refine ⟨ρ, hρ, H, K, Ka, g, hg, hK, hHnn, hKann,
+    fun y hy ε hε hερ => ?_⟩
   have hyc : y ∈ closedBall x₀ ρ := ball_subset_closedBall hy
   -- the gradient at the base point
   have hgy : g < ‖gradient φ y‖ := hgrad y hy
@@ -101,9 +106,16 @@ theorem expansion_uniform [Nontrivial (EuclSpace d)] (hd : 0 < d)
     have hz3nn : (0:ℝ) ≤ ‖z‖ ^ 3 := by positivity
     nlinarith [h1, hz3, hKge, hK, hz3nn]
   -- the two halves
-  have hext := ext_avg_err_abs hφ hxy hε hK hTerr (hH y hyc) hg
-    (le_of_lt hgy)
-  have havg := hKa y hyc ε hε hερ
+  have hHy : ‖fderiv ℝ (fderiv ℝ φ) y‖ ≤ H :=
+    le_trans (hH₀ y hyc) (le_max_left _ _)
+  have hext := ext_avg_err_abs hφ hxy hε hK hTerr hHy hg (le_of_lt hgy)
+  have havg : |⨍ z in ball (0 : EuclSpace d) ε, taylorErr φ y z|
+      ≤ Ka * ε ^ 3 := by
+    have h := hKa₀ y hyc ε hε hερ
+    have hε3 : (0:ℝ) ≤ ε ^ 3 := by positivity
+    have : Ka₀ * ε ^ 3 ≤ Ka * ε ^ 3 :=
+      mul_le_mul_of_nonneg_right (le_max_left _ _) hε3
+    linarith [h, this]
   exact expansion_err_le hd hp hpd hφ hε hext havg
 
 end
