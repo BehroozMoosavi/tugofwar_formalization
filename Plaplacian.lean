@@ -43,6 +43,7 @@ import Plaplacian.Err2Deriv
 import Plaplacian.ErrDiff
 import Plaplacian.ErrNeg
 import Plaplacian.ErrRate
+import Plaplacian.ErrSmall
 import Plaplacian.Exclude
 import Plaplacian.Existence
 import Plaplacian.Expansion
