@@ -1,5 +1,24 @@
+/-
+Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Behrooz Moosavi
+-/
 import Mathlib
 import Plaplacian.ExpUnif
+
+/-!
+# The uniform error is small against the squared parameter
+
+The uniform bound on the expansion error is the squared parameter times a
+factor that is continuous and vanishes at zero, so the error is eventually
+below any positive multiple of the squared parameter.
+
+## Main results
+
+- errFactor, tendsto_errFactor
+- bound_eq_sq_mul
+- eventually_bound_le
+-/
 
 open Set Topology Filter MeasureTheory Metric
 
