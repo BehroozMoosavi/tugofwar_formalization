@@ -111,6 +111,7 @@ import Plaplacian.QuadCompare
 import Plaplacian.QuadInf
 import Plaplacian.QuotZero
 import Plaplacian.Radius
+import Plaplacian.Regular
 import Plaplacian.Relaxed
 import Plaplacian.Sandwich
 import Plaplacian.SecondOrder
