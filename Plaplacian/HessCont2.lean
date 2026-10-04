@@ -1,5 +1,24 @@
+/-
+Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Behrooz Moosavi
+-/
 import Mathlib
 import Plaplacian.SingEigen
+
+/-!
+# The Hessian quadratic form, continuous uniformly
+
+Near the maximum, the Hessian quadratic form at a nearby point exceeds the one
+at the maximum by at most a prescribed multiple of the squared norm, uniformly
+in the direction. That is continuity of the Hessian in the operator norm,
+which the curried representation does not support and the flat second
+derivative does.
+
+## Main results
+
+- hess_quad_cont
+-/
 
 open Set Topology Filter MeasureTheory Metric
 
