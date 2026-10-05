@@ -34,6 +34,15 @@ A superjet of `u` at `x` is a pair `(q, X)` such that, for every `η > 0`, near
 This is the little-o form of the usual definition, quantified so that the
 polynomial on the right is a valid test function for each `η`.
 
+## Closed jets
+
+The closure is taken with the forms converging in operator norm, explicitly.
+Convergence in the topology of the space of continuous linear maps is the same
+thing mathematically, but turning it into norm convergence makes the
+elaborator unify two topologies on that space and time out, the obstruction
+recorded among the findings on derivative representations. Stating the norm
+convergence directly keeps every downstream argument in normed terms.
+
 ## The statement
 
 For `u` upper and `v` lower semicontinuous and bounded, if
@@ -88,34 +97,38 @@ def SubJet (u : EuclSpace d → ℝ) (x : EuclSpace d) :
 the function converges. -/
 def ClSuperJet (u : EuclSpace d → ℝ) (x : EuclSpace d) :
     Set (EuclSpace d × Bilin d) :=
-  {qX | ∃ xs : ℕ → EuclSpace d, ∃ js : ℕ → EuclSpace d × Bilin d,
-    (∀ n, js n ∈ SuperJet u (xs n)) ∧
+  {qX | ∃ xs : ℕ → EuclSpace d, ∃ qs : ℕ → EuclSpace d, ∃ Xs : ℕ → Bilin d,
+    (∀ n, (qs n, Xs n) ∈ SuperJet u (xs n)) ∧
     Tendsto xs atTop (𝓝 x) ∧
     Tendsto (fun n => u (xs n)) atTop (𝓝 (u x)) ∧
-    Tendsto js atTop (𝓝 qX)}
+    Tendsto qs atTop (𝓝 qX.1) ∧
+    Tendsto (fun n => ‖Xs n - qX.2‖) atTop (𝓝 0)}
 
 /-- **The closed subjet.** -/
 def ClSubJet (u : EuclSpace d → ℝ) (x : EuclSpace d) :
     Set (EuclSpace d × Bilin d) :=
-  {qX | ∃ xs : ℕ → EuclSpace d, ∃ js : ℕ → EuclSpace d × Bilin d,
-    (∀ n, js n ∈ SubJet u (xs n)) ∧
+  {qX | ∃ xs : ℕ → EuclSpace d, ∃ qs : ℕ → EuclSpace d, ∃ Xs : ℕ → Bilin d,
+    (∀ n, (qs n, Xs n) ∈ SubJet u (xs n)) ∧
     Tendsto xs atTop (𝓝 x) ∧
     Tendsto (fun n => u (xs n)) atTop (𝓝 (u x)) ∧
-    Tendsto js atTop (𝓝 qX)}
+    Tendsto qs atTop (𝓝 qX.1) ∧
+    Tendsto (fun n => ‖Xs n - qX.2‖) atTop (𝓝 0)}
 
 /-- A superjet is a closed superjet, by constant sequences. -/
 theorem superJet_subset_cl (u : EuclSpace d → ℝ) (x : EuclSpace d) :
     SuperJet u x ⊆ ClSuperJet u x := by
   intro qX h
-  exact ⟨fun _ => x, fun _ => qX, fun _ => h, tendsto_const_nhds,
-    tendsto_const_nhds, tendsto_const_nhds⟩
+  refine ⟨fun _ => x, fun _ => qX.1, fun _ => qX.2, fun _ => h,
+    tendsto_const_nhds, tendsto_const_nhds, tendsto_const_nhds, ?_⟩
+  simpa using (tendsto_const_nhds : Tendsto (fun _ : ℕ => (0:ℝ)) atTop (𝓝 0))
 
 /-- A subjet is a closed subjet, by constant sequences. -/
 theorem subJet_subset_cl (u : EuclSpace d → ℝ) (x : EuclSpace d) :
     SubJet u x ⊆ ClSubJet u x := by
   intro qX h
-  exact ⟨fun _ => x, fun _ => qX, fun _ => h, tendsto_const_nhds,
-    tendsto_const_nhds, tendsto_const_nhds⟩
+  refine ⟨fun _ => x, fun _ => qX.1, fun _ => qX.2, fun _ => h,
+    tendsto_const_nhds, tendsto_const_nhds, tendsto_const_nhds, ?_⟩
+  simpa using (tendsto_const_nhds : Tendsto (fun _ : ℕ => (0:ℝ)) atTop (𝓝 0))
 
 /-- The gradient of the quartic penalty. -/
 def penaltyGrad (α : ℝ) (x y : EuclSpace d) : EuclSpace d :=
