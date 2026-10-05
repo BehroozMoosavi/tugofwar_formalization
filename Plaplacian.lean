@@ -73,6 +73,7 @@ import Plaplacian.InfUpper
 import Plaplacian.Invariance
 import Plaplacian.Iteration
 import Plaplacian.IterFDeriv
+import Plaplacian.JetBridge
 import Plaplacian.Jets
 import Plaplacian.KeyStep
 import Plaplacian.LbarSub
