@@ -120,7 +120,7 @@ theorem superJet_subset_cl (u : EuclSpace d → ℝ) (x : EuclSpace d) :
   intro qX h
   refine ⟨fun _ => x, fun _ => qX.1, fun _ => qX.2, fun _ => h,
     tendsto_const_nhds, tendsto_const_nhds, tendsto_const_nhds, ?_⟩
-  simpa using (tendsto_const_nhds : Tendsto (fun _ : ℕ => (0:ℝ)) atTop (𝓝 0))
+  simp
 
 /-- A subjet is a closed subjet, by constant sequences. -/
 theorem subJet_subset_cl (u : EuclSpace d → ℝ) (x : EuclSpace d) :
@@ -128,7 +128,7 @@ theorem subJet_subset_cl (u : EuclSpace d → ℝ) (x : EuclSpace d) :
   intro qX h
   refine ⟨fun _ => x, fun _ => qX.1, fun _ => qX.2, fun _ => h,
     tendsto_const_nhds, tendsto_const_nhds, tendsto_const_nhds, ?_⟩
-  simpa using (tendsto_const_nhds : Tendsto (fun _ : ℕ => (0:ℝ)) atTop (𝓝 0))
+  simp
 
 /-- The gradient of the quartic penalty. -/
 def penaltyGrad (α : ℝ) (x y : EuclSpace d) : EuclSpace d :=
