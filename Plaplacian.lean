@@ -75,6 +75,7 @@ import Plaplacian.Invariance
 import Plaplacian.IshiiFoundations
 import Plaplacian.Iteration
 import Plaplacian.IterFDeriv
+import Plaplacian.JetAlgebra
 import Plaplacian.JetBridge
 import Plaplacian.Jets
 import Plaplacian.KeyStep
