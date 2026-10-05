@@ -1,13 +1,10 @@
+/-
+Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Behrooz Moosavi
+-/
 import Mathlib
 import Plaplacian.ViscC2
-
-open Set Topology Filter MeasureTheory Metric
-
-namespace PLaplacian
-
-noncomputable section
-
-variable {d : ℕ}
 
 /-! # Jets, and the statement of the theorem of sums
 
@@ -51,6 +48,16 @@ This follows from the theorem of sums of [CIL92, Thm 3.2] for the penalty
 only, `A` annihilates every direction `(v, v)`, which gives `X ≤ Y`; and at
 `x̂ = ŷ` the quartic has vanishing Hessian, so `A = 0` and `X ≤ 0 ≤ Y`.
 -/
+
+open Set Topology Filter MeasureTheory Metric
+
+namespace PLaplacian
+
+noncomputable section
+
+variable {d : ℕ}
+
+
 
 /-- The bilinear forms on the space. -/
 abbrev Bilin (d : ℕ) := EuclSpace d →L[ℝ] EuclSpace d →L[ℝ] ℝ
