@@ -104,6 +104,9 @@ theorem reflect_bound {φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 3 φ)
   linarith [hinf, hplus, hminus, he1, he2]
 
 set_option maxHeartbeats 1000000 in
+-- The proof assembles the reflection bound, the uniform Hessian continuity,
+-- the comparison and the eigenvalue case analysis in one declaration, with a
+-- large hypothesis context; the default budget is exhausted by elaboration.
 /-- **The singular subsolution inequality.** At a strict maximum of the upper
 relaxed limit minus a bounded `C³` test function, the lower envelope is
 nonpositive. No condition on the gradient is needed. -/
