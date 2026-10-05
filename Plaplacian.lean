@@ -18,6 +18,7 @@ import Plaplacian.Bounds
 import Plaplacian.C2Diff
 import Plaplacian.C2Expand
 import Plaplacian.C2Taylor
+import Plaplacian.ClJetBridge
 import Plaplacian.Combine
 import Plaplacian.Comparison
 import Plaplacian.ComparisonFinal
