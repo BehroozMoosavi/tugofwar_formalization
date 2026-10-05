@@ -50,7 +50,7 @@ theorem bddAbove_supConv_family (hlam : 0 ≤ lam) (hub : BddAbove (range u))
   obtain ⟨SU, hSU⟩ := hub
   refine ⟨SU, ?_⟩
   rintro _ ⟨x, rfl⟩
-  show u x - lam / 2 * ‖x - ξ‖ ^ 2 ≤ SU
+  change u x - lam / 2 * ‖x - ξ‖ ^ 2 ≤ SU
   have h1 : u x ≤ SU := hSU ⟨x, rfl⟩
   have h2 : 0 ≤ lam / 2 * ‖x - ξ‖ ^ 2 := by positivity
   linarith
@@ -127,7 +127,7 @@ theorem supConv_attained (hlam : 0 < lam) (hu : UpperSemicontinuous u)
   obtain ⟨SU, hSU⟩ := hub
   set K := {x : EuclSpace d | lam / 2 * ‖x - ξ‖ ^ 2 ≤ SU - u ξ} with hKdef
   have hξK : ξ ∈ K := by
-    show lam / 2 * ‖ξ - ξ‖ ^ 2 ≤ SU - u ξ
+    change lam / 2 * ‖ξ - ξ‖ ^ 2 ≤ SU - u ξ
     have := hSU ⟨ξ, rfl⟩
     simp only [sub_self, norm_zero]
     have h0 : (0:ℝ) ^ 2 = 0 := by norm_num
