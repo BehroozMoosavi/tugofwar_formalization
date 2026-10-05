@@ -145,6 +145,7 @@ import Plaplacian.Taylor2D
 import Plaplacian.Taylor2Deriv
 import Plaplacian.TaylorBound
 import Plaplacian.TaylorInfra
+import Plaplacian.TaylorTest
 import Plaplacian.TendProd
 import Plaplacian.TendZero
 import Plaplacian.Thread
