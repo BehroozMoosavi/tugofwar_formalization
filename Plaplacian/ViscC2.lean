@@ -123,7 +123,7 @@ theorem lamMax_shift (hd : 0 < d)
   apply le_antisymm
   · apply csSup_le (hS.image _)
     rintro _ ⟨v, hvS, rfl⟩
-    show (Y v) v ≤ _
+    change (Y v) v ≤ _
     rw [hv v hvS]
     have := le_csSup hbX ⟨v, hvS, rfl⟩
     linarith
@@ -131,7 +131,7 @@ theorem lamMax_shift (hd : 0 < d)
         ≤ sSup ((fun v => (Y v) v) '' {v : EuclSpace d | ‖v‖ = 1}) - 2 * κ := by
       apply csSup_le (hS.image _)
       rintro _ ⟨v, hvS, rfl⟩
-      show (X v) v ≤ _
+      change (X v) v ≤ _
       have h1 : (Y v) v ≤ sSup ((fun v => (Y v) v) '' {v : EuclSpace d | ‖v‖ = 1}) :=
         le_csSup hbY ⟨v, hvS, rfl⟩
       rw [hv v hvS] at h1
@@ -154,7 +154,7 @@ theorem lamMin_shift (hd : 0 < d)
         ≤ sInf ((fun v => (X v) v) '' {v : EuclSpace d | ‖v‖ = 1}) := by
       apply le_csInf (hS.image _)
       rintro _ ⟨v, hvS, rfl⟩
-      show _ ≤ (X v) v
+      change _ ≤ (X v) v
       have h1 : sInf ((fun v => (Y v) v) '' {v : EuclSpace d | ‖v‖ = 1}) ≤ (Y v) v :=
         csInf_le hbY ⟨v, hvS, rfl⟩
       rw [hv v hvS] at h1
@@ -162,7 +162,7 @@ theorem lamMin_shift (hd : 0 < d)
     linarith
   · apply le_csInf (hS.image _)
     rintro _ ⟨v, hvS, rfl⟩
-    show _ ≤ (Y v) v
+    change _ ≤ (Y v) v
     rw [hv v hvS]
     have := csInf_le hbX ⟨v, hvS, rfl⟩
     linarith
