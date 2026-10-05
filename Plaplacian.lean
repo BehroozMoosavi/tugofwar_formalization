@@ -72,6 +72,7 @@ import Plaplacian.InfSide
 import Plaplacian.InfTransport
 import Plaplacian.InfUpper
 import Plaplacian.Invariance
+import Plaplacian.IshiiFoundations
 import Plaplacian.Iteration
 import Plaplacian.IterFDeriv
 import Plaplacian.JetBridge
