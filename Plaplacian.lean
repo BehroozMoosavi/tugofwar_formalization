@@ -136,6 +136,7 @@ import Plaplacian.StepOperator
 import Plaplacian.Strict
 import Plaplacian.StrictComp
 import Plaplacian.Subsol
+import Plaplacian.SumsSplit
 import Plaplacian.SupAbs
 import Plaplacian.SupBound
 import Plaplacian.Super
