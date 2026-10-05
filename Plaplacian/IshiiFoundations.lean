@@ -33,10 +33,20 @@ Rademacher's theorem and the area formula are in Mathlib.
 ## Jensen's lemma
 
 If a semiconvex function has a strict maximum at a point on a closed ball,
-then for every `δ > 0` the set of points of the open ball at which some
-perturbation `w + ⟪p, ·⟫` with `‖p‖ ≤ δ` has a local maximum has positive
-measure. [CIL92, Lemma A.3]. Semiconvexity is stated as convexity of
-`w + (λ/2) ‖·‖²`.
+then for every `δ > 0` the set of points of the open ball at which some small
+linear perturbation has a local maximum has positive measure [CIL92, Lemma
+A.3].
+
+It is stated on the product `E × E`, where it is used: the theorem of sums
+applies it to the doubled function. The product carries the maximum norm, not
+a Euclidean one, so semiconvexity is taken with respect to `‖x‖² + ‖y‖²` and
+the perturbations are `⟪p₁, x⟫ + ⟪p₂, y⟫`. The statement follows from the
+Euclidean lemma on `ℝ^{2d}`: the product's balls and perturbation sets contain
+the Euclidean ones of the same radius, and its measure is Lebesgue measure.
+
+An earlier version stated the lemma on `E` alone, which the theorem of sums
+cannot use; the mismatch was found while writing out that proof, before
+anything had been built on the statement.
 -/
 
 open Set Topology Filter MeasureTheory Metric
@@ -64,12 +74,13 @@ def AlexandrovThm (d : ℕ) : Prop :=
 
 /-- **Jensen's lemma**, stated as a proposition. -/
 def JensenLemma (d : ℕ) : Prop :=
-  ∀ (w : EuclSpace d → ℝ) (lam : ℝ), SemiconvexWith lam w →
-    ∀ (xh : EuclSpace d) (r : ℝ), 0 < r →
-      (∀ y ∈ closedBall xh r, y ≠ xh → w y < w xh) →
-      ∀ δ > 0, 0 < (volume : Measure (EuclSpace d))
-        {x ∈ ball xh r | ∃ p : EuclSpace d, ‖p‖ ≤ δ ∧
-          IsLocalMax (fun y => w y + inner ℝ p y) x}
+  ∀ (w : EuclSpace d × EuclSpace d → ℝ) (lam : ℝ),
+    ConvexOn ℝ univ (fun z => w z + (lam / 2) * (‖z.1‖ ^ 2 + ‖z.2‖ ^ 2)) →
+    ∀ (zh : EuclSpace d × EuclSpace d) (r : ℝ), 0 < r →
+      (∀ z ∈ closedBall zh r, z ≠ zh → w z < w zh) →
+      ∀ δ > 0, 0 < (volume : Measure (EuclSpace d × EuclSpace d))
+        {z ∈ ball zh r | ∃ p₁ p₂ : EuclSpace d, ‖p₁‖ ≤ δ ∧ ‖p₂‖ ≤ δ ∧
+          IsLocalMax (fun z' => w z' + inner ℝ p₁ z'.1 + inner ℝ p₂ z'.2) z}
 
 /-- Peano twice differentiability gives a superjet. -/
 theorem TwiceDiffAt.superJet {f : EuclSpace d → ℝ} {x q : EuclSpace d}
@@ -78,6 +89,19 @@ theorem TwiceDiffAt.superJet {f : EuclSpace d → ℝ} {x q : EuclSpace d}
 /-- And a subjet. -/
 theorem TwiceDiffAt.subJet {f : EuclSpace d → ℝ} {x q : EuclSpace d}
     {X : Bilin d} (h : TwiceDiffAt f x q X) : (q, X) ∈ SubJet f x := h.2
+
+/-- A set of positive measure meets every set of full measure, for any
+measure. -/
+theorem exists_mem_of_pos_of_ae' {α : Type*} [MeasurableSpace α]
+    {μ : Measure α} {s : Set α} (hs : 0 < μ s) {P : α → Prop}
+    (hP : ∀ᵐ x ∂μ, P x) : ∃ x ∈ s, P x := by
+  by_contra h
+  push Not at h
+  have hsub : s ⊆ {x | ¬ P x} := fun x hx => h x hx
+  have h0 : μ {x | ¬ P x} = 0 := ae_iff.1 hP
+  have := measure_mono_null hsub h0
+  rw [this] at hs
+  exact lt_irrefl 0 hs
 
 /-- A set of positive measure meets every set of full measure. -/
 theorem exists_mem_of_pos_of_ae {s : Set (EuclSpace d)}
