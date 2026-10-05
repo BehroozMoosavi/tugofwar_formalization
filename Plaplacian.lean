@@ -123,6 +123,7 @@ import Plaplacian.SeqExtract
 import Plaplacian.Shift
 import Plaplacian.SingEigen
 import Plaplacian.Singular
+import Plaplacian.SingularCase
 import Plaplacian.Squeeze
 import Plaplacian.Stability
 import Plaplacian.StepOperator
