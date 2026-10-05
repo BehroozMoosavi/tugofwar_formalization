@@ -141,6 +141,7 @@ import Plaplacian.Subsol
 import Plaplacian.SumsSplit
 import Plaplacian.SupAbs
 import Plaplacian.SupBound
+import Plaplacian.SupConv
 import Plaplacian.Super
 import Plaplacian.SuperForm
 import Plaplacian.SupErrUnif
