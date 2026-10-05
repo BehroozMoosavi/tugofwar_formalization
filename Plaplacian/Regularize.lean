@@ -129,7 +129,7 @@ theorem regularize {V φ : EuclSpace d → ℝ} (hφ : ContDiff ℝ 3 φ)
     simp only [hψ0def, quart_self, add_zero]
   have hlw := hloc w hwρ
   have hqp := quart_pos hne
-  show V w - ψ w < V x₀ - ψ x₀
+  change V w - ψ w < V x₀ - ψ x₀
   rw [hψw, hψx]
   linarith
 
