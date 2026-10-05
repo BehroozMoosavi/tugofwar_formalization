@@ -110,6 +110,7 @@ import Plaplacian.Operator
 import Plaplacian.OpExpansion
 import Plaplacian.OpLocal
 import Plaplacian.Order2
+import Plaplacian.PenaltyTaylor
 import Plaplacian.Perturbation
 import Plaplacian.PredForm
 import Plaplacian.QuadAverage
