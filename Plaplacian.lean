@@ -111,6 +111,7 @@ import Plaplacian.QuadAverage
 import Plaplacian.QuadBound
 import Plaplacian.QuadCompare
 import Plaplacian.QuadInf
+import Plaplacian.Quartic
 import Plaplacian.QuotZero
 import Plaplacian.Radius
 import Plaplacian.Regular
