@@ -59,6 +59,7 @@ import Plaplacian.ExtremeExpansion
 import Plaplacian.ExtremeValues
 import Plaplacian.FilterChar
 import Plaplacian.FinSup
+import Plaplacian.FormCompact
 import Plaplacian.FreqGen
 import Plaplacian.FreqProj
 import Plaplacian.FreqRate
