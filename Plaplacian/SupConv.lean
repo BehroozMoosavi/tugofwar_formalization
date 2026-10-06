@@ -220,7 +220,7 @@ theorem supConv_grad (hlam : 0 ≤ lam) (hub : BddAbove (range u))
     have e2 : xs - (ξ + t • w) = (xs - ξ) - t • w := by abel
     rw [e2, norm_sub_sq_real] at hle
     simp only [inner_smul_right, map_smul, smul_eq_mul, norm_smul,
-      Real.norm_eq_abs, mul_pow, sq_abs, ContinuousLinearMap.smul_apply] at ht hle
+      Real.norm_eq_abs, mul_pow, sq_abs, smul_apply] at ht hle
     have ha : inner ℝ a w = lam * inner ℝ (xs - ξ) w - inner ℝ p w := by
       rw [hadef, inner_sub_left, real_inner_smul_left]
     rw [ha]

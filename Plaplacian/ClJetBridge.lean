@@ -60,7 +60,7 @@ theorem tendsto_quad {Xs : ℕ → Bilin d} {X : Bilin d}
   have hsplit : (fun n => (Xs n (ws n)) (ws n))
       = fun n => ((Xs n - X) (ws n)) (ws n) + (X (ws n)) (ws n) := by
     funext n
-    simp only [ContinuousLinearMap.sub_apply]
+    simp only [sub_apply]
     ring
   rw [hsplit]
   simpa using h1.add h2
@@ -118,7 +118,7 @@ theorem lamMax_le_add_norm (hd : 0 < d) (X Y : Bilin d) :
     le_trans (le_abs_self _)
       (by rw [← Real.norm_eq_abs]; exact norm_apply_apply_le (le_of_eq hv1))
   have h3 : (X v) v = (Y v) v + ((X - Y) v) v := by
-    simp only [ContinuousLinearMap.sub_apply]; ring
+    simp only [sub_apply]; ring
   linarith
 
 /-- The same, with the difference reversed. Stated separately because the
@@ -137,7 +137,7 @@ theorem lamMax_le_add_norm' (hd : 0 < d) (X Y : Bilin d) :
     le_trans (neg_le_abs _)
       (by rw [← Real.norm_eq_abs]; exact norm_apply_apply_le (le_of_eq hv1))
   have h3 : (X v) v = (Y v) v - ((Y - X) v) v := by
-    simp only [ContinuousLinearMap.sub_apply]; ring
+    simp only [sub_apply]; ring
   linarith
 
 theorem tendsto_lamMax (hd : 0 < d) {Xs : ℕ → Bilin d} {X : Bilin d}

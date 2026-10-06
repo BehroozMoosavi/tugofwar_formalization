@@ -115,7 +115,7 @@ theorem eq_zero_of_eventually_mul_le {a C : ℝ}
   have ha2 : 0 < a ^ 2 := by positivity
   have hcomp : Tendsto (fun s : ℝ => a * s) (𝓝[>] 0) (𝓝 0) := by
     have h0 : Tendsto (fun s : ℝ => a * s) (𝓝 0) (𝓝 (a * 0)) :=
-      (continuous_mul_left a).tendsto 0
+      (continuous_const_mul a).tendsto 0
     rw [mul_zero] at h0
     exact h0.mono_left nhdsWithin_le_nhds
   have h1 : ∀ᶠ s in 𝓝[>] (0 : ℝ), (a * s) * a ≤ (a * s) ^ 2 * C :=
@@ -123,7 +123,7 @@ theorem eq_zero_of_eventually_mul_le {a C : ℝ}
   have h2 : ∀ᶠ s in 𝓝[>] (0 : ℝ), s * (|C| + 1) < 1 / 2 := by
     have hc : Tendsto (fun s : ℝ => s * (|C| + 1)) (𝓝[>] 0) (𝓝 0) := by
       have h0 : Tendsto (fun s : ℝ => s * (|C| + 1)) (𝓝 0) (𝓝 (0 * (|C| + 1))) :=
-        (continuous_mul_right (|C| + 1)).tendsto 0
+        (continuous_mul_const (|C| + 1)).tendsto 0
       rw [zero_mul] at h0
       exact h0.mono_left nhdsWithin_le_nhds
     exact hc.eventually (gt_mem_nhds (by norm_num))
@@ -178,7 +178,7 @@ theorem localMax_subJet {f : EuclSpace d → ℝ} {x q : EuclSpace d}
     have hsub : x + t • v - x = t • v := by abel
     rw [hsub] at ht1
     simp only [inner_smul_right, map_smul, smul_eq_mul, norm_smul,
-      Real.norm_eq_abs, mul_pow, sq_abs, ContinuousLinearMap.smul_apply] at ht1
+      Real.norm_eq_abs, mul_pow, sq_abs, smul_apply] at ht1
     nlinarith
   -- the gradient vanishes
   have hq : q = 0 := by
@@ -202,7 +202,7 @@ theorem localMax_subJet {f : EuclSpace d → ℝ} {x q : EuclSpace d}
       have ht2 : 0 ≤ t ^ 2 := by positivity
       nlinarith [mul_le_mul_of_nonneg_left hle ht2]
     linarith
-  simp only [ContinuousLinearMap.zero_apply]
+  simp only [zero_apply]
   linarith
 
 /-- **The semiconvex Hessian bound.** -/
@@ -257,7 +257,7 @@ theorem semiconvex_superJet {lam : ℝ} {w : EuclSpace d → ℝ}
     rw [e2, e3] at h2
     simp only [inner_smul_right, inner_neg_right, map_smul, map_neg, smul_eq_mul,
       norm_smul, norm_neg, Real.norm_eq_abs, mul_pow, sq_abs,
-      ContinuousLinearMap.smul_apply, ContinuousLinearMap.neg_apply] at h1 h2
+      smul_apply, neg_apply] at h1 h2
     have hm' := hmid t
     nlinarith
   have hb : -(X v) v - lam * ‖v‖ ^ 2 ≤ 0 := by

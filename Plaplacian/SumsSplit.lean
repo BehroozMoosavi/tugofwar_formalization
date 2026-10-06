@@ -83,8 +83,8 @@ theorem superJet_zero_of_diag {u v : EuclSpace d → ℝ} {α : ℝ} (hα : 0 < 
   have h1 := hslice.eventually hmax
   have h2 := eventually_quartic_le (x := xh) hα hη
   filter_upwards [h1, h2] with x hx hq
-  simp only [inner_zero_left, ContinuousLinearMap.zero_apply, mul_zero,
-    add_zero, sub_self, norm_zero]
+  simp only [inner_zero_left, zero_apply, mul_zero,
+    add_zero]
   have hself : ‖xh - xh‖ ^ 4 / (4 * α) = 0 := by simp
   rw [hself] at hx
   linarith
@@ -102,8 +102,8 @@ theorem subJet_zero_of_diag {u v : EuclSpace d → ℝ} {α : ℝ} (hα : 0 < α
   have h1 := hslice.eventually hmax
   have h2 := eventually_quartic_le (x := xh) hα hη
   filter_upwards [h1, h2] with y hy hq
-  simp only [inner_zero_left, ContinuousLinearMap.zero_apply, mul_zero,
-    add_zero, sub_self, norm_zero]
+  simp only [inner_zero_left, zero_apply, mul_zero,
+    add_zero]
   have hself : ‖xh - xh‖ ^ 4 / (4 * α) = 0 := by simp
   rw [hself] at hy
   have hsym : ‖xh - y‖ = ‖y - xh‖ := norm_sub_rev xh y

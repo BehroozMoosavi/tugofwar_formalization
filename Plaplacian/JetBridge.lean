@@ -67,7 +67,7 @@ theorem jPoly_line (c : ℝ) (x q z : EuclSpace d) (X : Bilin d) (κ s : ℝ) :
   have hsub : x + s • z - x = s • z := by abel
   rw [hsub]
   simp only [inner_smul_right, map_smul, smul_eq_mul, norm_smul,
-    Real.norm_eq_abs, mul_pow, sq_abs, ContinuousLinearMap.smul_apply]
+    Real.norm_eq_abs, mul_pow, sq_abs, smul_apply]
   ring
 
 theorem jPoly_line_fun (c : ℝ) (x q z : EuclSpace d) (X : Bilin d) (κ : ℝ) :

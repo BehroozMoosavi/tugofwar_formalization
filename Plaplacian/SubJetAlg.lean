@@ -35,13 +35,13 @@ set_option synthInstance.maxHeartbeats 200000 in
 -- continuous linear maps.
 theorem add_form_apply (X₁ X₂ : Bilin d) (v : EuclSpace d) :
     ((X₁ + X₂) v) v = (X₁ v) v + (X₂ v) v := by
-  simp only [ContinuousLinearMap.add_apply]
+  simp only [add_apply]
 
 set_option synthInstance.maxHeartbeats 200000 in
 -- As above, for negation.
 theorem neg_form_apply (X : Bilin d) (v : EuclSpace d) :
     ((-X) v) v = -((X v) v) := by
-  simp only [ContinuousLinearMap.neg_apply]
+  simp only [neg_apply]
 
 /-- **Subjets add.** -/
 theorem subJet_add (h₁ : (q₁, X₁) ∈ SubJet f x) (h₂ : (q₂, X₂) ∈ SubJet g x) :

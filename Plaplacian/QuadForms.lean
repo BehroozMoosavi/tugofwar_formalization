@@ -69,8 +69,8 @@ set_option synthInstance.maxHeartbeats 200000 in
 -- budget when the scalar action and the sum are unfolded together.
 theorem symmForm_apply (X : Bilin d) (u w : EuclSpace d) :
     (symmForm X u) w = (1 / 2) * ((X u) w + (X w) u) := by
-  simp only [symmForm, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.add_apply, ContinuousLinearMap.flip_apply, smul_eq_mul]
+  simp only [symmForm, smul_apply,
+    add_apply, ContinuousLinearMap.flip_apply, smul_eq_mul]
 
 theorem symmForm_apply_self (X : Bilin d) (v : EuclSpace d) :
     (symmForm X v) v = (X v) v := by
@@ -114,8 +114,8 @@ theorem quadLE_symmForm {X Y : Bilin d} (h : QuadLE X Y) :
 theorem polar_symmForm (X : Bilin d) (u w : EuclSpace d) :
     4 * (symmForm X u) w
       = (symmForm X (u + w)) (u + w) - (symmForm X (u - w)) (u - w) := by
-  simp only [map_add, map_sub, ContinuousLinearMap.add_apply,
-    ContinuousLinearMap.sub_apply]
+  simp only [map_add, map_sub, add_apply,
+    sub_apply]
   have h := symmForm_comm X u w
   ring_nf
   linarith
@@ -153,7 +153,7 @@ theorem symmForm_le_mul {X : Bilin d} {L : ℝ} (_hL : 0 ≤ L)
   have ht2 : t ^ 2 = ‖w‖ / ‖u‖ := Real.sq_sqrt (div_pos hnw hnu).le
   -- the form is unchanged when u is scaled by t and w by 1/t
   have hscale : (symmForm X (t • u)) (t⁻¹ • w) = (symmForm X u) w := by
-    simp only [map_smul, ContinuousLinearMap.smul_apply, smul_eq_mul]
+    simp only [map_smul, smul_apply, smul_eq_mul]
     field_simp
   have hb := symmForm_le_half hX (t • u) (t⁻¹ • w)
   rw [hscale] at hb

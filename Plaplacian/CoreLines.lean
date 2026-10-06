@@ -44,13 +44,13 @@ variable {d : ℕ}
 set_option synthInstance.maxHeartbeats 200000 in
 -- The zero form applied twice.
 theorem zero_form_apply (v : EuclSpace d) : ((0 : Bilin d) v) v = 0 := by
-  simp only [ContinuousLinearMap.zero_apply]
+  simp only [zero_apply]
 
 set_option synthInstance.maxHeartbeats 200000 in
 -- A scalar multiple of a form applied twice.
 theorem smul_form_apply (c : ℝ) (X : Bilin d) (v : EuclSpace d) :
     ((c • X) v) v = c * (X v) v := by
-  simp only [ContinuousLinearMap.smul_apply, smul_eq_mul]
+  simp only [smul_apply, smul_eq_mul]
 
 /-- A local maximum pulls back along a continuous map. -/
 theorem isLocalMax_pullback {F : EuclSpace d × EuclSpace d → ℝ}

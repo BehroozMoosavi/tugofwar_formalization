@@ -140,7 +140,7 @@ theorem tPoly_line (φ : EuclSpace d → ℝ) (x₀ z : EuclSpace d) (κ s : ℝ
   have hsub : x₀ + s • z - x₀ = s • z := by abel
   rw [hsub]
   simp only [map_smul, smul_eq_mul, norm_smul, Real.norm_eq_abs, mul_pow,
-    sq_abs, ContinuousLinearMap.smul_apply]
+    sq_abs, smul_apply]
   ring
 
 /-- **Its gradient at the base point is that of the original.** -/
