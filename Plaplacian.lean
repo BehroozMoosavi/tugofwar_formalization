@@ -25,6 +25,7 @@ import Plaplacian.ComparisonFinal
 import Plaplacian.Compose
 import Plaplacian.Consistency
 import Plaplacian.ContactArg
+import Plaplacian.CoreLines
 import Plaplacian.CubicBound
 import Plaplacian.CubicTaylor
 import Plaplacian.Deficit
