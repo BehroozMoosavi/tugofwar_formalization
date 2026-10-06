@@ -123,6 +123,7 @@ import Plaplacian.QuadCompare
 import Plaplacian.QuadForms
 import Plaplacian.QuadInf
 import Plaplacian.Quartic
+import Plaplacian.QuarticJets
 import Plaplacian.QuotZero
 import Plaplacian.Radius
 import Plaplacian.Regular
@@ -156,14 +157,12 @@ import Plaplacian.SupMax
 import Plaplacian.SupUpper
 import Plaplacian.Taylor1D
 import Plaplacian.Taylor2D
-import Plaplacian.Taylor2D
 import Plaplacian.Taylor2Deriv
 import Plaplacian.TaylorBound
 import Plaplacian.TaylorInfra
 import Plaplacian.TaylorTest
 import Plaplacian.TendProd
 import Plaplacian.TendZero
-import Plaplacian.Thread
 import Plaplacian.Thread
 import Plaplacian.Thread2
 import Plaplacian.ThreeRadii
