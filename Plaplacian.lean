@@ -138,6 +138,7 @@ import Plaplacian.Stability
 import Plaplacian.StepOperator
 import Plaplacian.Strict
 import Plaplacian.StrictComp
+import Plaplacian.SubJetAlg
 import Plaplacian.Subsol
 import Plaplacian.SumsSplit
 import Plaplacian.SupAbs
