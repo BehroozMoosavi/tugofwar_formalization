@@ -122,8 +122,8 @@ theorem setAverage_term [Nontrivial (EuclSpace d)] (hd : 0 < d)
   rw [setAverage_mul_const (fun z => (z.ofLp i) * (z.ofLp j))]
   by_cases h : i = j
   · subst h
-    rw [if_pos rfl, setAverage_mul_coord_diag hd i hε]
-  · rw [if_neg h, setAverage_mul_coord_eq_zero i j h]
+    rw [ite_eq_left rfl, setAverage_mul_coord_diag hd i hε]
+  · rw [ite_eq_right h, setAverage_mul_coord_eq_zero i j h]
 
 theorem inner_sum_collapse (X : EuclSpace d →L[ℝ] EuclSpace d →L[ℝ] ℝ)
     (i : Fin d) {ε : ℝ} :
