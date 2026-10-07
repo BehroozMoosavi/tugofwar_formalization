@@ -126,6 +126,7 @@ import Plaplacian.Quartic
 import Plaplacian.QuarticJets
 import Plaplacian.QuotZero
 import Plaplacian.Radius
+import Plaplacian.Reduce1
 import Plaplacian.Regular
 import Plaplacian.Regularize
 import Plaplacian.Relaxed
