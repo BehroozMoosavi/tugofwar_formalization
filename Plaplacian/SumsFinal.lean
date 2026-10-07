@@ -33,8 +33,8 @@ variable {d : ℕ}
 
 
 
-set_option synthInstance.maxHeartbeats 400000
-
+set_option synthInstance.maxHeartbeats 400000 in
+-- Instance search on iterated continuous linear maps needs a larger budget.
 /-- Norm convergence of forms gives convergence of the quadratic form. -/
 theorem tendsto_form_apply {Xs : ℕ → Bilin d} {X : Bilin d}
     (h : Tendsto (fun n => ‖Xs n - X‖) atTop (𝓝 0)) (w : EuclSpace d) :
@@ -51,6 +51,8 @@ theorem tendsto_form_apply {Xs : ℕ → Bilin d} {X : Bilin d}
         mul_le_mul_of_nonneg_right (ContinuousLinearMap.le_opNorm _ _) (norm_nonneg _)
     _ = ‖Xs n - X‖ * (‖w‖ * ‖w‖) := by ring
 
+set_option synthInstance.maxHeartbeats 400000 in
+-- Instance search on iterated continuous linear maps needs a larger budget.
 /-- The quartic's form term tends to zero in norm. -/
 theorem tendsto_norm_quartic_form {K : ℝ} {xs : ℕ → EuclSpace d}
     (hxs : Tendsto xs atTop (𝓝 0)) :
@@ -64,6 +66,8 @@ section closed
 
 variable {u v : EuclSpace d → ℝ} {q xh yh : EuclSpace d} {K : ℝ}
 
+set_option synthInstance.maxHeartbeats 400000 in
+-- Instance search on iterated continuous linear maps needs a larger budget.
 /-- **The closed superjet of `u`**, from jets of `ũ` at points tending to
 zero. -/
 theorem clSuperJet_u_of (hK : 0 ≤ K) {xs as : ℕ → EuclSpace d} {As : ℕ → Bilin d}
@@ -118,6 +122,8 @@ theorem clSuperJet_u_of (hK : 0 ≤ K) {xs as : ℕ → EuclSpace d} {As : ℕ �
     rw [add_zero] at hR
     exact squeeze_zero (fun n => ContinuousLinearMap.opNorm_nonneg _) hb hR
 
+set_option synthInstance.maxHeartbeats 400000 in
+-- Instance search on iterated continuous linear maps needs a larger budget.
 /-- **The closed subjet of `v`**, from jets of `ṽ` at points tending to zero. -/
 theorem clSubJet_v_of (hK : 0 ≤ K) {ys bs : ℕ → EuclSpace d} {Bs : ℕ → Bilin d}
     {Yl : Bilin d}
@@ -170,6 +176,8 @@ theorem clSubJet_v_of (hK : 0 ≤ K) {ys bs : ℕ → EuclSpace d} {Bs : ℕ →
 
 end closed
 
+set_option synthInstance.maxHeartbeats 400000 in
+-- Instance search on iterated continuous linear maps needs a larger budget.
 /-- Entry bound for a symmetrized form with bounded quadratic form. -/
 theorem symmForm_entry_le {X : Bilin d} {L : ℝ} (hL : 0 ≤ L)
     (hX : ∀ w, |(X w) w| ≤ L * ‖w‖ ^ 2) (i j : Fin d) :
@@ -180,6 +188,8 @@ theorem symmForm_entry_le {X : Bilin d} {L : ℝ} (hL : 0 ≤ L)
 
 set_option maxHeartbeats 2000000 in
 -- The assembly applies a dozen results in one declaration.
+set_option synthInstance.maxHeartbeats 400000 in
+-- Instance search on iterated continuous linear maps needs a larger budget.
 /-- **The regular half of the theorem of sums**, from Alexandrov's theorem and
 Jensen's lemma. -/
 theorem theoremOfSumsRegular_of (hA : AlexandrovThm d) (hJ : JensenLemma d) :
@@ -315,6 +325,8 @@ theorem theoremOfSumsRegular_of (hA : AlexandrovThm d) (hJ : JensenLemma d) :
     have := quadLE_symmForm (hle (φ (ψ n))) w
     exact this
 
+set_option synthInstance.maxHeartbeats 400000 in
+-- Instance search on iterated continuous linear maps needs a larger budget.
 /-- **The comparison principle for strict subsolutions**, from Alexandrov's
 theorem and Jensen's lemma. -/
 theorem comparison_strict_of_AJ (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p)
