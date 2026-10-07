@@ -148,6 +148,7 @@ import Plaplacian.StrictComp
 import Plaplacian.SubJetAlg
 import Plaplacian.Subsol
 import Plaplacian.SumsSplit
+import Plaplacian.SumsTransfer
 import Plaplacian.SupAbs
 import Plaplacian.SupBound
 import Plaplacian.SupConv
