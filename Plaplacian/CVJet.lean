@@ -220,7 +220,8 @@ theorem peanoAt_cv {V : EuclSpace d → ℝ} {x q : EuclSpace d} {X : Bilin d}
   have he := hb k hk1
   -- the jet terms
   have hQ : inner ℝ (c • q) k = c * inner ℝ q k := real_inner_smul_left _ _ _
-  have hR : ((c • X - (2 * η) • rankOne q) k) k = c * (X k) k - 2 * η * (inner ℝ q k * inner ℝ q k) := by
+  have hR : ((c • X - (2 * η) • rankOne q) k) k
+      = c * (X k) k - 2 * η * (inner ℝ q k * inner ℝ q k) := by
     rw [sub_apply, sub_apply, smul_apply, smul_apply, smul_apply, smul_apply, smul_eq_mul,
       smul_eq_mul, rankOne_apply]
   change |(V (x + k) - η * V (x + k) ^ 2) - (V x - η * V x ^ 2) - inner ℝ (c • q) k
