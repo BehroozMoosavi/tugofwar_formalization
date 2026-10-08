@@ -31,6 +31,7 @@ import Plaplacian.CoreJA
 import Plaplacian.CoreLines
 import Plaplacian.CubicBound
 import Plaplacian.CubicTaylor
+import Plaplacian.CVJet
 import Plaplacian.Deficit
 import Plaplacian.DeficitMono
 import Plaplacian.DiffIneq
