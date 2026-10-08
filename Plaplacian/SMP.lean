@@ -129,14 +129,14 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
   -- the contact set
   set S := closedBall y₀ (R / 2) ∩ {y | m ≤ u y} with hSdef
   have hxS : x ∈ S :=
-    ⟨by rw [mem_closedBall, dist_comm]; linarith, by show m ≤ u x; exact le_rfl⟩
+    ⟨by rw [mem_closedBall, dist_comm]; linarith, by change m ≤ u x; exact le_rfl⟩
   have hSc : IsClosed S := by
     rw [← closure_subset_iff_isClosed]
     intro y hy
     have hyK : y ∈ closedBall y₀ (R / 2) :=
       closure_minimal inter_subset_left isClosed_closedBall hy
     refine ⟨hyK, ?_⟩
-    show m ≤ u y
+    change m ≤ u y
     by_contra hcon
     push Not at hcon
     have hyΩ : y ∈ Ω := hball (hK hyK)
@@ -224,7 +224,7 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
     (isCompact_closedBall y₀ r).inter_right
       (isClosed_le continuous_const (continuous_id.dist continuous_const))
   have hzA : z ∈ A := ⟨by rw [mem_closedBall, hzr], by
-    show r - θ ≤ dist z y₀
+    change r - θ ≤ dist z y₀
     rw [hzr]; linarith⟩
   have hAΩ : A ⊆ Ω := fun y hy =>
     hball (hK (closedBall_subset_closedBall (by linarith) hy.1))
@@ -237,7 +237,7 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
     exact h1.add (h2.upperSemicontinuous.upperSemicontinuousOn A)
   obtain ⟨w, hwA, hwmax⟩ := UpperSemicontinuousOn.exists_isMaxOn ⟨z, hzA⟩ hAc hgusc
   have hgz : g z = m + ε * (κ * r ^ 2) ^ 2 := by
-    show u z + ε * barrier y₀ B z = _
+    change u z + ε * barrier y₀ B z = _
     rw [huz, hbar_z]
   have hgw : g z ≤ g w := hwmax hzA
   have hwr : dist w y₀ ≤ r := by
@@ -251,7 +251,7 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
     have h1 := hgapC w hwC
     have h2 := hbar_le w hwA.2 hwr
     have h3 : g w ≤ m - δ + ε * M₀ := by
-      show u w + ε * barrier y₀ B w ≤ _
+      change u w + ε * barrier y₀ B w ≤ _
       have := mul_le_mul_of_nonneg_left h2 hε0.le
       linarith
     have h4 : 0 ≤ ε * (κ * r ^ 2) ^ 2 := by positivity
