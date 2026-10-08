@@ -150,6 +150,7 @@ import Plaplacian.StepOperator
 import Plaplacian.Strict
 import Plaplacian.StrictComp
 import Plaplacian.Subgrad
+import Plaplacian.SubgradApprox
 import Plaplacian.SubJetAlg
 import Plaplacian.Subsol
 import Plaplacian.SumsFinal
