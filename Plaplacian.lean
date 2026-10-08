@@ -105,6 +105,7 @@ import Plaplacian.NearFreq
 import Plaplacian.NearMin
 import Plaplacian.NearSup
 import Plaplacian.NegOp
+import Plaplacian.NullImage
 import Plaplacian.OneDim
 import Plaplacian.OpBounded
 import Plaplacian.OpCont
