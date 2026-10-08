@@ -82,6 +82,7 @@ import Plaplacian.IshiiFoundations
 import Plaplacian.Iteration
 import Plaplacian.IterFDeriv
 import Plaplacian.JensenEucl
+import Plaplacian.JensenProduct
 import Plaplacian.JetAlgebra
 import Plaplacian.JetBridge
 import Plaplacian.Jets
