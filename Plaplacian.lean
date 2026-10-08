@@ -135,6 +135,7 @@ import Plaplacian.Reduce2
 import Plaplacian.Regular
 import Plaplacian.Regularize
 import Plaplacian.Relaxed
+import Plaplacian.RiemannTaylor
 import Plaplacian.Sandwich
 import Plaplacian.SecondOrder
 import Plaplacian.Selection
