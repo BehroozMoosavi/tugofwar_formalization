@@ -150,6 +150,7 @@ import Plaplacian.Singular
 import Plaplacian.SingularCase
 import Plaplacian.SMP
 import Plaplacian.SMPBarrier
+import Plaplacian.SMPMin
 import Plaplacian.Squeeze
 import Plaplacian.Stability
 import Plaplacian.StepOperator
