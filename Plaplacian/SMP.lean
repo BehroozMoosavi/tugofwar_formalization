@@ -107,9 +107,13 @@ theorem smp_value_pos {p D r κ s : ℝ} (hp : 2 ≤ p) (hD : 0 < D) (hr : 0 < r
 
 set_option maxHeartbeats 800000 in
 -- A long geometric argument; its arithmetic is in the lemmas above.
-/-- **The strong maximum principle on a ball.** -/
-theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
-    {u : EuclSpace d → ℝ} (hsub : IsViscositySubsolution p Ω (fun _ => 0) u)
+/-- **The strong maximum principle on a ball**, for an upper semicontinuous
+function whose superjets with nonzero gradient satisfy the subsolution
+inequality. -/
+theorem smp_ball_jet (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
+    {u : EuclSpace d → ℝ} (husc : UpperSemicontinuousOn u Ω)
+    (hjetc : ∀ w ∈ Ω, ∀ (q : EuclSpace d) (X : Bilin d), (q, X) ∈ SuperJet u w →
+      q ≠ 0 → viscF p q X ≤ 0)
     {x : EuclSpace d} {R : ℝ} (hR : 0 < R) (hball : ball x R ⊆ Ω)
     (hmax : ∀ y ∈ ball x R, u y ≤ u x) :
     ∀ y ∈ ball x (R / 3), u y = u x := by
@@ -140,7 +144,7 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
     by_contra hcon
     push Not at hcon
     have hyΩ : y ∈ Ω := hball (hK hyK)
-    have hev := hsub.usc y hyΩ m hcon
+    have hev := husc y hyΩ m hcon
     rw [eventually_nhdsWithin_iff] at hev
     have hN : {y' | y' ∈ Ω → u y' < m} ∩ ball x R ∈ 𝓝 y :=
       inter_mem hev (isOpen_ball.mem_nhds (hK hyK))
@@ -192,7 +196,7 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
   have hCΩ : closedBall y₀ (r - θ) ⊆ Ω := fun y hy => hball (hK (hCsub hy))
   obtain ⟨y₁, hy₁C, hy₁max⟩ := UpperSemicontinuousOn.exists_isMaxOn
     ⟨y₀, mem_closedBall_self (by linarith)⟩ (isCompact_closedBall y₀ (r - θ))
-    (hsub.usc.mono hCΩ)
+    (husc.mono hCΩ)
   have hy₁lt : u y₁ < m := hin y₁ (by rw [mem_closedBall] at hy₁C; linarith)
   set δ := m - u y₁ with hδ
   have hδ0 : 0 < δ := by linarith
@@ -231,7 +235,7 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
   -- the maximizer of g = u + ε φ
   set g : EuclSpace d → ℝ := fun y => u y + ε * barrier y₀ B y with hgdef
   have hgusc : UpperSemicontinuousOn g A := by
-    have h1 := hsub.usc.mono hAΩ
+    have h1 := husc.mono hAΩ
     have h2 : Continuous (fun y => ε * barrier y₀ B y) := by
       unfold barrier; fun_prop
     exact h1.add (h2.upperSemicontinuous.upperSemicontinuousOn A)
@@ -302,7 +306,7 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
   have hjet := superJet_barrier (u := u) (w := w) (y₀ := y₀) (B := B) hε0 hloc
   have hw : w ∈ Ω := hAΩ hwA
   have hq : (4 * ε * (B - ‖w - y₀‖ ^ 2)) • (w - y₀) ≠ 0 := smul_ne_zero hc.ne' hv0
-  have hvisc := superJet_regular hd hp hsub hw hjet hq
+  have hvisc := hjetc w hw _ _ hjet hq
   change _ ≤ (0 : ℝ) at hvisc
   rw [viscF_barrierJet hv0 hc] at hvisc
   -- the value is positive
@@ -316,6 +320,16 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
       + (p - 2) * (4 * ε * (r ^ 2 + κ * r ^ 2 - s) - 8 * ε * s))
       = ε * (8 * (p - 1) * s - 4 * (r ^ 2 + κ * r ^ 2 - s) * ((d : ℝ) + p - 2)) := by ring
   linarith
+
+
+/-- **The strong maximum principle on a ball.** -/
+theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
+    {u : EuclSpace d → ℝ} (hsub : IsViscositySubsolution p Ω (fun _ => 0) u)
+    {x : EuclSpace d} {R : ℝ} (hR : 0 < R) (hball : ball x R ⊆ Ω)
+    (hmax : ∀ y ∈ ball x R, u y ≤ u x) :
+    ∀ y ∈ ball x (R / 3), u y = u x :=
+  smp_ball_jet hd hp hsub.usc (fun w hw _ _ hj hq => superJet_regular hd hp hsub hw hj hq)
+    hR hball hmax
 
 end
 
