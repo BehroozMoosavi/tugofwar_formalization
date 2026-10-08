@@ -81,6 +81,7 @@ import Plaplacian.Invariance
 import Plaplacian.IshiiFoundations
 import Plaplacian.Iteration
 import Plaplacian.IterFDeriv
+import Plaplacian.JensenEucl
 import Plaplacian.JetAlgebra
 import Plaplacian.JetBridge
 import Plaplacian.Jets
