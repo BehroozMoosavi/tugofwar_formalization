@@ -148,6 +148,7 @@ import Plaplacian.Shift
 import Plaplacian.SingEigen
 import Plaplacian.Singular
 import Plaplacian.SingularCase
+import Plaplacian.SMP
 import Plaplacian.SMPBarrier
 import Plaplacian.Squeeze
 import Plaplacian.Stability
