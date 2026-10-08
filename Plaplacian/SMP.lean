@@ -328,7 +328,7 @@ theorem smp_ball (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
     {x : EuclSpace d} {R : ℝ} (hR : 0 < R) (hball : ball x R ⊆ Ω)
     (hmax : ∀ y ∈ ball x R, u y ≤ u x) :
     ∀ y ∈ ball x (R / 3), u y = u x :=
-  smp_ball_jet hd hp hsub.usc (fun w hw _ _ hj hq => superJet_regular hd hp hsub hw hj hq)
+  smp_ball_jet hd hp hsub.usc (fun _ hw _ _ hj hq => superJet_regular hd hp hsub hw hj hq)
     hR hball hmax
 
 end
