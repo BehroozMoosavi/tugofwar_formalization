@@ -124,6 +124,7 @@ import Plaplacian.OpEst
 import Plaplacian.OpExpansion
 import Plaplacian.OpLocal
 import Plaplacian.Order2
+import Plaplacian.PeanoUniq
 import Plaplacian.PenaltyP
 import Plaplacian.PenaltyTaylor
 import Plaplacian.Perturbation
