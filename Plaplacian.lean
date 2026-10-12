@@ -68,6 +68,7 @@ import Plaplacian.FreqProj
 import Plaplacian.FreqRate
 import Plaplacian.GoodSet
 import Plaplacian.GradDir
+import Plaplacian.GradEst
 import Plaplacian.GradInner
 import Plaplacian.HessCont
 import Plaplacian.HessCont2
