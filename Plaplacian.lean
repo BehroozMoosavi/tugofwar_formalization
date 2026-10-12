@@ -159,6 +159,7 @@ import Plaplacian.Squeeze
 import Plaplacian.Stability
 import Plaplacian.Step2
 import Plaplacian.Step2Prelim
+import Plaplacian.Step3
 import Plaplacian.Step3M
 import Plaplacian.Step3Tools
 import Plaplacian.StepOperator
