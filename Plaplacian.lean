@@ -118,6 +118,7 @@ import Plaplacian.OpCont
 import Plaplacian.OpContFull
 import Plaplacian.OpenClosed
 import Plaplacian.Operator
+import Plaplacian.OpEst
 import Plaplacian.OpExpansion
 import Plaplacian.OpLocal
 import Plaplacian.Order2
