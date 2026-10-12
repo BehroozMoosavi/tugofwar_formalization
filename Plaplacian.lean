@@ -156,6 +156,7 @@ import Plaplacian.SMPBarrier
 import Plaplacian.SMPMin
 import Plaplacian.Squeeze
 import Plaplacian.Stability
+import Plaplacian.Step2
 import Plaplacian.Step2Prelim
 import Plaplacian.StepOperator
 import Plaplacian.Strict
