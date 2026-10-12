@@ -127,6 +127,7 @@ import Plaplacian.PenaltyTaylor
 import Plaplacian.Perturbation
 import Plaplacian.PredForm
 import Plaplacian.Prox
+import Plaplacian.PsiSemi
 import Plaplacian.QuadAverage
 import Plaplacian.QuadBound
 import Plaplacian.QuadCompare
