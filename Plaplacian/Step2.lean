@@ -225,7 +225,8 @@ theorem step2 (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {U V : EuclSpace d → ℝ} 
   have hr1 : r ≤ 1 := le_trans (min_le_right _ _) (min_le_left _ _)
   have hrq : r ≤ ‖q‖ / (2 * (lam + 2 * μ + 3)) :=
     le_trans (min_le_right _ _) (min_le_right _ _)
-  set δ := min (1 / 2) (min (κ / (6 * ((d : ℝ) + p - 2))) (κ * ‖q‖ / (72 * ((p - 2) * (lam * (1 + Cc) + 1) + 1)))) with hδ
+  set δ := min (1 / 2) (min (κ / (6 * ((d : ℝ) + p - 2)))
+    (κ * ‖q‖ / (72 * ((p - 2) * (lam * (1 + Cc) + 1) + 1)))) with hδ
   have hδ0 : 0 < δ := lt_min (by norm_num) (lt_min (by positivity) (by positivity))
   have hδ1 : δ ≤ 1 / 2 := min_le_left _ _
   have hδ2 : δ ≤ κ / (6 * ((d : ℝ) + p - 2)) := le_trans (min_le_right _ _) (min_le_left _ _)
@@ -305,7 +306,8 @@ theorem step2 (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {U V : EuclSpace d → ℝ} 
     have := (le_div_iff₀ (by positivity : (0 : ℝ) < 6 * ((d : ℝ) + p - 2))).1 hδ2
     linarith
   have hdir : (p - 2) * (2 * (lam * (1 + Cc) + 1) * (12 * δ / ‖q‖)) ≤ κ / 3 := by
-    have h2 : (p - 2) * (2 * (lam * (1 + Cc) + 1) * (12 * δ / ‖q‖)) = 24 * ((p - 2) * (lam * (1 + Cc) + 1) * δ) / ‖q‖ := by ring
+    have h2 : (p - 2) * (2 * (lam * (1 + Cc) + 1) * (12 * δ / ‖q‖))
+        = 24 * ((p - 2) * (lam * (1 + Cc) + 1) * δ) / ‖q‖ := by ring
     have h3 : δ * (72 * ((p - 2) * (lam * (1 + Cc) + 1) + 1)) ≤ κ * ‖q‖ :=
       (le_div_iff₀ (by positivity)).1 hδ3
     rw [h2, div_le_iff₀ hQ]
