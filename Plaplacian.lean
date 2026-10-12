@@ -111,6 +111,7 @@ import Plaplacian.LocalMono
 import Plaplacian.LocDistUnif
 import Plaplacian.LocUnif
 import Plaplacian.LowerSemi
+import Plaplacian.MainConv
 import Plaplacian.MaxSub
 import Plaplacian.Measurability
 import Plaplacian.MinCmp
