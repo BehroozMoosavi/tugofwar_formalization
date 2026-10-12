@@ -57,6 +57,7 @@ import Plaplacian.ErrSmall
 import Plaplacian.Exclude
 import Plaplacian.Existence
 import Plaplacian.Expansion
+import Plaplacian.ExpCompact
 import Plaplacian.ExpErr
 import Plaplacian.ExpUnif
 import Plaplacian.ExtAvgErr
