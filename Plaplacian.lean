@@ -14,6 +14,7 @@ import Plaplacian.AvgTerms
 import Plaplacian.AvgUnif
 import Plaplacian.BallCont
 import Plaplacian.BallMoments
+import Plaplacian.BandEst
 import Plaplacian.Basic
 import Plaplacian.Bounds
 import Plaplacian.C2Diff
