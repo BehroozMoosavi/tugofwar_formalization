@@ -24,6 +24,7 @@ import Plaplacian.ClJetBridge
 import Plaplacian.Combine
 import Plaplacian.Comparison
 import Plaplacian.ComparisonFinal
+import Plaplacian.CompFull
 import Plaplacian.Compose
 import Plaplacian.Consistency
 import Plaplacian.ContactArg
