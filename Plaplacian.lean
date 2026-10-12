@@ -17,6 +17,7 @@ import Plaplacian.BallMoments
 import Plaplacian.BandEst
 import Plaplacian.BarrierPoly
 import Plaplacian.Basic
+import Plaplacian.BdryEst
 import Plaplacian.BdryPrep
 import Plaplacian.Bounds
 import Plaplacian.C2Diff
