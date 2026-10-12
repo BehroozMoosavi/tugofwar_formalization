@@ -139,6 +139,7 @@ import Plaplacian.QuotZero
 import Plaplacian.Radius
 import Plaplacian.Reduce1
 import Plaplacian.Reduce2
+import Plaplacian.RegPair
 import Plaplacian.Regular
 import Plaplacian.Regularize
 import Plaplacian.Relaxed
