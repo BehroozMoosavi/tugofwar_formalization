@@ -41,6 +41,7 @@ import Plaplacian.Deficit
 import Plaplacian.DeficitMono
 import Plaplacian.DiffIneq
 import Plaplacian.DiffMin
+import Plaplacian.DirichletExistence
 import Plaplacian.DiscComp
 import Plaplacian.Discharge
 import Plaplacian.Domain
