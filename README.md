@@ -20,23 +20,23 @@ the definition of the discrete problem.
 - **Complete:** every theorem is fully proved. The library contains no `sorry`.
 - **Axioms:** the main theorem depends only on Lean's standard axioms,
   `propext`, `Classical.choice` and `Quot.sound`.
-- **Size:** 28,502 lines in 222 files.
+- **Size:** 29,003 lines in 223 files.
 
 ## The main theorem
 
-`PLaplacian.pharmonious_converge`, in `Plaplacian/MainConv.lean`:
+`PLaplacian.pharmonious_exists_converge`, in `Plaplacian/DirichletExistence.lean`:
 
 > Let $2 \le p$ and $d \ge 1$, let $\Omega \subseteq \mathbb{R}^d$ be bounded and
-> open with an exterior sphere at every boundary point, and let $F$ be continuous.
-> Let $(u_\varepsilon)_{\varepsilon > 0}$ be uniformly bounded, each $u_\varepsilon$
-> $p$-harmonious in $\Omega$ with data $F$ and equal to $F$ outside $\Omega$.
-> Then the upper and lower half-relaxed limits coincide on $\overline\Omega$,
+> open with an exterior sphere at every boundary point, and let $F$ be bounded
+> and continuous. Then for every $\varepsilon > 0$ there is a $p$-harmonious
+> function $u_\varepsilon$ in $\Omega$ with data $F$, equal to $F$ outside $\Omega$;
+> and the upper and lower half-relaxed limits coincide on $\overline\Omega$,
 > equal $F$ on $\partial\Omega$, and $u_\varepsilon \to \overline u$ uniformly on
 > $\overline\Omega$.
 
-This completes the Barles–Souganidis argument for the scheme. The theorem takes
-the family $(u_\varepsilon)$ as given; it is a convergence theorem, not an
-existence theorem for the $\varepsilon$-problem with exterior data.
+This completes the Barles–Souganidis argument for the scheme, including
+existence for the $\varepsilon$-problem. The convergence part holds for every
+uniformly bounded such family (`PLaplacian.pharmonious_converge`).
 
 ## What is formalized
 
@@ -114,13 +114,13 @@ file `Check.lean` containing
 
 ```lean
 import Plaplacian
-#print axioms PLaplacian.pharmonious_converge
+#print axioms PLaplacian.pharmonious_exists_converge
 ```
 
 and run `lake env lean Check.lean`. The expected output is
 
 ```
-'PLaplacian.pharmonious_converge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'PLaplacian.pharmonious_exists_converge' depends on axioms: [propext, Classical.choice, Quot.sound]
 ```
 
 To confirm there is no `sorry`, run `grep -rn "sorry" Plaplacian/`; it prints nothing.
