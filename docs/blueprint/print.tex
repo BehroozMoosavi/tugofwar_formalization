@@ -1,0 +1,51 @@
+% Print version of the blueprint (pdflatex print.tex).
+% The leanblueprint tool supplies its own print.tex and web.tex; this file lets
+% the PDF be built without it, by defining the blueprint commands as no-ops.
+\documentclass[11pt]{report}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage{pdflscape}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+\makeatletter
+% \lean and \uses take comma-separated lists; print them so that lines can break
+\newcommand{\lean}[1]{\par\noindent{\footnotesize\textsf{Lean:}\ \raggedright
+  \@for\@n:=#1\do{\texttt{\expandafter\detokenize\expandafter{\@n}}\ \allowbreak}\par}}
+\newcommand{\leanok}{}
+\newcommand{\uses}[1]{\par\noindent{\footnotesize\textsf{Uses:}\ \raggedright
+  \@for\@u:=#1\do{\ref{\@u}\ \allowbreak}\par}}
+\makeatother
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\input{macros/common}
+\setlength{\emergencystretch}{3em}
+% allow long Lean names to break after underscores
+\DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+\title{Blueprint: a formally verified convergence theorem\\
+       for the tug-of-war scheme of the normalized $p$-Laplacian}
+\author{Juan J. Manfredi \and Behrooz Moosavi}
+\date{}
+\begin{document}
+\maketitle
+\chapter*{About this blueprint}
+This blueprint lists every definition and theorem of the Lean development
+\url{https://github.com/BehroozMoosavi/tugofwar_formalization} on the route to
+the main result, Theorem~\ref{thm:existsconv}. Each statement gives the Lean
+declarations that prove it and the results it uses; all of them are
+formalized. Figure~\ref{fig:graph} shows the dependency graph: definitions are
+ellipses, theorems are boxes, and an arrow points from a result to the results
+that use it. Fuller explanations of each step are in the technical companion.
+\begin{landscape}
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth,height=0.85\textheight,keepaspectratio]{graph.pdf}
+\caption{The dependency graph, by chapter. Arrows point from a result to the
+results that use it; the main theorem is at the far right. The figure is
+vector graphics and can be enlarged on screen.}\label{fig:graph}
+\end{figure}
+\end{landscape}
+\input{content}
+\end{document}
