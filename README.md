@@ -148,3 +148,9 @@ trust the theorems.
 ## License
 
 Apache 2.0. See [LICENSE](LICENSE).
+
+## Documentation
+
+The [`docs/`](docs/) folder contains the article, the technical companion and
+the blueprint (every definition and theorem with its Lean declarations and a
+dependency graph), each as a PDF with its LaTeX source.
