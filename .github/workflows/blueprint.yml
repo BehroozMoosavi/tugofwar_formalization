@@ -1,0 +1,48 @@
+name: Blueprint website
+
+# Rebuilds the blueprint website whenever the blueprint or the Lean sources
+# change on main, and publishes it with GitHub Pages. The Lean code shown on
+# the site is read from the commit being built.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/blueprint/**"
+      - "Plaplacian/**"
+      - ".github/workflows/blueprint.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Graphviz
+        run: sudo apt-get update && sudo apt-get install -y graphviz
+
+      - name: Build the site
+        run: python3 docs/blueprint/site/build.py
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
