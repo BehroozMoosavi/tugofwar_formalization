@@ -334,12 +334,19 @@ def index_lean():
 
 
 def find_decl(name, decls):
+    """Find a declaration by its full name. If the name is not found as written,
+    accept a declaration whose name differs only in its namespace prefix, but
+    only when exactly one such declaration exists, so the match is never
+    ambiguous."""
     if name in decls:
         return decls[name]
-    # tolerate a missing or extra namespace prefix
-    tails = [k for k in decls if k.endswith("." + name) or name.endswith("." + k)]
-    if len(tails) == 1:
-        return decls[tails[0]]
+    short = name[len("PLaplacian."):] if name.startswith("PLaplacian.") else name
+    cands = [k for k in decls
+             if k == short or k.endswith("." + short) or name.endswith("." + k)]
+    if len(cands) == 1:
+        return decls[cands[0]]
+    if len(cands) > 1:
+        warn(f"{name} matches several declarations: {', '.join(sorted(cands))}")
     return None
 
 
@@ -359,7 +366,7 @@ TOKEN_RE = re.compile(
     r"(?P<comment>/-[\s\S]*?-/|--[^\n]*)"
     r"|(?P<string>\"(?:\\.|[^\"\\])*\")"
     r"|(?P<attr>@\[[^\]]*\])"
-    r"|(?P<word>[A-Za-z_][A-Za-z0-9_'!?.]*)"
+    r"|(?P<word>[^\W\d][\w'!?.]*)"
     r"|(?P<num>\b\d+(?:\.\d+)?\b)")
 
 
