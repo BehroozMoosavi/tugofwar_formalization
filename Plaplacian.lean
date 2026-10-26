@@ -220,4 +220,5 @@ import Plaplacian.UpperEv
 import Plaplacian.ViscC2
 import Plaplacian.ViscC3
 import Plaplacian.Viscosity
+import Plaplacian.ViscUnique
 import Plaplacian.WeightErr
