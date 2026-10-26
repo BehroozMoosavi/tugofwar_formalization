@@ -44,6 +44,7 @@ import Plaplacian.DiffMin
 import Plaplacian.DirichletExistence
 import Plaplacian.DiscComp
 import Plaplacian.Discharge
+import Plaplacian.DiscUnique
 import Plaplacian.Domain
 import Plaplacian.DomainBounds
 import Plaplacian.Dominated
