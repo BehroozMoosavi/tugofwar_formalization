@@ -1234,8 +1234,25 @@ the regularized difference exceeds its boundary values.
 The theorem depends only on Lean's standard axioms.
 \end{proof}
 
+\begin{theorem}[Uniqueness of viscosity solutions]\label{thm:viscunique}
+\lean{PLaplacian.visc_unique}
+\leanok
+\uses{def:sub}
+Two bounded continuous viscosity solutions of $-\pnlap u = 0$ in a bounded open
+set $\Omega$ that agree on $\partial\Omega$ agree in $\Omega$.
+\end{theorem}
 
-\chapter{Boundary behaviour, existence and convergence}
+\begin{proof}
+\leanok
+\uses{thm:viscomp}
+A viscosity solution is both a sub- and a supersolution, and a continuous
+function is both upper and lower semicontinuous, so
+Theorem~\ref{thm:viscomp} applies in each direction and gives
+$u_1 \le u_2$ and $u_2 \le u_1$ in $\Omega$.
+\end{proof}
+
+
+\chapter{Boundary behaviour, existence, uniqueness and convergence}
 
 \begin{theorem}[Discrete comparison against a strict supersolution]\label{thm:disccomp}
 \lean{PLaplacian.disc_comparison}
@@ -1398,5 +1415,67 @@ The family is chosen by Theorem~\ref{thm:existsph} and fed to
 Theorem~\ref{thm:main}. The boundedness of $F$ is the one hypothesis added, and
 it is unavoidable, since $u_\eps = F$ outside $\Omega$ and $u_\eps$ must be
 bounded. Both theorems depend only on Lean's standard axioms.
+\end{proof}
+
+\begin{lemma}[The one-step estimate]\label{lem:discstep}
+\lean{PLaplacian.disc_step}
+\leanok
+\uses{def:pharm}
+Let $u$ and $v$ satisfy the dynamic programming principle in $\Omega$, let
+$w = v - u \le M$ on $\R^d$, and let $e$ be a unit vector. If $x \in \Omega$ and
+$w(x) > M - \delta$ with $\delta > 0$, then $w(y) > M - C\delta$ at some point
+$y$ with $\langle y, e\rangle \ge \langle x, e\rangle + \eps/2$, where
+$C = 2\abs{B_\eps}/(\beta\abs{B_{\eps/4}})$ depends only on $d$, $p$ and $\eps$.
+\end{lemma}
+
+\begin{proof}
+\leanok
+\uses{thm:comparison}
+By the key estimate, $w(x) \le \alpha M + \beta \avgint_{B_\eps(x)} w$, so
+$\avgint_{B_\eps(x)} w > M - \delta/\beta$. The ball
+$S = B(x + \frac34\eps e, \frac14\eps)$ lies in $B_\eps(x)$, and each of its
+points lies at least $\eps/2$ further in the direction $e$. If $w \le M - C\delta$
+on all of $S$, then $\int_{B_\eps(x)}(M - w) \ge \int_S (M - w)
+\ge C\delta\abs{B_{\eps/4}}$, while $\int_{B_\eps(x)}(M - w)
+= \abs{B_\eps}(M - \avgint_{B_\eps(x)} w) < \abs{B_\eps}\delta/\beta$; with the
+stated $C$ these are incompatible.
+\end{proof}
+
+\begin{theorem}[The difference of two solutions is nonpositive]\label{thm:diffnonpos}
+\lean{PLaplacian.sup_diff_nonpos}
+\leanok
+\uses{def:pharm}
+Let $\Omega$ be bounded, and let $u$ and $v$ satisfy the dynamic programming
+principle in $\Omega$ and agree outside $\Omega$. Then $v \le u$.
+\end{theorem}
+
+\begin{proof}
+\leanok
+\uses{lem:discstep}
+The strategy is that of Luiro, Parviainen and Saksman (Theorem~2.2 of their
+paper on $p$-harmonious functions): near-maxima propagate in a fixed direction
+until they leave the bounded domain. Let $M = \sup(v - u)$ and suppose $M > 0$;
+since $v - u = 0$ outside $\Omega$, near-maxima lie in $\Omega$. Starting from
+$w(x_0) > M - \delta_0$ and applying Lemma~\ref{lem:discstep} $N$ times, with
+$N\eps/2$ larger than the width of $\Omega$, gives a point outside $\Omega$ where
+$w > M - C^N\delta_0$. With $\delta_0 = M/(2C^N)$ this is positive, a
+contradiction. Unlike the original argument, the formal proof propagates
+near-maxima with geometrically growing errors, so no compactness argument is
+needed to produce an exact maximal set.
+\end{proof}
+
+\begin{theorem}[Uniqueness for the $\eps$-problem]\label{thm:discunique}
+\lean{PLaplacian.pharmonious_unique}
+\leanok
+\uses{def:pharm}
+Let $\Omega$ be bounded. Two $p$-harmonious functions in $\Omega$ with data $F$
+that both equal $F$ outside $\Omega$ are equal.
+\end{theorem}
+
+\begin{proof}
+\leanok
+\uses{thm:diffnonpos}
+Both functions satisfy the dynamic programming principle in $\Omega$ and agree
+outside $\Omega$, so Theorem~\ref{thm:diffnonpos} applies in each direction.
 \end{proof}
 

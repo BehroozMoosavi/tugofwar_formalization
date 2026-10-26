@@ -4,7 +4,7 @@
 %%
 %%  Technical companion to the article "A formally verified convergence
 %%  theorem for the tug-of-war scheme of the normalized p-Laplacian".
-%%  It documents the development at commit d910b76 (tag v1.1), layer by layer.
+%%  It documents the development at tag v1.2, layer by layer.
 %%
 %%  \LEANREF{..} gives the Lean declaration name backing a statement.
 %% ============================================================================
@@ -196,10 +196,11 @@ its admissible class invariant, existence by iteration, and the discrete
 comparison principle. Layer~2 is the viscosity framework. Layer~3 is the
 asymptotic expansion of the scheme, with an explicit error rate. Layer~4 proves
 the viscosity property of the half-relaxed limits, Alexandrov's theorem,
-Jensen's lemma, the comparison principle for the homogeneous equation, the
+Jensen's lemma, the comparison principle and uniqueness for the homogeneous
+equation, the
 boundary behaviour under an exterior sphere condition, uniform convergence, and
-existence for the $\eps$-problem with exterior data, so that the main theorem
-holds unconditionally.
+existence and uniqueness for the $\eps$-problem with exterior data, so that the
+main theorem holds unconditionally.
 Every statement is given with the name of the Lean declaration that proves it.
 We also record fifty-one findings in which formalization corrected or
 constrained the intended development, and describe the architecture of the 223
@@ -250,8 +251,7 @@ step, as in the tug-of-war with noise of Peres and Sheffield \cite{PS08},
 reaches the normalized $p$-Laplacian for finite $p$; Manfredi, Parviainen and
 Rossi made this precise through the asymptotic mean value characterization of
 $p$-harmonic functions \cite{MPR10} and through $p$-harmonious functions, the
-solutions of the associated discrete problem \cite{MPR12}. Lewicka's
-textbook \cite{Lew20} gives a systematic account of the theory.
+solutions of the associated discrete problem \cite{MPR12}.
 
 The structural point for this development is that the value of the $\eps$-step game
 satisfies a dynamic programming principle, and both the discrete
@@ -344,21 +344,25 @@ Lebesgue measure on a ball (Theorem~\ref{thm:moments}).
   \item \textbf{Alexandrov's theorem} and \textbf{Jensen's lemma}
         (Theorems~\ref{thm:alexandrov}, \ref{thm:jensen});
   \item the strong maximum and minimum principles (Theorem~\ref{thm:smp});
-  \item \textbf{the comparison principle} for the homogeneous equation
-        (Theorem~\ref{thm:viscomp});
+  \item \textbf{the comparison principle} for the homogeneous equation, and
+        uniqueness of viscosity solutions
+        (Theorems~\ref{thm:viscomp}, \ref{thm:viscunique});
   \item the discrete comparison against a strict supersolution, the boundary
         barrier, and \textbf{the boundary estimate} under an exterior sphere
         condition (Theorems~\ref{thm:disccomp}, \ref{thm:barrier},
         \ref{thm:bdry});
   \item \textbf{convergence}: $u_\eps$ converges uniformly on
         $\overline\Omega$ to the viscosity solution (Theorem~\ref{thm:main});
-  \item \textbf{existence} for the $\eps$-problem with exterior data, and the
-        main theorem in unconditional form (Theorems~\ref{thm:dirunif},
-        \ref{thm:existsph}, \ref{thm:existsconv}).
+  \item \textbf{existence and uniqueness} for the $\eps$-problem with
+        exterior data, and the main theorem in unconditional form
+        (Theorems~\ref{thm:dirunif}, \ref{thm:existsph},
+        \ref{thm:existsconv}, \ref{thm:discunique}).
 \end{itemize}
 
 \emph{Not formalized.} The stability of an infinite family of subsolutions
-(\S\ref{sec:future}).
+(\S\ref{sec:future}), and the stability estimate of \cite[Theorem~2.2]{LPS14}
+for solutions with different boundary data; uniqueness for equal data is
+formalized (Theorem~\ref{thm:discunique}).
 
 \emph{Not attempted.} The game itself. No strategy spaces, path-space
 measures, stopping times or optional stopping arguments appear. The dynamic
@@ -389,8 +393,8 @@ consequence of play; Finding~\ref{find:mpr} records the price of that decision.
   \item Jensen's lemma, with neither mollification nor the area formula;
         absent from Mathlib. (About 530 lines.)
   \item The boundary behaviour of the relaxed limits under an exterior sphere
-        condition, the convergence theorem, and existence for the
-        $\eps$-problem with exterior data. (About 1850 lines.)
+        condition, the convergence theorem, and existence and uniqueness for
+        the $\eps$-problem with exterior data. (About 2200 lines.)
   \item \LEANREF{setAverage\_mono}, absent from Mathlib: monotonicity of
         $\avgint$ over a general set. Mathlib has the $\mathrm{ENNReal}$-valued
         lower average and circle averages, but not this. (95 lines.)
@@ -418,15 +422,17 @@ consequence of play; Finding~\ref{find:mpr} records the price of that decision.
 
 \subsection{Code availability}
 
-Lean toolchain \texttt{leanprover/lean4:v4.34.0-rc2}; Mathlib revision
+The development is written in Lean~4 \cite{dMU21} on top of the Mathlib
+library \cite{Mathlib20}. Lean toolchain
+\texttt{leanprover/lean4:v4.34.0-rc2}; Mathlib revision
 \texttt{85e3a25e006c35636f0e53b0e9296caca2685bc0}. The development
-comprises 29\,003 lines in 223 files, built over 279 commits, and contains no
+comprises about 29\,400 lines in 225 files, and contains no
 \LEANREF{sorry}: every theorem is fully proved. The main theorem,
 \LEANREF{pharmonious\_converge}, depends only on the axioms
 \LEANREF{propext}, \LEANREF{Classical.choice} and \LEANREF{Quot.sound}. The source
 is available at
 \url{https://github.com/BehroozMoosavi/tugofwar_formalization}; this document
-describes commit \texttt{d910b76}, tagged \texttt{v1.1}.
+describes the version tagged \texttt{v1.2}.
 
 % ============================================================================
 \section{Layer 1: the discrete theory}\label{sec:layer1}
@@ -644,7 +650,9 @@ That the maximum is attained only inside $\Omega$ is stated rather than
 derived. In the intended application it holds because $v \le u$ on
 $\Gamma_\eps$; but the $\eps$-Dirichlet problem constrains nothing outside
 $\Omega_\eps$, so it cannot be deduced without a further assumption on
-behaviour at infinity.
+behaviour at infinity. Uniqueness without this hypothesis, for solutions that
+agree outside $\Omega$, is proved in \S\ref{ssec:dirichlet}
+(Theorem~\ref{thm:discunique}).
 \end{remark}
 
 % ============================================================================
@@ -1962,6 +1970,18 @@ everything (\S\ref{ssec:step3}); and the regularization produces a set on which
 the regularized difference exceeds its boundary values (\S\ref{ssec:step4}).
 The theorem depends only on Lean's standard axioms.
 
+\begin{theorem}[\LEANREF{visc\_unique}]\label{thm:viscunique}
+Two bounded continuous viscosity solutions of $-\pnlap u = 0$ in a bounded open
+set $\Omega$ that agree on $\partial\Omega$ agree in $\Omega$.
+\end{theorem}
+
+A viscosity solution is both a sub- and a supersolution, and a continuous
+function is both upper and lower semicontinuous, so Theorem~\ref{thm:viscomp}
+applies in each direction and gives $u_1 \le u_2$ and $u_2 \le u_1$ in
+$\Omega$. In particular, the limit of Theorem~\ref{thm:main} does not depend
+on the family $(u_\eps)$: every admissible family converges to the unique
+viscosity solution with boundary values $F$.
+
 \subsection{The strong maximum principle}\label{ssec:smp}
 
 \begin{theorem}[\LEANREF{smp\_ball\_jet}, \LEANREF{smp\_ball},
@@ -2227,6 +2247,36 @@ The family is chosen by Theorem~\ref{thm:existsph} and fed to
 Theorem~\ref{thm:main}. The boundedness of $F$ is the one hypothesis added, and
 it is unavoidable, since $u_\eps = F$ outside $\Omega$ and $u_\eps$ must be
 bounded. Both theorems depend only on Lean's standard axioms.
+
+\begin{theorem}[\LEANREF{disc\_step}, \LEANREF{sup\_diff\_nonpos},
+\LEANREF{pharmonious\_unique}]\label{thm:discunique}
+Let $\Omega$ be bounded. Two $p$-harmonious functions in $\Omega$ with data
+$F$ that both equal $F$ outside $\Omega$ are equal.
+\end{theorem}
+
+The strategy is that of \cite[Theorem~2.2]{LPS14}: near-maxima of the
+difference of two solutions propagate in a fixed direction until they leave the
+bounded domain. Let $w = v - u$, $M = \sup w$, and suppose $M > 0$; then
+$w = 0$ outside $\Omega$, so near-maxima lie in $\Omega$. Where
+$w(x) > M - \delta$, the dynamic programming principle and the key estimate of
+Theorem~\ref{thm:comparison} give
+$w(x) \le \alpha M + \beta \avgint_{B_\eps(x)} w$, hence
+$\avgint_{B_\eps(x)} w > M - \delta/\beta$. The ball
+$S = B(x + \frac34\eps e, \frac14\eps)$, which lies in $B_\eps(x)$ in a fixed
+unit direction $e$, has a volume independent of $x$; comparing the integrals of
+$M - w$ over $S$ and over $B_\eps(x)$ shows that $w > M - C\delta$ somewhere in
+$S$, with $C$ depending only on $d$, $p$ and $\eps$ (\LEANREF{disc\_step}).
+Every point of $S$ lies at least $\eps/2$ further in the direction $e$. Starting
+from $w(x_0) > M - \delta_0$ and repeating $N$ times, with $N\eps/2$ larger
+than the width of $\Omega$, produces a point outside $\Omega$ at which
+$w > M - C^N\delta_0$; with $\delta_0 = M/(2C^N)$ this is positive, a
+contradiction (\LEANREF{sup\_diff\_nonpos}).
+
+Luiro, Parviainen and Saksman first show, by a compactness argument, that the
+maximum is attained almost everywhere on some ball, and then propagate the
+exact maximal set. The formal proof propagates near-maxima with geometrically
+growing errors instead, which avoids the compactness step and the passage to
+subsequences.
 
 % ============================================================================
 \section{Findings}\label{sec:findings}
@@ -3108,6 +3158,8 @@ File & Contents & Lines \\
 \texttt{BdryPrep}, \texttt{BdryEst} & Theorem~\ref{thm:bdry}               & 475 \\
 \texttt{MainConv}           & Theorem~\ref{thm:main}                        & 150 \\
 \texttt{DirichletExistence} & Theorems~\ref{thm:dirunif}--\ref{thm:existsconv} & 500 \\
+\texttt{ViscUnique}          & Theorem~\ref{thm:viscunique}                  & 50 \\
+\texttt{DiscUnique}          & Theorem~\ref{thm:discunique}                  & 315 \\
 \midrule
 \multicolumn{3}{@{}l}{\emph{Layer 4: the first route, partly superseded}} \\
 \multicolumn{2}{@{}p{0.80\textwidth}}{\texttt{KeyStep}, \texttt{ContactArg},
@@ -3120,11 +3172,11 @@ File & Contents & Lines \\
   \texttt{Compose}, \texttt{Transfer}; a few lemmas reused by the final proof}
                             & 2600 \\
 \midrule
-\textbf{Total}              &                                                & \textbf{29\,003} \\
+\textbf{Total}              &                                                & \textbf{$\approx$29\,400} \\
 \end{longtable}}
 
 
-The counts in individual rows are approximate; the total is exact. The first
+The counts are approximate. The first
 route of Layer~4 assembled the predicate around an
 eventual, then a frequent, form of the limit argument, before the reference
 point of Finding~\ref{find:refpoint} and the uniformity of
@@ -3394,7 +3446,13 @@ dividing by $\eps^2$ --- that held the gap.
 % ============================================================================
 \section{Future work}\label{sec:future}
 
+\subsection{Stability for the \texorpdfstring{$\eps$}{epsilon}-problem}
 
+Theorem~\ref{thm:discunique} gives uniqueness for equal data. The stability
+estimate $\sup_\Omega\abs{u' - u} \le \sup_{\Gamma_\eps}\abs{g' - g}$ of
+\cite[Theorem~2.2]{LPS14}, for solutions with data $g$ and $g'$ on the strip,
+would follow from the same propagation argument, with the bound for $w$ outside
+$\Omega$ replaced by $\sup_{\Gamma_\eps}(g' - g)$.
 
 \subsection{Contributions to Mathlib}
 
@@ -3446,97 +3504,7 @@ We thank the Mathlib community, on whose library this development is built,
 and the developers of Lean. This work received no external funding.
 
 % ============================================================================
-\begin{thebibliography}{99}
-\small
-
-\bibitem{Ale39} A.~D.~Alexandrov,
-\emph{Almost everywhere existence of the second differential of a convex
-function and some properties of convex surfaces connected with it},
-Uchenye Zapiski Leningrad. Gos. Univ. Math. Ser. \textbf{6} (1939), 3--35
-(in Russian).
-
-\bibitem{AK26} S.~Armstrong and J.~Kempe,
-\emph{Formalization of De Giorgi--Nash--Moser theory in Lean},
-arXiv:2604.05984, 2026.
-
-\bibitem{AS12} S.~N.~Armstrong and C.~K.~Smart,
-\emph{A finite difference approach to the infinity Laplace equation and
-tug-of-war games},
-Trans. Amer. Math. Soc. \textbf{364} (2012), 595--636.
-
-\bibitem{BB01} G.~Barles and J.~Busca,
-\emph{Existence and comparison results for fully non linear degenerate elliptic
-equations without zeroth order terms},
-Comm. Partial Differential Equations \textbf{26} (2001), 2323--2337.
-
-\bibitem{BS91} G.~Barles and P.~E.~Souganidis,
-\emph{Convergence of approximation schemes for fully nonlinear second order
-equations},
-Asymptotic Anal. \textbf{4} (1991), 271--283.
-
-\bibitem{CIL92} M.~G.~Crandall, H.~Ishii and P.-L.~Lions,
-\emph{User's guide to viscosity solutions of second order partial differential
-equations},
-Bull. Amer. Math. Soc. \textbf{27} (1992), 1--67.
-
-\bibitem{dTMP22} F.~del Teso, J.~J.~Manfredi and M.~Parviainen,
-\emph{Convergence of dynamic programming principles for the $p$-Laplacian},
-Adv. Calc. Var. \textbf{15} (2022), no.~2, 191--212.
-
-\bibitem{dMU21} L.~de Moura and S.~Ullrich,
-\emph{The Lean 4 theorem prover and programming language},
-Automated Deduction --- CADE 28, LNCS \textbf{12699}, Springer, 2021,
-625--635.
-
-\bibitem{Jen88} R.~Jensen,
-\emph{The maximum principle for viscosity solutions of fully nonlinear second
-order partial differential equations},
-Arch. Rational Mech. Anal. \textbf{101} (1988), 1--27.
-
-\bibitem{Lew20} M.~Lewicka,
-\emph{A Course on Tug-of-War Games with Random Noise: Introduction and Basic
-Constructions}, Universitext, Springer, Cham, 2020.
-
-\bibitem{JLM01} P.~Juutinen, P.~Lindqvist and J.~J.~Manfredi,
-\emph{On the equivalence of viscosity solutions and weak solutions for a
-quasi-linear equation},
-SIAM J. Math. Anal. \textbf{33} (2001), 699--717.
-
-\bibitem{LPS14} H.~Luiro, M.~Parviainen and E.~Saksman,
-\emph{On the existence and uniqueness of $p$-harmonious functions},
-Differential Integral Equations \textbf{27} (2014), no.~3--4, 201--216.
-
-\bibitem{Mathlib20} The mathlib Community,
-\emph{The Lean mathematical library},
-Proc. 9th ACM SIGPLAN Int. Conf. on Certified Programs and Proofs (CPP 2020),
-367--381.
-
-\bibitem{MMart} J.~J.~Manfredi and B.~Moosavi,
-\emph{A formally verified convergence theorem for the tug-of-war scheme of the
-normalized $p$-Laplacian}, 2026.
-
-\bibitem{MPR10} J.~J.~Manfredi, M.~Parviainen and J.~D.~Rossi,
-\emph{An asymptotic mean value characterization for $p$-harmonic functions},
-Proc. Amer. Math. Soc. \textbf{138} (2010), 881--889.
-
-\bibitem{MPR12} J.~J.~Manfredi, M.~Parviainen and J.~D.~Rossi,
-\emph{On the definition and properties of $p$-harmonious functions},
-Ann. Sc. Norm. Super. Pisa Cl. Sci. (5) \textbf{11} (2012), no.~2, 215--241.
-
-\bibitem{PS08} Y.~Peres and S.~Sheffield,
-\emph{Tug-of-war with noise: a game-theoretic view of the $p$-Laplacian},
-Duke Math. J. \textbf{145} (2008), 91--120.
-
-\bibitem{PSSW09} Y.~Peres, O.~Schramm, S.~Sheffield and D.~B.~Wilson,
-\emph{Tug-of-war and the infinity Laplacian},
-J. Amer. Math. Soc. \textbf{22} (2009), 167--210.
-
-\bibitem{vDM24} F.~van Doorn and H.~Macbeth,
-\emph{Integrals within integrals: a formalization of the
-Gagliardo--Nirenberg--Sobolev inequality},
-15th Int. Conf. on Interactive Theorem Proving (ITP 2024),
-LIPIcs \textbf{309}, 2024, 37:1--37:18.
-
-\end{thebibliography}
+\bibliographystyle{amsplain}
+\bibliography{refs}
 
 \end{document}

@@ -6,19 +6,50 @@
 \usepackage[utf8]{inputenc}
 \usepackage{fancyvrb}
 \usepackage{upquote}
+\usepackage{url}
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 
-% ---- Lean listings under pdfLaTeX -------------------------------------------
-\DeclareUnicodeCharacter{03A9}{\ensuremath{\Omega}}
-\DeclareUnicodeCharacter{211D}{\ensuremath{\mathbb{R}}}
-\DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
-\DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}
-\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
-\DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
+
+\DeclareUnicodeCharacter{03A9}{\ensuremath{\Omega}}          % Ω
+\DeclareUnicodeCharacter{211D}{\ensuremath{\mathbb{R}}}      % ℝ
+\DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}     % →
+\DeclareUnicodeCharacter{2200}{\ensuremath{\forall}}         % ∀
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}             % ∈
+\DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}            % ≤
+% Greek letters, number sets and logic
+\DeclareUnicodeCharacter{03B4}{\ensuremath{\delta}}          % δ
+\DeclareUnicodeCharacter{03B5}{\ensuremath{\varepsilon}}     % ε (same glyph as \eps)
+\DeclareUnicodeCharacter{03BC}{\ensuremath{\mu}}             % μ
+\DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}      % ℕ
+\DeclareUnicodeCharacter{2203}{\ensuremath{\exists}}         % ∃
+\DeclareUnicodeCharacter{2227}{\ensuremath{\wedge}}          % ∧
+\DeclareUnicodeCharacter{2228}{\ensuremath{\vee}}            % ∨
+\DeclareUnicodeCharacter{2260}{\ensuremath{\neq}}            % ≠
+\DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}            % ≥
+\DeclareUnicodeCharacter{2286}{\ensuremath{\subseteq}}       % ⊆
+% Arrows (the math ← and ↑ replace LaTeX's tiny text arrows and match →)
+\DeclareUnicodeCharacter{2190}{\ensuremath{\leftarrow}}      % ← as in rw [← h]
+\DeclareUnicodeCharacter{2191}{\ensuremath{\uparrow}}        % ↑ coercion
+\DeclareUnicodeCharacter{2194}{\ensuremath{\leftrightarrow}} % ↔
+\DeclareUnicodeCharacter{21A6}{\ensuremath{\mapsto}}         % ↦
+% Analysis
+\DeclareUnicodeCharacter{2202}{\ensuremath{\partial}}        % ∂ as in ∂μ
+\DeclareUnicodeCharacter{221E}{\ensuremath{\infty}}          % ∞
+\DeclareUnicodeCharacter{222B}{\ensuremath{\int}}            % ∫
+\DeclareUnicodeCharacter{2A0D}{\ensuremath{\fint}}           % ⨍ Mathlib's average
+\DeclareUnicodeCharacter{1D4DD}{\ensuremath{\mathcal{N}}}    % 𝓝 neighbourhood filter
+% Superscripts and subscripts
+\DeclareUnicodeCharacter{207B}{\ensuremath{^{-}}}            % ⁻ as in x⁻¹
+\DeclareUnicodeCharacter{00B9}{\ensuremath{^{1}}}            % ¹ (matches ⁻)
+\DeclareUnicodeCharacter{1DA0}{\textsuperscript{f}}          % ᶠ as in ∀ᶠ
+\DeclareUnicodeCharacter{2080}{\textsubscript{0}}            % ₀
+\DeclareUnicodeCharacter{2081}{\textsubscript{1}}            % ₁
+\DeclareUnicodeCharacter{2082}{\textsubscript{2}}            % ₂
+
 \fvset{fontsize=\small, xleftmargin=10pt}
 \DefineVerbatimEnvironment{lean}{Verbatim}{}
 
@@ -27,13 +58,38 @@
 % ---- Notation ----------------------------------------------------------------
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\eps}{\varepsilon}
-\newcommand{\pnlap}{\Delta_p^{N}}
-\newcommand{\inflap}{\Delta_\infty^{N}}
-\newcommand{\Op}{T_\eps}
-\newcommand{\abs}[1]{\lvert #1\rvert}
-\newcommand{\fint}{\mathop{\mathrlap{\,\rule[0.62ex]{0.62em}{0.5pt}}\int}}
-\newcommand{\leanref}[1]{\texttt{\small\def\_{\textunderscore\allowbreak}#1}}
+\newcommand{\pnlap}{\Delta_p^{\mathrm{N}}}       % normalized p-Laplacian
+\newcommand{\inflap}{\Delta_\infty^{\mathrm{N}}} % normalized infinity-Laplacian
+\newcommand{\Op}{T_{\eps}}                       % averaging operator T_eps
+\newcommand{\Fop}{\mathcal{F}}                   % the operator of the equation
 
+% Delimiters: \abs{x}; \abs*{...} grows with its content; \abs[\big]{...}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiterX{\inner}[2]{\langle}{\rangle}{#1, #2}
+
+% Average integral, e.g. \fint_{B_\eps(x)} u(y)\,dy.
+% A zero-width bar is laid over a genuine \int, so spacing, \limits/\nolimits
+% and the placement of sub- and superscripts are exactly those of \int.
+% The bar is centred on the math axis and scales with the math style.
+\makeatletter
+\NewDocumentCommand{\fint}{}{\mathop{\mathpalette\fint@bar\relax}\!\int}
+\newcommand*{\fint@bar}[2]{% #1 = current math style
+  \sbox\z@{$\m@th#1\intop$}% the integral sign, italic correction included
+  \rlap{\kern.225\wd\z@
+        $\m@th#1\vcenter{\hrule\@height\fint@rule#1\@width.55\wd\z@}$}}
+\newcommand*{\fint@rule}[1]{% rule thickness of the math fonts in style #1
+  \ifx#1\scriptscriptstyle\fontdimen8\scriptscriptfont\thr@@
+  \else\ifx#1\scriptstyle\fontdimen8\scriptfont\thr@@
+  \else\fontdimen8\textfont\thr@@\fi\fi}
+\makeatother
+
+% Lean declaration names, typed with plain underscores and allowed to break
+% after "." and "_", e.g. \leanref{MeasureTheory.average_eq_integral}.
+% \upshape keeps code upright inside italic theorem statements.
+\DeclareUrlCommand\leanref{\def\UrlFont{\small\ttfamily\upshape}}
+
+% ---- Theorem environments ----------------------------------------------------
 \theoremstyle{plain}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{proposition}[theorem]{Proposition}
@@ -65,25 +121,17 @@
   viscosity solutions, comparison principle, Lean, formal verification}
 
 \begin{abstract}
-We present a complete formalization, in the Lean~4 proof assistant, of the
-convergence of $p$-harmonious functions to the viscosity solution of the
-Dirichlet problem for the normalized $p$-Laplacian, $2 \le p < \infty$. The
-$p$-harmonious functions are the solutions of the dynamic programming
-principle of tug-of-war with noise. On a bounded domain satisfying an exterior
-sphere condition, with bounded continuous data, we prove that the dynamic
-programming principle has a solution for every step size, and that these
-solutions converge uniformly on the closure of the domain. The proof follows the
-argument of Barles and Souganidis and is formalized in full: the asymptotic
-expansion of the scheme, the viscosity property of the half-relaxed limits,
-the boundary behaviour, existence for the discrete problem, and a comparison
-principle for the homogeneous equation. For the latter, strictness is supplied by a change of values away
-from critical points and by spatial translations at critical points, and the
-argument rests on formalizations of Alexandrov's theorem and Jensen's lemma
-that we carry out along the way. The development comprises about
-29\,000 lines and depends only on Lean's standard axioms. We also report what
-formalization revealed about the informal theory, including a measurability
-defect in the closed-ball form of the scheme and a hypothesis on the exterior
-data that informal statements leave implicit.
+We present a complete formalization, using Lean~4, of the convergence of
+$p$-harmonious functions to the viscosity solution of the Dirichlet problem
+for the normalized $p$-Laplacian, $2 \le p < \infty$, as the step size goes to
+zero. By $p$-harmonious functions we mean solutions of the dynamic programming
+principle of tug-of-war with noise. Our proof follows the argument of Barles
+and Souganidis and is formalized in full, depending only on Mathlib and the
+standard axioms of Lean. In particular, we include the asymptotic expansion of
+the scheme, the viscosity properties of the half-relaxed limits, existence and
+uniqueness for the discrete problem, the comparison principle and uniqueness for the
+homogeneous equation,
+Aleksandrov's theorem, and Jensen's lemma.
 \end{abstract}
 
 \maketitle
@@ -91,12 +139,15 @@ data that informal statements leave implicit.
 % =============================================================================
 \section{Introduction}\label{sec:intro}
 
-For $1 < p < \infty$ the normalized, or game-theoretic, $p$-Laplacian is
+For $1 < p < \infty$ the normalized $p$-Laplacian is
 \begin{equation}\label{eq:pnlap}
   \pnlap u = \Delta u + (p-2)\,\inflap u, \qquad
   \inflap u = \Bigl\langle D^2u\,\tfrac{\nabla u}{\abs{\nabla u}},
                 \tfrac{\nabla u}{\abs{\nabla u}}\Bigr\rangle .
 \end{equation}
+Here $u$ is a function on an open subset of $\R^d$, $d \ge 1$, with gradient
+$\nabla u$ and Hessian $D^2u$; $\langle\cdot,\cdot\rangle$ is the Euclidean
+inner product, and \eqref{eq:pnlap} is defined where $\nabla u \ne 0$.
 The operator is homogeneous of degree one and not in divergence form, so the
 natural notion of solution is the viscosity one. Its connection with
 stochastic games goes back to Peres, Schramm, Sheffield and Wilson, who
@@ -110,41 +161,51 @@ principle
   u_\eps(x) = \frac{\alpha}{2}\Bigl(\sup_{B_\eps(x)} u_\eps
      + \inf_{B_\eps(x)} u_\eps\Bigr)
      + \beta \fint_{B_\eps(x)} u_\eps, \qquad
-  \alpha = \frac{p-2}{p+d}, \quad \beta = \frac{d+2}{p+d},
+  \alpha = \frac{p-2}{p+d}, \quad \beta = \frac{d+2}{p+d}.
 \end{equation}
-showing that they converge to the solution of the Dirichlet problem
-\cite{MPR12}; see Lewicka's book \cite{Lew20} for a systematic account.
-
-The structure of that convergence proof is the one of Barles and Souganidis
-\cite{BS91}: a monotone, stable and consistent scheme converges to the
-solution of a limit equation that satisfies a strong comparison principle.
-Each ingredient is classical, but the full argument is long. It combines
-measure theory (the scheme must preserve the class on which it acts),
-second-order analysis (consistency is an expansion to order $\eps^2$),
-semicontinuous limits, the theorem of sums of viscosity theory, and barrier
-arguments at the boundary. It is therefore a natural test of whether a modern
-proof assistant can carry an argument of current research in nonlinear PDE
-from the axioms to the end.
+Here $\eps > 0$ is the step size, $B_\eps(x)$ is the open ball of radius
+$\eps$ centred at $x$, and
+$\fint_B v = \abs{B}^{-1}\int_B v(y)\,dy$ is the average of $v$ over $B$ with
+respect to Lebesgue measure, $\abs B$ denoting the volume of $B$. For
+$p \ge 2$ the weights satisfy $\alpha \ge 0$, $\beta > 0$ and
+$\alpha + \beta = 1$. In the game, $\alpha$ is the probability of a
+tug-of-war move, in which the choices of the two players produce the supremum
+and the infimum, and $\beta$ is the probability of a random move, uniformly
+distributed in $B_\eps(x)$, which produces the average. Manfredi, Parviainen
+and Rossi showed that $p$-harmonious functions converge, as $\eps \to 0$, to
+the viscosity solution of the Dirichlet problem \cite{MPR12}.
 
 \subsection*{Main result}
 We report a complete formalization of this convergence theorem in Lean~4
 \cite{dMU21} on top of the Mathlib library \cite{Mathlib20}.
+The development builds with Lean~4.34.0-rc2 (toolchain
+\texttt{leanprover/lean4:v4.34.0-rc2}) against Mathlib at commit
+\texttt{85e3a25}.\footnote{The full commit hash is
+\texttt{85e3a25e006c35636f0e53b0e9296caca2685bc0}.}
 
-\begin{maintheorem}[\leanref{PLaplacian.pharmonious\_exists\_converge}]
-Let $2 \le p < \infty$ and $d \ge 1$. Let $\Omega \subset \R^d$ be bounded and
-open, with an exterior sphere at every boundary point, and let
+Recall that an open set $\Omega \subset \R^d$ satisfies the \emph{exterior
+sphere condition} if for every $y \in \partial\Omega$ there is a ball
+$B(z,\delta)$ with $B(z,\delta) \cap \Omega = \emptyset$ and
+$y \in \partial B(z,\delta)$.
+
+\begin{maintheorem}[\leanref{PLaplacian.pharmonious_exists_converge}]
+Let $2 \le p < \infty$ and $d \ge 1$. Let $\Omega \subset \R^d$ be a bounded
+open set satisfying the exterior sphere condition, and let
 $F \colon \R^d \to \R$ be bounded and continuous. Then:
 \begin{enumerate}
-  \item for every $\eps > 0$ there is a function $u_\eps$, $p$-harmonious in
-    $\Omega$ with data $F$, equal to $F$ outside $\Omega$, with
+  \item for every $\eps > 0$ there is a unique function $u_\eps$, $p$-harmonious in
+    $\Omega$ with data $F$ (Definition~\ref{def:pharm}), equal to $F$ outside
+    $\Omega$, with
     $\sup\abs{u_\eps} \le \sup\abs F$;
   \item the half-relaxed limits $\overline u$ and $\underline u$ of this
-    family coincide on $\overline\Omega$ and equal $F$ on $\partial\Omega$, and
+    family (Section~\ref{ssec:relaxed}) coincide on $\overline\Omega$ and equal $F$ on $\partial\Omega$, and
     $u_\eps \to \overline u$ uniformly on $\overline\Omega$.
 \end{enumerate}
-The limit is a viscosity solution of $-\pnlap u = 0$ in $\Omega$. Part (2)
+The limit is a viscosity solution of $-\pnlap u = 0$ in $\Omega$
+(Definition~\ref{def:visc}). Uniqueness in (1) is Theorem~\ref{thm:discunique}.
+Part (2)
 holds for every uniformly bounded family of $p$-harmonious functions with data
-$F$ that equal $F$ outside $\Omega$ (\leanref{pharmonious\_converge}).
+$F$ that equal $F$ outside $\Omega$ (\leanref{pharmonious_converge}).
 \end{maintheorem}
 
 The development contains no unproved statements, and Lean reports that both
@@ -152,7 +213,7 @@ theorems depend only on the axioms \leanref{propext}, \leanref{Classical.choice}
 and \leanref{Quot.sound}, that is, on classical mathematics. The source is
 available at
 \url{https://github.com/BehroozMoosavi/tugofwar_formalization}, tag
-\texttt{v1.1}; a technical companion \cite{MMcomp} documents every layer of
+\texttt{v1.2}; a technical companion \cite{MMcomp} documents every layer of
 the development file by file.
 
 \subsection*{Contributions}
@@ -164,17 +225,24 @@ existence follows the analytic argument of Luiro, Parviainen and Saksman
 \cite{LPS14}, applied to the operator restricted to the domain, and
 convergence follows \cite{BS91}.
 
-\emph{A comparison principle with an unusual source of strictness.} The usual
-device for making a subsolution strict perturbs its gradient, which an
-operator depending on the direction of the gradient does not tolerate. The
-argument we formalize obtains strictness from a concave change of values away
-from critical points, in the spirit of Barles and Busca \cite{BB01}, and
-replaces it by a translation argument at critical points (Section~\ref{sec:cp}).
+\emph{A comparison principle without strict subsolutions.} The standard proof
+of comparison first makes the subsolution strict by adding a small quadratic.
+For the normalized $p$-Laplacian this fails: the quadratic changes the
+gradient, and the operator depends on the direction of the gradient. We
+proceed in two steps instead. Away from critical points, the change of values
+$V \mapsto V - \eta V^2$, in the spirit of Barles and Busca \cite{BB01}, makes
+the supersolution strict. At critical points we
+show that the maximum of $U(\cdot + h) - \psi(V)$, with
+$\psi(s) = s - \eta s^2$, does not depend on the translation $h$; the strong maximum principle then gives the contradiction
+(Section~\ref{sec:cp}).
 
-\emph{Alexandrov's theorem and Jensen's lemma.} Both are absent from Mathlib.
-We prove Alexandrov's theorem \cite{Ale39} through the proximal map, using
-neither the Hahn--Banach theorem nor integration, and Jensen's lemma
-\cite{Jen88} without mollification or the area formula.
+\emph{Aleksandrov's theorem and Jensen's lemma.} Neither was available in
+Mathlib. Our proof of Aleksandrov's theorem \cite{Ale39} obtains subgradients
+from the proximal map, rather than from a supporting-hyperplane argument based
+on the Hahn--Banach theorem, and derives the second-order expansion from the
+subgradient inequalities by Riemann sums, rather than by integrating the
+gradient along segments. Our proof of Jensen's lemma \cite{Jen88} uses neither
+mollification nor the area formula.
 
 \emph{What formalization revealed.} Several statements of the informal theory
 had to be corrected or made precise; Section~\ref{sec:findings} collects the
@@ -184,15 +252,19 @@ most instructive.
 Formalized analysis of partial differential equations is recent. Van Doorn and
 Macbeth formalized the Gagliardo--Nirenberg--Sobolev inequality \cite{vDM24},
 and Armstrong and Kempe the interior De Giorgi--Nash--Moser theory \cite{AK26}.
-Both concern divergence-form equations and weak solutions. To our knowledge
-the present development is the first formalization of viscosity solutions of
-a fully nonlinear equation, and of the convergence of a numerical or
-game-theoretic scheme to them.
+Both concern divergence-form equations and weak solutions. In probability,
+Marion formalized the Ionescu--Tulcea theorem and infinite products of
+probability measures in Mathlib \cite{Mar26}. To our knowledge the present
+development is the first formalization of viscosity solutions of a fully
+nonlinear equation, and of the convergence of a numerical or game-theoretic
+scheme to them.
 
 \subsection*{Organization}
-Section~\ref{sec:setting} fixes the definitions. Section~\ref{sec:plan} gives
-the plan of the proof, and Sections~\ref{sec:consistency}--\ref{sec:boundary}
-its main steps. Section~\ref{sec:findings} reports on the formalization.
+In Section~\ref{sec:setting} we fix the definitions, and in
+Section~\ref{sec:plan} we give the plan of the proof. In
+Sections~\ref{sec:consistency}--\ref{sec:boundary} we carry out its main
+steps, and in Section~\ref{sec:findings} we report what the formalization
+revealed.
 
 % =============================================================================
 \section{Setting}\label{sec:setting}
@@ -206,60 +278,73 @@ measurable and bounded. For admissible $v$ the step operator is
   \Op v(x) = \frac{\alpha}{2}\Bigl(\sup_{B_\eps(x)} v + \inf_{B_\eps(x)} v\Bigr)
     + \beta \fint_{B_\eps(x)} v ,
 \end{equation}
-with $\alpha,\beta$ as in \eqref{eq:dpp}, so that $\alpha \ge 0$,
-$\beta > 0$ and $\alpha + \beta = 1$. The balls are \emph{open}; this matters
+with $\alpha,\beta$ as in \eqref{eq:dpp}. The balls are \emph{open}; this matters
 (Section~\ref{sec:findings}). The operator is monotone, commutes with the
 addition of constants, and is therefore nonexpansive in the supremum norm.
 Monotonicity uses $p \ge 2$ essentially: for $p < 2$ the weight $\alpha$ is
 negative.
 
-\begin{definition}
-Let $\Omega \subset \R^d$ and let $F$ be bounded. An admissible $u$ is
-\emph{$p$-harmonious in $\Omega$ with data $F$} if $u = \Op u$ on $\Omega$ and
-$u = F$ on the strip $\Gamma_\eps = \{x \notin \Omega :
-\operatorname{dist}(x,\Omega) \le \eps\}$.
+\begin{definition}\label{def:pharm}
+Let $\Omega \subset \R^d$ and let $F \colon \R^d \to \R$ be bounded; $F$ is
+the boundary data. An admissible $u$ is \emph{$p$-harmonious in $\Omega$ with
+data $F$} if $u = \Op u$ on $\Omega$ and $u = F$ on the strip
+$\Gamma_\eps = \{x \notin \Omega : \operatorname{dist}(x,\Omega) \le \eps\}$.
 \end{definition}
 
 \subsection{Viscosity solutions}
-Write the equation as $F(\nabla u, D^2u) = 0$ with
+Write the equation as $\Fop(\nabla u, D^2u) = 0$, where
 \[
-  F(q, X) = -\operatorname{tr} X - (p-2)\,
+  \Fop(q, X) = -\operatorname{tr} X - (p-2)\,
     \Bigl\langle X\tfrac{q}{\abs q}, \tfrac{q}{\abs q}\Bigr\rangle ,
   \qquad q \ne 0 .
 \]
-$F$ is degenerate elliptic and undefined at $q = 0$. For $p \ge 2$ its lower
+Here $q \in \R^d$, $X$ ranges over the symmetric $d \times d$ matrices, and
+$\operatorname{tr} X$ is the trace of $X$. We also write
+$\pnlap(q, X) = -\Fop(q, X)$, so that $\pnlap u = \pnlap(\nabla u, D^2u)$.
+The operator $\Fop$ is degenerate elliptic, that is,
+$\Fop(q, X) \le \Fop(q, Y)$ whenever $X - Y$ is positive semidefinite, and it
+is undefined at $q = 0$. For $p \ge 2$ its lower
 and upper semicontinuous envelopes at $q = 0$ have the closed forms
 \begin{equation}\label{eq:env}
-  F_*(0,X) = -\operatorname{tr}X - (p-2)\lambda_{\max}(X), \qquad
-  F^*(0,X) = -\operatorname{tr}X - (p-2)\lambda_{\min}(X),
+  \Fop_*(0,X) = -\operatorname{tr}X - (p-2)\lambda_{\max}(X), \qquad
+  \Fop^*(0,X) = -\operatorname{tr}X - (p-2)\lambda_{\min}(X),
 \end{equation}
-which we use directly, so that no general envelope construction is needed.
+where $\lambda_{\min}(X)$ and $\lambda_{\max}(X)$ denote the smallest and the
+largest eigenvalue of $X$. We use these formulas directly, so that no general
+envelope construction is needed.
 
 \begin{definition}\label{def:visc}
 An upper semicontinuous $u$ is a \emph{viscosity subsolution} of
 $-\pnlap u = 0$ in an open set $\Omega$ if, whenever $\varphi \in C^2$ and
 $u - \varphi$ has a local maximum at $x_0 \in \Omega$,
 \[
-  F(\nabla\varphi(x_0), D^2\varphi(x_0)) \le 0 \ \text{ if } \nabla\varphi(x_0)
-  \ne 0, \qquad F_*(0, D^2\varphi(x_0)) \le 0 \ \text{ otherwise}.
+  \Fop(\nabla\varphi(x_0), D^2\varphi(x_0)) \le 0 \ \text{ if } \nabla\varphi(x_0)
+  \ne 0, \qquad \Fop_*(0, D^2\varphi(x_0)) \le 0 \ \text{ otherwise}.
 \]
 Supersolutions are defined dually, with minima, reversed inequalities and
-$F^*$; a solution is both.
+$\Fop^*$; a solution is both.
 \end{definition}
 
-\subsection{Half-relaxed limits}
+The definition can equivalently be stated with jets. A pair $(q, X)$ is a
+\emph{superjet} of $u$ at $x_0$ if
+$u(x_0 + h) \le u(x_0) + \langle q, h\rangle + \frac12\langle Xh, h\rangle
++ o(\abs h^2)$ as $h \to 0$, and a \emph{subjet} if the reverse inequality
+holds; the conditions of Definition~\ref{def:visc} then apply to $(q, X)$ in
+place of $(\nabla\varphi(x_0), D^2\varphi(x_0))$.
+
+\subsection{Half-relaxed limits}\label{ssec:relaxed}
 For a uniformly bounded family $(u_\eps)$,
 \[
   \overline u(x) = \limsup_{\eps \to 0^+,\ y \to x} u_\eps(y), \qquad
   \underline u(x) = \liminf_{\eps \to 0^+,\ y \to x} u_\eps(y),
 \]
 the limits being taken along the product of the punctured right neighbourhood
-of $0$ with the neighbourhood of $x$. They are finite, $\underline u \le
-\overline u$, and $\overline u$ is upper and $\underline u$ lower
-semicontinuous. Since $-u_\eps$ is $p$-harmonious with data $-F$ whenever
-$u_\eps$ is (the operator is odd), $\underline u = -\overline{(-u)}$, and
-every statement about $\underline u$ below is read off from the
-corresponding statement about $\overline u$.
+of $0$ with the neighbourhood of $x$. They are defined on all of $\R^d$ and
+finite, $\underline u \le \overline u$, and $\overline u$ is upper and
+$\underline u$ lower semicontinuous. Since $-u_\eps$ is $p$-harmonious with
+data $-F$ whenever $u_\eps$ is (the operator is odd),
+$\underline u = -\overline{(-u)}$, and every statement about $\underline u$
+below is read off from the corresponding statement about $\overline u$.
 
 % =============================================================================
 \section{Plan of the proof}\label{sec:plan}
@@ -275,8 +360,8 @@ statements about the relaxed limits:
     subsolution lies below a bounded lower semicontinuous supersolution in
     $\Omega$ if it does so on $\partial\Omega$ (Section~\ref{sec:cp}).
 \end{enumerate}
-Existence of the family, part (1), is proved separately by iteration
-(Section~\ref{ssec:existence}). Given (A), (B) and (C),
+Existence of the family, part (1), is proved separately by iteration, and its
+uniqueness by a propagation argument (Section~\ref{ssec:existence}). Given (A), (B) and (C),
 $\overline u \le \underline u$ in $\Omega$, hence equality on
 $\overline\Omega$; the common value is continuous, and uniform convergence
 follows by a compactness argument against the semicontinuity of the relaxed
@@ -302,11 +387,11 @@ Layer & Content & Lines (approx.) \\
 4 & relaxed limits, comparison principle, boundary, convergence
   & 19\,100 \\
 \midrule
- & total (223 files) & 29\,003 \\
+ & total (225 files) & 29\,400 \\
 \bottomrule
 \end{tabular}
 \caption{The four layers of the development. Layer~4 includes
-Alexandrov's theorem, Jensen's lemma, and a first route to the viscosity
+Aleksandrov's theorem, Jensen's lemma, and a first route to the viscosity
 property that was later superseded.}\label{tab:layers}
 \end{table}
 
@@ -317,7 +402,7 @@ property that was later superseded.}\label{tab:layers}
               text width=2.6cm, minimum height=1.0cm, inner sep=3pt},
   main/.style={box, very thick, text width=3.4cm},
   arr/.style={-{Stealth[length=4pt]}, semithick}]
-  \node[box] (AJ) at (0,0)    {Alexandrov, Jensen};
+  \node[box] (AJ) at (0,0)    {Aleksandrov, Jensen};
   \node[box] (L2) at (3.6,0)  {viscosity predicates, jets};
   \node[box] (L1) at (7.2,0)  {scheme, discrete comparison};
   \node[box] (L3) at (10.8,0) {asymptotic expansion};
@@ -343,7 +428,7 @@ uses the source.}\label{fig:chain}
 % =============================================================================
 \section{Consistency: the asymptotic expansion}\label{sec:consistency}
 
-\begin{theorem}[\leanref{tugOfWarOp\_expansion\_final}]\label{thm:exp}
+\begin{theorem}[\leanref{tugOfWarOp_expansion_final}]\label{thm:exp}
 Let $\varphi \in C^3$ with $\nabla\varphi(x) \ne 0$. Then
 \[
   \Op\varphi(x) = \varphi(x) + \frac{\eps^2}{2(p+d)}\,\pnlap\varphi(x)
@@ -357,8 +442,10 @@ ball,
 \[
   \fint_{B_\eps(0)} z_i z_j \, dz = \frac{\eps^2}{d+2}\,\delta_{ij},
 \]
-so that $\fint_{B_\eps(x)} \varphi = \varphi(x) + \frac{\eps^2}{2(d+2)}
-\Delta\varphi(x) + O(\eps^3)$. The average of the supremum and infimum yields
+where $\delta_{ij}$ is the Kronecker delta, so that $\fint_{B_\eps(x)} \varphi = \varphi(x) + \frac{\eps^2}{2(d+2)}
+\Delta\varphi(x) + O(\eps^3)$: the first moments vanish, and the remainder of
+the second-order Taylor expansion of $\varphi \in C^3$ is bounded by a constant
+times $\eps^3$ on $B_\eps(x)$. The average of the supremum and infimum yields
 the infinity Laplacian: the maximizer of $\varphi$ on $\overline B_\eps(x)$
 lies within $O(\eps^{3/2})$ of $x + \eps\,\nabla\varphi(x)/\abs{\nabla\varphi(x)}$,
 the first-order terms of the two extreme values cancel, and
@@ -373,7 +460,7 @@ numerator of $\beta$.
 
 For the viscosity property the expansion must hold uniformly for base points
 near a given point, since near-maximizers move with $\eps$; we prove it with
-explicit constants, the Taylor error being cubic in the increment and the
+explicit constants, the Taylor remainder being cubic in the increment and the
 localization error of order $\eps^{3/2}$ \cite[\S5]{MMcomp}. At critical
 points the extreme-value term is controlled instead by the eigenvalues of the
 Hessian, which is where the envelopes \eqref{eq:env} appear.
@@ -381,7 +468,7 @@ Hessian, which is where the envelopes \eqref{eq:env} appear.
 % =============================================================================
 \section{The viscosity property of the relaxed limits}\label{sec:relaxed}
 
-\begin{theorem}[\leanref{ubar\_isViscositySubsolution}]\label{thm:A}
+\begin{theorem}[\leanref{ubar_isViscositySubsolution}]\label{thm:A}
 If $(u_\eps)$ is uniformly bounded and each $u_\eps$ is $p$-harmonious in an
 open set $\Omega$, then $\overline u$ is a viscosity subsolution of
 $-\pnlap u = 0$ in $\Omega$, in the sense of Definition~\ref{def:visc}, and
@@ -419,11 +506,29 @@ Hessian only through its quadratic form $X(v,v)$.
 % =============================================================================
 \section{The comparison principle}\label{sec:cp}
 
-\begin{theorem}[\leanref{visc\_comparison}]\label{thm:C}
-Let $\Omega \subset \R^d$ be bounded and open. Let $U$ be bounded, upper
-semicontinuous and a viscosity subsolution of $-\pnlap u = 0$ in $\Omega$, and
-$V$ bounded, lower semicontinuous and a viscosity supersolution. If $U \le V$ on
-$\partial\Omega$, then $U \le V$ in $\Omega$.
+\begin{theorem}[\leanref{visc_comparison}]\label{thm:C}
+Let $\Omega \subset \R^d$ be bounded and open, and let $U, V \colon \R^d \to \R$
+be bounded, with $U$ upper semicontinuous and $V$ lower semicontinuous on
+$\R^d$. Suppose that $U$ is a viscosity subsolution and $V$ a viscosity
+supersolution of $-\pnlap u = 0$ in $\Omega$. If $U(y) \le V(y)$ for every
+$y \in \partial\Omega$, then $U \le V$ in $\Omega$.
+\end{theorem}
+
+The boundary condition is pointwise. Since $U$ and $V$ are semicontinuous on
+all of $\R^d$, it implies the usual boundary inequality
+\[
+  \limsup_{x \to y,\ x \in \Omega} U(x) \le U(y) \le V(y)
+  \le \liminf_{x \to y,\ x \in \Omega} V(x) \qquad (y \in \partial\Omega).
+\]
+In the application $U = \overline u$ and $V = \underline u$, which are defined
+and semicontinuous on all of $\R^d$.
+
+Applying Theorem~\ref{thm:C} in both directions gives uniqueness.
+
+\begin{theorem}[\leanref{visc_unique}]\label{thm:unique}
+Two bounded continuous viscosity solutions of $-\pnlap u = 0$ in a bounded open
+set $\Omega$ that agree on $\partial\Omega$ agree in $\Omega$. In particular,
+the limit in the Main Theorem does not depend on the family $(u_\eps)$.
 \end{theorem}
 
 The formal statement reads as follows; the boundedness hypotheses appear as
@@ -456,8 +561,10 @@ viscosity theory.
 
 \subsection{The change of values}
 Let $\psi(s) = s - \eta s^2$ with $\eta > 0$ small, and $W = \psi\circ V$.
-If $V$ has the second-order expansion $(q, X)$ at a point, then $W$ has the
-expansion $(cq,\ cX - 2\eta\, q\otimes q)$ with $c = \psi'(V) > 0$, and the
+If $V$ has the second-order Peano expansion $(q, X)$ at a point, as at the
+points given by Aleksandrov's theorem, then $W$ has the Peano expansion
+$(cq,\ cX - 2\eta\, q\otimes q)$ with $c = \psi'(V) > 0$, where
+$q \otimes q$ is the matrix $(q_i q_j)_{i,j}$, and the
 supersolution inequality improves to
 \begin{equation}\label{eq:cv}
   \pnlap\bigl(cq,\ cX - 2\eta\, q\otimes q\bigr) \le -2\eta(p-1)\abs q^2 .
@@ -468,10 +575,15 @@ needed.
 
 \subsection{No maximum with nonzero gradient}
 After regularization (Section~\ref{ssec:reg}), $U$ is semiconvex and $V$ and
-$W$ are semiconcave. Let $x$ be a local maximum of $U - W$. We show that every
-lower support $q$ of $U$ at $x$ vanishes. Suppose not. Jensen's lemma, applied
+$W$ are semiconcave: there are constants $\lambda, \mu \ge 0$ such that
+$U + \frac\lambda2\abs{\cdot}^2$ is convex and $W - \frac\mu2\abs{\cdot}^2$ is
+concave. A vector $q$ is a \emph{lower support} of $U$ at $x$ if
+$U(x + h) \ge U(x) + \langle q, h\rangle - \frac\lambda2\abs h^2$ for all
+$h$; by semiconvexity, $U$ has a lower support at every point. Let $x$ be a
+local maximum of $U - W$. We show that every lower support $q$ of $U$ at $x$
+vanishes. Suppose not. Jensen's lemma, applied
 to $U - W - \delta\abs{\cdot - x}^2$, gives a set of positive measure of points
-at which small linear perturbations attain their maximum; by Alexandrov's
+at which small linear perturbations attain their maximum; by Aleksandrov's
 theorem $U$ and $-V$ are twice differentiable almost everywhere, so the set
 contains a point $y_0$ of twice differentiability of both. There the
 first- and second-order conditions at a maximum, together with
@@ -480,7 +592,7 @@ first- and second-order conditions at a maximum, together with
   0 \le -\kappa + \tfrac{\kappa}{3} + \tfrac{\kappa}{3},
   \qquad \kappa = 2\eta(p-1)\Bigl(\frac{\abs q}{2C}\Bigr)^2 > 0,
 \]
-a contradiction. A quantitative gradient estimate, $\abs{a - q} \le
+where $C$ is an upper bound for $\psi' \circ V$; this is a contradiction. A quantitative gradient estimate, $\abs{a - q} \le
 (\lambda + 2\mu)\abs{y - x}$ for lower supports $a$ at nearby points $y$,
 allows all parameters to be fixed in advance, so that a single point of the
 positive-measure set suffices and no sequence of points is extracted.
@@ -514,10 +626,12 @@ $\partial\Omega$ on which the regularized difference is small, and the
 connected component of a superlevel set containing a point where
 $U - V$ is positive supplies the set $G$ of the previous step.
 
-\subsection{Alexandrov's theorem and Jensen's lemma}
+\subsection{Aleksandrov's theorem and Jensen's lemma}
 \begin{theorem}[\leanref{alexandrov}]
-A convex function on $\R^d$ has a second-order Peano expansion at almost every
-point.
+A convex function $f$ on $\R^d$ is twice differentiable in the sense of Peano
+at almost every point: for almost every $x$ there are $q \in \R^d$ and a
+symmetric bilinear form $X$ with
+$f(x + h) = f(x) + \langle q, h\rangle + \tfrac12 X(h,h) + o(\abs h^2)$.
 \end{theorem}
 
 For convex $f$, the proximal map $J(y) = \operatorname{argmin}_x\bigl(f(x) +
@@ -530,12 +644,12 @@ has a linear approximation, and the second-order expansion follows from the
 subgradient inequalities alone, by a Riemann sum for $\int_0^1 t\,dt$; no
 integral is used.
 
-\begin{theorem}[\leanref{jensen\_positive\_measure}]
+\begin{theorem}[\leanref{jensen_positive_measure}]
 Let $W$ be semiconvex on $\R^n$ and suppose that $W$ is larger at some point
 of $\overline B(x_0, r)$ than $2\delta r$ plus its values on the sphere. Then
-the set of points of $B(x_0,r)$ at which some $W + \langle p, \cdot\rangle$
-with $\abs p \le \delta$ attains its maximum over the ball has positive
-measure.
+the set of points of $B(x_0,r)$ at which some $W + \langle \xi, \cdot\rangle$
+with $\xi \in \R^n$, $\abs \xi \le \delta$, attains its maximum over the
+ball has positive measure.
 \end{theorem}
 
 The tilt at such a point is determined by a subgradient map $g$, which sends
@@ -546,7 +660,7 @@ bound given by the maximum. A null set would have a null image.
 % =============================================================================
 \section{Boundary behaviour, existence and convergence}\label{sec:boundary}
 
-\begin{theorem}[\leanref{ubar\_le\_bdry}]\label{thm:B}
+\begin{theorem}[\leanref{ubar_le_bdry}]\label{thm:B}
 Under the hypotheses of the Main Theorem, $\overline u(y_0) \le F(y_0)$ at
 every $y_0 \in \partial\Omega$; by negation, $F(y_0) \le \underline u(y_0)$.
 \end{theorem}
@@ -556,21 +670,48 @@ principle: \emph{if $u = \Op u$ and $\Op v \le v - \kappa$ on a set $D$, for
 some $\kappa > 0$, and $u \le v$ within $\eps$ outside $D$, then $u \le v$ on
 $D$.} Unlike comparison of two solutions, this needs no attained maximum.
 
-For an exterior ball $B(z,\delta)$ at $y_0$, let $t = \abs{x - z}^2 -
-\delta^2$ and
+\emph{The exterior ball.} Let $B(z_0,\delta_0)$ be an exterior ball at $y_0$,
+so that $\abs{y_0 - z_0} = \delta_0$ and $\abs{x - z_0} \ge \delta_0$ for every
+$x \in \overline\Omega$. We replace it by the ball of half the radius whose
+centre is the midpoint of $y_0$ and $z_0$,
+\[
+  z = \tfrac12(y_0 + z_0), \qquad \delta = \tfrac12\delta_0 .
+\]
+Apollonius's identity expresses the distance to a midpoint through the
+distances to the two endpoints: for every $x \in \R^d$,
+\[
+  \abs{x - z}^2 = \tfrac12\abs{x - y_0}^2 + \tfrac12\abs{x - z_0}^2
+    - \tfrac14\abs{y_0 - z_0}^2 ,
+\]
+which follows by expanding the squares (it is the parallelogram law). For
+$x \in \overline\Omega$ the middle term is at least $\frac12\delta_0^2$ and the
+last equals $\frac14\delta_0^2$, so
+\begin{equation}\label{eq:apollonius}
+  \abs{x - z}^2 \ge \delta^2 + \tfrac12\abs{x - y_0}^2
+  \qquad (x \in \overline\Omega).
+\end{equation}
+Thus $y_0$ is the only point of $\overline\Omega$ on the sphere
+$\partial B(z,\delta)$, and the points of $\overline\Omega$ with
+$\abs{x - z}^2 \le \delta^2 + \tau$ lie within $\sqrt{2\tau}$ of $y_0$: the
+comparison region shrinks to $y_0$ as $\tau \to 0$. For the original ball,
+every point of the sphere $\partial B(z_0,\delta_0)$ could lie on
+$\partial\Omega$, and no such localization would hold.
+
+\emph{The barrier.} With $t = \abs{x - z}^2 - \delta^2$, let
 \[
   \psi = t - Mt^2, \qquad M = \frac{2(d + p - 2) + 1}{8(p-1)\,\delta^2}.
 \]
 On the shell $0 \le t \le 1/(4M)$ the gradient of $\psi$ does not vanish and
 $\pnlap\psi \le -1$, so by the expansion, uniform on the compact shell,
-$\Op(c + A\psi) \le c + A\psi - A\eps^2/(4(p+d))$ for small $\eps$. The
+$\Op(c + A\psi) \le c + A\psi - A\eps^2/(4(p+d))$ on the shell, for all
+constants $c \in \R$ and $A > 0$ and all sufficiently small $\eps$. The
 barrier is a polynomial, hence globally smooth as the expansion requires; the
-classical barrier $\abs{x - z}^{-\sigma}$ is not. Halving the exterior ball
-about the midpoint of $y_0$ and $z$ makes the contact point unique, by
-Apollonius's identity, and keeps the comparison region close to $y_0$.
+classical barrier $\abs{x - z}^{-\sigma}$ is not. By \eqref{eq:apollonius},
+$t \ge \frac12\abs{x - y_0}^2 \ge 0$ on $\overline\Omega$, and the comparison
+is made on the part of $\Omega$ near $y_0$ where $t$ is small.
 
 \subsection{Existence with exterior data}\label{ssec:existence}
-\begin{theorem}[\leanref{exists\_pharmonious}]\label{thm:exist}
+\begin{theorem}[\leanref{exists_pharmonious}]\label{thm:exist}
 Let $\Omega$ be bounded and measurable, $\eps > 0$, and $F$ measurable with
 $\abs F \le C$. Then there is a $p$-harmonious function in $\Omega$ with data
 $F$, equal to $F$ outside $\Omega$ and bounded by $C$.
@@ -593,6 +734,29 @@ $\beta M \le (3 + \alpha)\delta$ for every $\delta > 0$, and $M = 0$. Because th
 deficit vanishes outside $\Omega$, the convergence is uniform on all of $\R^d$,
 and the limit is a fixed point of $\widetilde T$ by nonexpansiveness.
 
+\begin{theorem}[\leanref{pharmonious_unique}]\label{thm:discunique}
+Let $\Omega$ be bounded. Two $p$-harmonious functions in $\Omega$ with data $F$
+that both equal $F$ outside $\Omega$ are equal.
+\end{theorem}
+
+We follow the strategy of Luiro, Parviainen and Saksman
+\cite[Theorem~2.2]{LPS14}: near-maxima of the difference of two solutions
+propagate in a fixed direction until they leave the bounded domain. Let
+$w = v - u$ and $M = \sup w$, and suppose $M > 0$. Since $w = 0$ outside
+$\Omega$, every point where $w > 0$ lies in $\Omega$. If $w(x) > M - \delta$,
+then $w(x) \le \alpha M + \beta \fint_{B_\eps(x)} w$ by the dynamic programming
+principle, so $\fint_{B_\eps(x)} w > M - \delta/\beta$. Comparing integrals of
+$M - w$ over $B_\eps(x)$ and over the ball $S = B(x + \frac34\eps e, \frac14\eps)$,
+for a fixed unit vector $e$, shows that $w > M - C\delta$ at some point of $S$,
+which lies at least $\eps/2$ further in the direction $e$; the constant $C$
+depends only on $d$, $p$ and $\eps$. After $N$ such steps, with $N\eps/2$ larger
+than the width of $\Omega$, the point has left $\Omega$, yet
+$w > M - C^N\delta_0 > 0$ there if $\delta_0 = M/(2C^N)$: a contradiction. In
+\cite{LPS14} the maximum is first shown to be attained almost everywhere on a
+ball, by compactness, and the exact maximal set is propagated; our proof
+propagates near-maxima with geometrically growing errors instead, which avoids
+the compactness step.
+
 With (A), (B), (C) and Theorem~\ref{thm:exist} in hand, the Main Theorem
 follows as described in Section~\ref{sec:plan}.
 
@@ -611,7 +775,7 @@ The companion \cite[\S9]{MMcomp} records fifty-one places where formalization
 corrected or constrained the intended development. We describe the most
 instructive.
 
-\subsection{Open balls are forced}
+\subsection{Open balls are required}
 If the extreme values in \eqref{eq:op} are taken over \emph{closed} balls,
 as in much of the literature, the operator need not preserve Borel
 measurability: there are bounded Borel functions whose supremum over closed
@@ -670,7 +834,7 @@ already constructed; the bounds have to be carried through the derivation. We
 wrote the vacuous form twice before noticing. The failure mode is not an
 incorrect proof, which the system rejects, but a correct proof of an empty
 statement, which it accepts. As a safeguard we fixed every interface, stated
-as a proposition, before proving the analysis behind it; Alexandrov's theorem
+as a proposition, before proving the analysis behind it; Aleksandrov's theorem
 and Jensen's lemma, for instance, were hypotheses of the comparison principle
 until both were proved.
 
@@ -686,110 +850,23 @@ Theorem depends only on the standard axioms.
 % =============================================================================
 \section{Conclusion}\label{sec:conclusion}
 
-We have formalized existence and convergence for the tug-of-war scheme of the
-normalized $p$-Laplacian, including the comparison principle for the limit
+We have formalized existence, uniqueness and convergence for the tug-of-war
+scheme of the normalized $p$-Laplacian, including the comparison principle for the limit
 equation, in about 29\,000 lines of Lean. Further directions are the case
 $1 < p < 2$, where the operator must be regrouped to be monotone, the parabolic
 problem, the stability of infinite families of subsolutions, and the
-contribution of
-Alexandrov's theorem, Jensen's lemma and the strong maximum principle to
-Mathlib. The convergence framework of del Teso, Manfredi and Parviainen
-\cite{dTMP22}, which treats a broad class of dynamic programming principles
-for the $p$-Laplacian, is a natural next target.
+contribution of Aleksandrov's theorem, Jensen's lemma and the strong maximum
+principle to Mathlib. The convergence framework of del Teso, Manfredi and
+Parviainen \cite{dTMP22}, which treats a broad class of dynamic programming
+principles for the $p$-Laplacian, is a natural next target.
 
 \section*{Acknowledgements}
 We thank the Mathlib community, on whose library this development is built,
-and the developers of Lean. This work received no external funding.
+and the developers of Lean. J.~J.~Manfredi was partially supported by the
+Simons Foundation, award no.~\textbf{[AWARD NUMBER]}.
 
 % =============================================================================
-\begin{thebibliography}{99}
-\small
-
-\bibitem{Ale39} A.~D.~Alexandrov,
-\emph{Almost everywhere existence of the second differential of a convex
-function and some properties of convex surfaces connected with it},
-Uchenye Zapiski Leningrad. Gos. Univ. Math. Ser. \textbf{6} (1939), 3--35
-(in Russian).
-
-\bibitem{AK26} S.~Armstrong and J.~Kempe,
-\emph{Formalization of De Giorgi--Nash--Moser theory in Lean},
-arXiv:2604.05984, 2026.
-
-\bibitem{BB01} G.~Barles and J.~Busca,
-\emph{Existence and comparison results for fully non linear degenerate elliptic
-equations without zeroth order terms},
-Comm. Partial Differential Equations \textbf{26} (2001), 2323--2337.
-
-\bibitem{BS91} G.~Barles and P.~E.~Souganidis,
-\emph{Convergence of approximation schemes for fully nonlinear second order
-equations},
-Asymptotic Anal. \textbf{4} (1991), 271--283.
-
-\bibitem{CIL92} M.~G.~Crandall, H.~Ishii and P.-L.~Lions,
-\emph{User's guide to viscosity solutions of second order partial differential
-equations},
-Bull. Amer. Math. Soc. \textbf{27} (1992), 1--67.
-
-\bibitem{dTMP22} F.~del Teso, J.~J.~Manfredi and M.~Parviainen,
-\emph{Convergence of dynamic programming principles for the $p$-Laplacian},
-Adv. Calc. Var. \textbf{15} (2022), no.~2, 191--212.
-
-\bibitem{dMU21} L.~de Moura and S.~Ullrich,
-\emph{The Lean 4 theorem prover and programming language},
-Automated Deduction --- CADE 28, LNCS \textbf{12699}, Springer, 2021,
-625--635.
-
-\bibitem{Jen88} R.~Jensen,
-\emph{The maximum principle for viscosity solutions of fully nonlinear second
-order partial differential equations},
-Arch. Rational Mech. Anal. \textbf{101} (1988), 1--27.
-
-\bibitem{JLM01} P.~Juutinen, P.~Lindqvist and J.~J.~Manfredi,
-\emph{On the equivalence of viscosity solutions and weak solutions for a
-quasi-linear equation},
-SIAM J. Math. Anal. \textbf{33} (2001), 699--717.
-
-\bibitem{Lew20} M.~Lewicka,
-\emph{A Course on Tug-of-War Games with Random Noise: Introduction and Basic
-Constructions}, Universitext, Springer, Cham, 2020.
-
-\bibitem{LPS14} H.~Luiro, M.~Parviainen and E.~Saksman,
-\emph{On the existence and uniqueness of $p$-harmonious functions},
-Differential Integral Equations \textbf{27} (2014), no.~3--4, 201--216.
-
-\bibitem{MMcomp} J.~J.~Manfredi and B.~Moosavi,
-\emph{A formalized convergence theory for the dynamic programming scheme of
-the normalized $p$-Laplacian: technical companion}, 2026. Available with the
-source at
-\url{https://github.com/BehroozMoosavi/tugofwar_formalization}.
-
-\bibitem{MPR10} J.~J.~Manfredi, M.~Parviainen and J.~D.~Rossi,
-\emph{An asymptotic mean value characterization for $p$-harmonic functions},
-Proc. Amer. Math. Soc. \textbf{138} (2010), 881--889.
-
-\bibitem{MPR12} J.~J.~Manfredi, M.~Parviainen and J.~D.~Rossi,
-\emph{On the definition and properties of $p$-harmonious functions},
-Ann. Sc. Norm. Super. Pisa Cl. Sci. (5) \textbf{11} (2012), no.~2, 215--241.
-
-\bibitem{Mathlib20} The mathlib Community,
-\emph{The Lean mathematical library},
-Proc. 9th ACM SIGPLAN Int. Conf. on Certified Programs and Proofs (CPP 2020),
-367--381.
-
-\bibitem{PS08} Y.~Peres and S.~Sheffield,
-\emph{Tug-of-war with noise: a game-theoretic view of the $p$-Laplacian},
-Duke Math. J. \textbf{145} (2008), 91--120.
-
-\bibitem{PSSW09} Y.~Peres, O.~Schramm, S.~Sheffield and D.~B.~Wilson,
-\emph{Tug-of-war and the infinity Laplacian},
-J. Amer. Math. Soc. \textbf{22} (2009), 167--210.
-
-\bibitem{vDM24} F.~van Doorn and H.~Macbeth,
-\emph{Integrals within integrals: a formalization of the
-Gagliardo--Nirenberg--Sobolev inequality},
-15th Int. Conf. on Interactive Theorem Proving (ITP 2024),
-LIPIcs \textbf{309}, 2024, 37:1--37:18.
-
-\end{thebibliography}
+\bibliographystyle{amsplain}
+\bibliography{refs}
 
 \end{document}
