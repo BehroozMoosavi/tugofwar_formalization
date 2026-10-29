@@ -439,6 +439,7 @@ def page(title, body, macros, extra_head=""):
 
 def nav(active):
     items = [("index.html", "Blueprint"), ("graph.html", "Dependency graph"),
+             ("graph3d.html", "3D map"),
              (REPO_URL, "Repository"),
              (f"{REPO_URL}/blob/main/docs/blueprint/blueprint.pdf", "PDF")]
     links = "".join(
@@ -571,6 +572,88 @@ def build_graph(chapters, index, decls, macros):
     return page("Dependency graph — " + TITLE, body, macros), dot
 
 
+CHAPTER_COLORS = ["#e6a700", "#1f77b4", "#9467bd", "#17a2b8", "#d62728",
+                  "#7f5bd5", "#2ca02c", "#8c564b", "#e377c2"]
+MAIN_RESULTS = {"thm:existsconv", "thm:main", "thm:viscomp", "thm:main4",
+                "thm:viscunique", "thm:discunique"}
+
+
+def plain_title(t):
+    """A title as plain text, for labels in the 3D map."""
+    t = t.replace("$\\eps$", "\u03b5").replace("$\\varepsilon$", "\u03b5")
+    t = re.sub(r"\$([^$]*)\$", r"\1", t)
+    return re.sub(r"\\([A-Za-z]+)", r"\1", t).replace("{", "").replace("}", "")
+
+
+def build_graph3d(chapters, index, decls, macros):
+    nodes, links = [], []
+    for c, ch in enumerate(chapters, 1):
+        for n in ch["nodes"]:
+            nodes.append({
+                "id": n["label"], "number": n["number"],
+                "title": plain_title(n["title"]),
+                "kind": n["kind"], "kindName": KIND_NAMES[n["kind"]],
+                "chapter": c, "chapterTitle": plain_title(ch["title"]),
+                "lean": n["lean"], "main": n["label"] in MAIN_RESULTS,
+                "color": CHAPTER_COLORS[(c - 1) % len(CHAPTER_COLORS)],
+                "ok": bool(n["lean"]) and all(find_decl(x, decls) for x in n["lean"]),
+            })
+            for dep in dict.fromkeys(n["uses"] + n["proof_uses"]):
+                if dep in index:
+                    links.append({"source": dep, "target": n["label"]})
+    data = {"nodes": nodes, "links": links,
+            "chapters": [{"number": c, "title": plain_title(ch["title"]),
+                          "color": CHAPTER_COLORS[(c - 1) % len(CHAPTER_COLORS)]}
+                         for c, ch in enumerate(chapters, 1)]}
+    blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+    body = (nav("3D map") + f"""
+<div class="g3-wrap">
+  <aside class="g3-side">
+    <h1>3D dependency map</h1>
+    <p class="g3-help">Drag to rotate &middot; scroll to zoom &middot; right-drag to pan
+      &middot; click a node to select it</p>
+    <div class="g3-search">
+      <input id="g3-q" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Search a title, number (7.10) or Lean name"
+             aria-label="Search the dependency map">
+      <ul id="g3-results" role="listbox"></ul>
+    </div>
+    <div class="g3-controls">
+      <label>Highlight
+        <select id="g3-mode">
+          <option value="direct">direct neighbours</option>
+          <option value="up">everything it depends on</option>
+          <option value="down">everything that uses it</option>
+        </select>
+      </label>
+      <label>Layout
+        <select id="g3-layout">
+          <option value="">free (force-directed)</option>
+          <option value="lr">layered, left to right</option>
+          <option value="radialout">radial</option>
+        </select>
+      </label>
+      <div class="g3-buttons">
+        <button id="g3-clear" type="button">Clear selection</button>
+        <button id="g3-fit" type="button">Fit all</button>
+      </div>
+    </div>
+    <div id="g3-info" class="g3-info">
+      <p class="g3-empty">Select a result, by searching or by clicking a node, to
+        see what it depends on and what uses it.</p>
+    </div>
+    <div class="g3-legend-head">Chapters <span>(click to show or hide)</span></div>
+    <div id="g3-legend" class="g3-legend"></div>
+  </aside>
+  <div id="g3-canvas" class="g3-canvas"></div>
+</div>
+<script id="g3-data" type="application/json">{blob}</script>
+<script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1/dist/3d-force-graph.min.js"></script>
+<script src="assets/graph3d.js"></script>
+""")
+    return page("3D dependency map \u2014 " + TITLE, body, macros), len(nodes), len(links)
+
+
 def main():
     strict = "--strict" in sys.argv
     macros = read_macros()
@@ -580,13 +663,15 @@ def main():
     if OUT.exists():
         shutil.rmtree(OUT)
     (OUT / "assets").mkdir(parents=True)
-    for asset in ("style.css", "site.js"):
+    for asset in ("style.css", "site.js", "graph3d.js"):
         shutil.copy(SITE_SRC / "assets" / asset, OUT / "assets" / asset)
     idx, missing = build_index(chapters, index, decls, sha, macros)
     (OUT / "index.html").write_text(idx, encoding="utf-8")
     gph, dot = build_graph(chapters, index, decls, macros)
     (OUT / "graph.html").write_text(gph, encoding="utf-8")
     (OUT / "graph.dot").write_text(dot, encoding="utf-8")
+    g3, n3, l3 = build_graph3d(chapters, index, decls, macros)
+    (OUT / "graph3d.html").write_text(g3, encoding="utf-8")
     (OUT / ".nojekyll").write_text("")
     print(f"Read {len(index)} statements from the blueprint and "
           f"{len(decls)} declarations from {nfiles} Lean files.")
