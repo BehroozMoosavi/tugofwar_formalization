@@ -27,6 +27,9 @@ import subprocess
 import sys
 import unicodedata
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import lean2tex  # noqa: E402
+
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 BP = ROOT / "docs" / "blueprint"
 SITE_SRC = BP / "site"
@@ -447,7 +450,37 @@ def nav(active):
     return f'<nav class="top"><span class="brand">Blueprint</span>{links}</nav>'
 
 
-def build_index(chapters, index, decls, sha, macros):
+STATEMENTS = SITE_SRC / "statements.json"
+NAMES_FILE = SITE_SRC / "lean_names.txt"
+
+
+def load_statements():
+    if not STATEMENTS.exists():
+        return {}
+    data = json.loads(STATEMENTS.read_text(encoding="utf-8"))
+    return {st["name"]: st for st in data if not st.get("missing")}
+
+
+def formal_block(n, statements):
+    """The statements of the node's Lean declarations, typeset from Lean's output."""
+    blocks = []
+    for name in n["lean"]:
+        st = statements.get(name)
+        if st is None:
+            continue
+        body, ok = lean2tex.render_statement(st)
+        note = "" if ok else '<span class="fs-note">parts shown as Lean code</span>'
+        blocks.append(f'<div class="fs-decl"><div class="fs-name"><code>'
+                      f'{html.escape(name.replace("PLaplacian.", ""))}</code>{note}</div>'
+                      f'{body}</div>')
+    if not blocks:
+        return ""
+    return ('<div class="formal"><div class="fs-head">Formal statement'
+            '<span>generated from the Lean declaration</span></div>'
+            + "".join(blocks) + "</div>")
+
+
+def build_index(chapters, index, decls, sha, macros, statements):
     used_by = {lab: [] for lab in index}
     for n in index.values():
         for dep in dict.fromkeys(n["uses"] + n["proof_uses"]):
@@ -510,7 +543,11 @@ def build_index(chapters, index, decls, sha, macros):
                 f'<article class="node {n["kind"]}" id="{n["label"]}" data-search="{html.escape(search)}">'
                 f'<div class="nodehead"><span class="kind">{kind} {n["number"]}</span>'
                 f'<span class="title">{html.escape(n["title"])}</span>{status}</div>'
-                f'<div class="statement">{latex_to_html(n["body"], index)}</div>'
+                + formal_block(n, statements)
+                + (f'<div class="informal"><div class="fs-head">Informal statement'
+                   f'<span>from the blueprint</span></div>' if statements else '')
+                + f'<div class="statement">{latex_to_html(n["body"], index)}</div>'
+                + ('</div>' if statements else '')
                 + (f'<div class="deps"><span class="deplabel">Uses</span>{chips(uses)}</div>' if uses else '')
                 + (f'<div class="deps"><span class="deplabel">Used by</span>{chips(used_by[n["label"]])}</div>'
                    if used_by[n["label"]] else '')
@@ -665,7 +702,11 @@ def main():
     (OUT / "assets").mkdir(parents=True)
     for asset in ("style.css", "site.js", "graph3d.js"):
         shutil.copy(SITE_SRC / "assets" / asset, OUT / "assets" / asset)
-    idx, missing = build_index(chapters, index, decls, sha, macros)
+    # the names for ExportStatements.lean, and the statements it produced
+    names = sorted({x for n in index.values() for x in n["lean"]})
+    NAMES_FILE.write_text("\n".join(names) + "\n", encoding="utf-8")
+    statements = load_statements()
+    idx, missing = build_index(chapters, index, decls, sha, macros, statements)
     (OUT / "index.html").write_text(idx, encoding="utf-8")
     gph, dot = build_graph(chapters, index, decls, macros)
     (OUT / "graph.html").write_text(gph, encoding="utf-8")
@@ -681,6 +722,16 @@ def main():
             print("   ", m, file=sys.stderr)
     else:
         print("Every Lean name in the blueprint was found.")
+    if statements:
+        partial = [name for name, st in statements.items()
+                   if not lean2tex.render_statement(st)[1]]
+        print(f"Formal statements: {len(statements)} declarations read from statements.json; "
+              f"{len(statements) - len(partial)} fully typeset.")
+        for name in partial:
+            print(f"    shown partly as Lean code: {name}")
+    else:
+        print("No statements.json yet: run `lake env lean docs/blueprint/site/ExportStatements.lean`"
+              " to add the formal statements, then build again.")
     print(f"{len(warnings)} warnings. Site written to {OUT}.")
     if strict and missing:
         sys.exit(1)

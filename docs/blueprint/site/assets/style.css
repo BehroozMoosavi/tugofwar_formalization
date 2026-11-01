@@ -281,3 +281,22 @@ footer { margin-top: 3rem; color: var(--muted);
   .g3-wrap { grid-template-columns: 1fr; grid-template-rows: auto 70vh; height: auto; }
   .g3-side { border-right: none; border-bottom: 1px solid var(--border); }
 }
+
+/* ---- formal statements generated from Lean ----------------------------------- */
+.formal, .informal { margin: 0.5rem 0 0.4rem; }
+.formal { background: var(--ok-soft); border-radius: 6px; padding: 0.55rem 0.8rem 0.3rem; }
+.fs-head { font: 600 12.5px/1.2 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+           text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted);
+           margin-bottom: 0.25rem; }
+.fs-head span { text-transform: none; letter-spacing: 0; font-weight: 400; margin-left: 0.5rem; }
+.formal .fs-head { color: var(--ok); }
+.fs-decl + .fs-decl { border-top: 1px solid var(--border); margin-top: 0.4rem; padding-top: 0.4rem; }
+.fs-name { font: 12px/1.3 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; margin-bottom: 0.1rem; }
+.fs-name code { font-weight: 600; background: none; padding: 0; }
+.fs-note { margin-left: 0.6rem; color: var(--muted); font-style: italic; }
+.formal p { margin: 0.3rem 0; }
+.formal ul { margin: 0.2rem 0 0.4rem; padding-left: 1.4rem; }
+.formal li { margin: 0.12rem 0; }
+.fs-h { font: 11px/1 "SF Mono", Menlo, Consolas, monospace; color: var(--muted);
+        margin-left: 0.35rem; }
+.informal .statement p:first-child { margin-top: 0.15rem; }
