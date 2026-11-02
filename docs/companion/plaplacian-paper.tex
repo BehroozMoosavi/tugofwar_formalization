@@ -528,7 +528,9 @@ $\Gamma_\eps = \{x \notin \Omega : \operatorname{dist}(x,\Omega) \le \eps\}$
 and $\Omega_\eps = \Omega \cup \Gamma_\eps$.
 \end{definition}
 
-The non-strict inequality is forced (Finding~\ref{find:strip}).
+The non-strict inequality makes Lemma~\ref{lem:closed} hold; the operator
+itself, which reads only open balls, would be equally determined by the strip
+with strict inequality (Finding~\ref{find:strip}).
 
 \begin{lemma}[\LEANREF{closedBall\_subset\_union}]\label{lem:closed}
 For $x \in \Omega$, $\overline{B}_\eps(x) \subseteq \Omega_\eps$.
@@ -2330,15 +2332,21 @@ explicitly disclaimed.
 
 \subsection{Mathematical}
 
-\begin{finding}[The strip needs a non-strict
-inequality]\label{find:strip}
-$\Gamma_\eps$ must use $\operatorname{dist} \le \eps$, not $< \eps$.
+\begin{finding}[The boundary strip and the closed ball]\label{find:strip}
+The strip $\Gamma_\eps$ is defined with $\operatorname{dist} \le \eps$. The
+non-strict inequality is needed for Lemma~\ref{lem:closed}, but not for the
+operator.
 \end{finding}
 
-With strict inequality a point at distance exactly $\eps$ is read by the
-operator but assigned no data, so $u$ is underdetermined there and
-Lemma~\ref{lem:closed} fails. Small, and it agrees with \cite{LPS14}, but the
-kind of boundary detail that makes a formal proof fail late rather than early.
+For $x \in \Omega$, every point $y$ of the open ball $B_\eps(x)$ satisfies
+$\operatorname{dist}(y, \Omega) \le \abs{y - x} < \eps$. The operator
+\eqref{eq:op}, which reads only open balls, therefore never reads a point at
+distance exactly $\eps$ from $\Omega$, and data prescribed there do not affect
+$\Op$ in $\Omega$. The non-strict inequality is what makes the closed ball
+$\overline B_\eps(x)$ lie in $\Omega_\eps$ (Lemma~\ref{lem:closed}), since the
+points of its sphere may lie at distance exactly $\eps$. With extreme values
+over closed balls, as in an early draft of the development, the non-strict
+inequality would be necessary for the operator as well.
 
 \begin{finding}[Monotonicity requires $p \ge 2$]\label{find:prange}
 For $1<p<2$ the operator \eqref{eq:op} is not monotone.

@@ -5,6 +5,7 @@
 \usepackage[margin=1.1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm,mathtools}
 \usepackage{graphicx}
+\usepackage{enumitem}
 \usepackage{pdflscape}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
 \makeatletter
@@ -21,6 +22,12 @@
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \input{macros/common}
+% The formal statement of a node, generated from Lean (see content-formal.tex).
+\newenvironment{formalstatement}[1]%
+  {\par\smallskip\noindent{\small\textsf{Formal statement, generated from
+   Lean:}~\texttt{#1}}\par\nopagebreak\begingroup\small\leftskip=1.2em\setlist[itemize]{nosep}
+   \noindent\ignorespaces}%
+  {\par\endgroup\smallskip}
 \setlength{\emergencystretch}{3em}
 % allow long Lean names to break after underscores
 \DeclareRobustCommand{\_}{\textunderscore\allowbreak}
@@ -39,7 +46,9 @@ discrete problem (Theorem~\ref{thm:discunique}) and for the limit equation
 declarations that prove it and the results it uses; all of them are
 formalized. Figure~\ref{fig:graph} shows the dependency graph: definitions are
 ellipses, theorems are boxes, and an arrow points from a result to the results
-that use it. Fuller explanations of each step are in the technical companion.
+that use it. After each statement, its formal statement is typeset
+automatically from the Lean declaration that proves it. Fuller explanations of
+each step are in the technical companion.
 \begin{landscape}
 \begin{figure}[p]
 \centering
@@ -49,5 +58,7 @@ results that use it; the main theorem is at the far right. The figure is
 vector graphics and can be enlarged on screen.}\label{fig:graph}
 \end{figure}
 \end{landscape}
-\input{content}
+% content-formal.tex is content.tex with the statements generated from Lean;
+% it is written by docs/blueprint/site/build.py.
+\IfFileExists{content-formal.tex}{\input{content-formal}}{\input{content}}
 \end{document}

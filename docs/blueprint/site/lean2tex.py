@@ -12,7 +12,7 @@ import re
 # Tokens
 # ---------------------------------------------------------------------------
 
-SYMBOLS = ["=>", "⁻¹", "≤", "≥", "≠", "→", "↔", "∧", "∨", "¬", "∈", "∉", "⊆",
+SYMBOLS = ["∀ᶠ", "∃ᶠ", "=>", "⁻¹", "≤", "≥", "≠", "→", "↔", "∧", "∨", "¬", "∈", "∉", "⊆",
            "⊂", "∩", "∪", "∀", "∃", "⨍", "∫", "⨆", "⨅", "∑", "∏", "‖", "|",
            "↑", "•", "∘", "×", "(", ")", "[", "]", "{", "}", "⟨", "⟩", "⟪",
            "⟫", ",", ":", "+", "-", "*", "/", "^", "=", "<", ">", "∞", "''"]
@@ -25,6 +25,12 @@ TOKEN_RE = re.compile(
 
 class Unsupported(Exception):
     """Raised for notation the renderer does not handle."""
+
+
+# Lean keywords: never variables. Meeting one means the notation is not
+# understood, so the renderer stops instead of typesetting it as a name.
+RESERVED = {"in", "if", "then", "else", "match", "with", "let", "have", "show",
+            "from", "by", "do", "at", "fun", "λ", "where"}
 
 
 def tokenize(s):
@@ -269,6 +275,8 @@ class Parser:
             return ("num", tok)
         if tok == "⁻¹":
             return ("raw", "^{-1}")
+        if tok in RESERVED:
+            raise Unsupported(tok)
         if re.fullmatch(r"[^\W\d][\w'₀-₉!?.]*", tok):
             return ("ident", tok)
         raise Unsupported(tok)
@@ -321,6 +329,8 @@ def binder_vars(tokens):
             after_colon = False
         elif tok == ":":
             after_colon = True
+        elif tok in RESERVED:
+            raise Unsupported(tok)
         elif not after_colon and re.fullmatch(r"[^\W\d][\w'₀-₉!?.]*|_", tok):
             names.append("x" if tok == "_" else ident_tex(tok))
     if not names:
@@ -502,4 +512,130 @@ def render_statement(st):
         h, good = math_or_code(concl)
         ok &= good
         out.append("<p>Its value lies in " + h + ".</p>")
+    return "".join(out), ok
+
+
+# ---------------------------------------------------------------------------
+# LaTeX output, for the blueprint PDF
+# ---------------------------------------------------------------------------
+
+UNICODE_TEX = {
+    "ℝ": r"\ensuremath{\mathbb{R}}", "ℕ": r"\ensuremath{\mathbb{N}}",
+    "→": r"\ensuremath{\to}", "↔": r"\ensuremath{\leftrightarrow}",
+    "∀": r"\ensuremath{\forall}", "∃": r"\ensuremath{\exists}",
+    "∈": r"\ensuremath{\in}", "∉": r"\ensuremath{\notin}",
+    "≤": r"\ensuremath{\le}", "≥": r"\ensuremath{\ge}", "≠": r"\ensuremath{\ne}",
+    "∧": r"\ensuremath{\wedge}", "∨": r"\ensuremath{\vee}", "¬": r"\ensuremath{\neg}",
+    "‖": r"\ensuremath{\Vert}", "⨍": r"\ensuremath{\fint}", "∫": r"\ensuremath{\int}",
+    "↑": r"\ensuremath{\uparrow}", "⟪": r"\ensuremath{\langle\!\langle}",
+    "⟫": r"\ensuremath{\rangle\!\rangle}", "⟨": r"\ensuremath{\langle}",
+    "⟩": r"\ensuremath{\rangle}", "•": r"\ensuremath{\bullet}", "∘": r"\ensuremath{\circ}",
+    "×": r"\ensuremath{\times}", "⊆": r"\ensuremath{\subseteq}", "∩": r"\ensuremath{\cap}",
+    "∪": r"\ensuremath{\cup}", "∞": r"\ensuremath{\infty}", "ᶠ": r"\textsuperscript{f}",
+    "𝓝": r"\ensuremath{\mathcal{N}}", "⁻": r"\ensuremath{^{-}}", "¹": r"\ensuremath{^{1}}",
+    "✝": r"\ensuremath{\dagger}", "∂": r"\ensuremath{\partial}", "⦃": r"\{", "⦄": r"\}",
+}
+UNICODE_TEX.update({k: r"\ensuremath{" + v + "}" for k, v in GREEK.items()})
+UNICODE_TEX.update({chr(0x2080 + i): r"\textsubscript{%d}" % i for i in range(10)})
+TEX_SPECIAL = {"\\": r"\textbackslash{}", "{": r"\{", "}": r"\}", "_": r"\_",
+               "^": r"\^{}", "%": r"\%", "&": r"\&", "#": r"\#", "$": r"\$",
+               "~": r"\~{}"}
+
+
+def tex_escape(s):
+    """Lean source as LaTeX text, for \\texttt."""
+    out = []
+    for ch in s:
+        if ch in TEX_SPECIAL:
+            out.append(TEX_SPECIAL[ch])
+        elif ord(ch) < 128:
+            out.append(ch)
+        else:
+            out.append(UNICODE_TEX.get(ch, "?"))
+    return "".join(out)
+
+
+def math_or_code_tex(lean):
+    try:
+        return "$" + to_tex(lean) + "$", True
+    except (Unsupported, IndexError, RecursionError):
+        return r"\texttt{" + tex_escape(lean) + "}", False
+
+
+def type_clause_tex(names, lean_type):
+    vs = ", ".join(ident_tex(n) for n in names)
+    try:
+        if lean_type.startswith("Set "):
+            return "$%s \\subseteq %s$" % (vs, to_tex(lean_type[4:])), True
+        tt = to_tex(lean_type)
+        if "→" in lean_type:
+            return "$%s \\colon %s$" % (vs, tt), True
+        return "$%s \\in %s$" % (vs, tt), True
+    except (Unsupported, IndexError, RecursionError):
+        return r"\texttt{" + tex_escape(", ".join(names) + " : " + lean_type) + "}", False
+
+
+def render_statement_tex(st):
+    """LaTeX for one exported declaration. Returns (latex, fully_typeset)."""
+    ok = True
+    params, hyps = [], []
+    group, group_type = [], None
+    for b in st["binders"]:
+        if b["prop"] or b["kind"] == "instance":
+            if group:
+                params.append(type_clause_tex(group, group_type))
+                group = []
+            h, good = math_or_code_tex(b["type"])
+            ok &= good
+            if not (b["kind"] == "instance" or b["name"].startswith("inst")):
+                h += r" \quad{\footnotesize\texttt{" + tex_escape(b["name"]) + "}}"
+            hyps.append(h)
+        else:
+            if group and b["type"] != group_type:
+                params.append(type_clause_tex(group, group_type))
+                group = []
+            group.append(b["name"])
+            group_type = b["type"]
+    if group:
+        params.append(type_clause_tex(group, group_type))
+    for _, good in params:
+        ok &= good
+    out = []
+    if params:
+        out.append("Let " + ", ".join(p for p, _ in params) + ".\n")
+    if hyps:
+        out.append("Assume\n\\begin{itemize}\n" + "".join("  \\item " + h + "\n" for h in hyps)
+                   + "\\end{itemize}\n")
+    concl = st["conclusion"]
+    lead = "Then " if (hyps or params) else ""
+    if st.get("conclusionProp", True):
+        m = re.match(r"∃\s+([^,]+),\s*(.*)$", concl, re.S)
+        intro = None
+        if m:
+            try:
+                intro = "there exists $" + binder_head(tokenize(m.group(1))) + "$ such that"
+                parts = split_conjunction(m.group(2))
+            except (Unsupported, IndexError):
+                m, parts = None, split_conjunction(concl)
+        else:
+            parts = split_conjunction(concl)
+        if len(parts) > 1 or m:
+            items = []
+            for part in parts:
+                h, good = math_or_code_tex(part)
+                ok &= good
+                items.append("  \\item " + h + "\n")
+            head = intro if m else "all of the following hold"
+            out.append((lead + head if lead else head[0].upper() + head[1:]) + ":\n"
+                       + "\\begin{itemize}\n" + "".join(items) + "\\end{itemize}\n")
+        else:
+            h, good = math_or_code_tex(concl)
+            ok &= good
+            out.append(lead + h + ".\n")
+    elif st.get("declKind") == "structure" and concl.strip() == "Prop":
+        out.append("This defines a property of these parameters.\n")
+    else:
+        h, good = math_or_code_tex(concl)
+        ok &= good
+        out.append("Its value lies in " + h + ".\n")
     return "".join(out), ok

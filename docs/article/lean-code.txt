@@ -2,7 +2,7 @@ Lean code of the declarations cited in the article
 "A formally verified convergence theorem for the tug-of-war scheme of the
 normalized p-Laplacian" by J. J. Manfredi and B. Moosavi.
 
-Extracted from the repository at commit cf85c9a3a296
+Extracted from the repository at commit 0e38e0ee40b9
 (https://github.com/BehroozMoosavi/tugofwar_formalization)
 by docs/article/lean_code.py. Lean 4.34.0-rc2 (toolchain
 leanprover/lean4:v4.34.0-rc2); Mathlib commit
