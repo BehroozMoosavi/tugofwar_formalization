@@ -1,0 +1,951 @@
+Lean code of the declarations cited in the article
+"A formally verified convergence theorem for the tug-of-war scheme of the
+normalized p-Laplacian" by J. J. Manfredi and B. Moosavi.
+
+Extracted from the repository at commit cf85c9a3a296
+(https://github.com/BehroozMoosavi/tugofwar_formalization)
+by docs/article/lean_code.py. Lean 4.34.0-rc2 (toolchain
+leanprover/lean4:v4.34.0-rc2); Mathlib commit
+85e3a25e006c35636f0e53b0e9296caca2685bc0.
+
+Each entry gives the place in the article where the declaration is cited,
+its file and lines, and its exact source: docstring, statement and proof.
+
+CONTENTS
+  the Main Theorem       PLaplacian.pharmonious_exists_converge
+  the Main Theorem       pharmonious_converge
+  the text of Section 1  propext  (Lean axiom)
+  the text of Section 1  Classical.choice  (Lean axiom)
+  the text of Section 1  Quot.sound  (Lean axiom)
+  Theorem 4.1            tugOfWarOp_expansion_final
+  Theorem 5.1            ubar_isViscositySubsolution
+  Theorem 6.1            visc_comparison
+  Theorem 6.2            visc_unique
+  Theorem 6.3            alexandrov
+  Theorem 6.4            jensen_positive_measure
+  Theorem 7.1            ubar_le_bdry
+  Theorem 7.2            exists_pharmonious
+  Theorem 7.3            pharmonious_unique
+
+
+PART I. DECLARATIONS CITED IN THE ARTICLE
+
+==============================================================================
+The Main Theorem: PLaplacian.pharmonious_exists_converge
+Plaplacian/DirichletExistence.lean, lines 459-497
+==============================================================================
+
+/-- **Existence and convergence.** Let `Ω` be bounded and open with an exterior
+sphere at every boundary point, and `F` bounded and continuous. Then for every
+`ε > 0` the `ε`-problem has a `p`-harmonious solution with data `F`, equal to
+`F` outside `Ω`, and these solutions converge uniformly on `closure Ω` to the
+common value of the relaxed limits, which equals `F` on `frontier Ω`. -/
+theorem pharmonious_exists_converge [Nontrivial (EuclSpace d)] (hd : 0 < d)
+    {p : ℝ} (hp : 2 ≤ p) (hpd : 0 < p + (d : ℝ)) {Ω : Set (EuclSpace d)}
+    (hΩo : IsOpen Ω) (hΩb : Bornology.IsBounded Ω) {F : EuclSpace d → ℝ}
+    (hFc : Continuous F) {C : ℝ} (hFC : ∀ y, |F y| ≤ C)
+    (hext : ∀ y ∈ frontier Ω, ∃ (z : EuclSpace d) (δ : ℝ), 0 < δ ∧
+      ‖y - z‖ = δ ∧ ∀ x ∈ Ω, δ ≤ ‖x - z‖) :
+    ∃ u : ℝ → EuclSpace d → ℝ,
+      (∀ ε > 0, IsPHarmonious p ε Ω F (u ε)) ∧
+      (∀ ε > 0, ∀ x, x ∉ Ω → u ε x = F x) ∧
+      (∀ ε y, |u ε y| ≤ C) ∧
+      (∀ x ∈ closure Ω, ubar u x = lbar u x) ∧
+      (∀ x ∈ frontier Ω, ubar u x = F x) ∧
+      (∀ η > 0, ∃ ε₀ > 0, ∀ ε, 0 < ε → ε < ε₀ → ∀ x ∈ closure Ω,
+        |u ε x - ubar u x| ≤ η) := by
+  have hex : ∀ ε : ℝ, 0 < ε → ∃ v : EuclSpace d → ℝ,
+      IsPHarmonious p ε Ω F v ∧ (∀ x, x ∉ Ω → v x = F x) ∧ ∀ y, |v y| ≤ C :=
+    fun ε hε => exists_pharmonious p ε hp hε hd hpd hΩo.measurableSet hΩb
+      hFc.measurable hFC
+  choose! U hU using hex
+  set u : ℝ → EuclSpace d → ℝ := fun ε => if 0 < ε then U ε else F with hudef
+  have hUeq : ∀ ε, 0 < ε → u ε = U ε := fun ε hε => by
+    rw [hudef]; simp [hε]
+  have hu : ∀ ε > 0, IsPHarmonious p ε Ω F (u ε) := fun ε hε => by
+    rw [hUeq ε hε]; exact (hU ε hε).1
+  have hout : ∀ ε > 0, ∀ x, x ∉ Ω → u ε x = F x := fun ε hε x hx => by
+    rw [hUeq ε hε]; exact (hU ε hε).2.1 x hx
+  have hC : ∀ ε y, |u ε y| ≤ C := fun ε y => by
+    by_cases hε : 0 < ε
+    · rw [hUeq ε hε]; exact (hU ε hε).2.2 y
+    · have h : u ε = F := by rw [hudef]; simp [hε]
+      rw [h]; exact hFC y
+  obtain ⟨h1, h2, h3⟩ :=
+    pharmonious_converge hd hp hpd hΩo hΩb hFc hext hC hu hout
+  exact ⟨u, hu, hout, hC, h1, h2, h3⟩
+
+==============================================================================
+The Main Theorem: pharmonious_converge
+Plaplacian/MainConv.lean, lines 39-144
+==============================================================================
+
+/-- **Convergence of `p`-harmonious functions to the viscosity solution.** -/
+theorem pharmonious_converge [Nontrivial (EuclSpace d)] (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p)
+    (hpd : 0 < p + (d : ℝ)) {Ω : Set (EuclSpace d)} (hΩo : IsOpen Ω)
+    (hΩb : Bornology.IsBounded Ω) {F : EuclSpace d → ℝ} (hFc : Continuous F)
+    (hext : ∀ y ∈ frontier Ω, ∃ (z : EuclSpace d) (δ : ℝ), 0 < δ ∧ ‖y - z‖ = δ ∧
+      ∀ x ∈ Ω, δ ≤ ‖x - z‖)
+    {u : ℝ → EuclSpace d → ℝ} {C : ℝ} (hC : ∀ ε y, |u ε y| ≤ C)
+    (hu : ∀ ε > 0, IsPHarmonious p ε Ω F (u ε))
+    (hout : ∀ ε > 0, ∀ x, x ∉ Ω → u ε x = F x) :
+    (∀ x ∈ closure Ω, ubar u x = lbar u x) ∧
+    (∀ x ∈ frontier Ω, ubar u x = F x) ∧
+    (∀ η > 0, ∃ ε₀ > 0, ∀ ε, 0 < ε → ε < ε₀ → ∀ x ∈ closure Ω,
+      |u ε x - ubar u x| ≤ η) := by
+  -- the negated family
+  have hC' : ∀ ε y, |(fun ε y => -u ε y) ε y| ≤ C := fun ε y => by
+    simp only [abs_neg]; exact hC ε y
+  have hu' : ∀ ε > 0, IsPHarmonious p ε Ω (fun y => -F y) ((fun ε y => -u ε y) ε) :=
+    fun ε hε => isPHarmonious_neg (hu ε hε)
+  have hout' : ∀ ε > 0, ∀ x, x ∉ Ω → (fun ε y => -u ε y) ε x = (fun y => -F y) x := by
+    intro ε hε x hx
+    change -u ε x = -F x
+    rw [hout ε hε x hx]
+  -- the bounds on the relaxed limits
+  have hubC : ∀ x, ubar u x ≤ C := fun x =>
+    ubar_le_of_bound u hC (S := Ioi 0) self_mem_nhdsWithin (V := univ) (b := C)
+      (fun ε _ y _ => (abs_le.1 (hC ε y)).2) univ_mem
+  have hlbC : ∀ x, -C ≤ lbar u x := by
+    intro x
+    have h : ubar (fun ε y => -u ε y) x ≤ C :=
+      ubar_le_of_bound _ hC' (S := Ioi 0) self_mem_nhdsWithin (V := univ) (b := C)
+        (fun ε _ y _ => (abs_le.1 (hC' ε y)).2) univ_mem
+    rw [lbar_eq_neg_ubar_neg]
+    linarith
+  have hord : ∀ x, lbar u x ≤ ubar u x := lbar_le_ubar u hC
+  -- the boundary estimates
+  have hupper : ∀ y ∈ frontier Ω, ubar u y ≤ F y := by
+    intro y hy
+    obtain ⟨z, δ, hδ, hyz, hext'⟩ := hext y hy
+    exact ubar_le_bdry hd hp hpd hC hu hout hFc.continuousAt hδ hyz hext'
+  have hlower : ∀ y ∈ frontier Ω, F y ≤ lbar u y := by
+    intro y hy
+    obtain ⟨z, δ, hδ, hyz, hext'⟩ := hext y hy
+    have h : ubar (fun ε y => -u ε y) y ≤ -F y :=
+      ubar_le_bdry hd hp hpd hC' hu' hout' hFc.neg.continuousAt hδ hyz hext'
+    rw [lbar_eq_neg_ubar_neg]
+    linarith
+  -- comparison in Ω
+  have hcomp := visc_comparison hd hp hΩo hΩb (upperSemicontinuous_ubar u hC)
+    (lowerSemicontinuous_lbar u hC)
+    ⟨C, by rintro _ ⟨x, rfl⟩; exact hubC x⟩
+    ⟨-C, by rintro _ ⟨x, rfl⟩; exact le_trans (hlbC x) (hord x)⟩
+    ⟨-C, by rintro _ ⟨x, rfl⟩; exact hlbC x⟩
+    ⟨C, by rintro _ ⟨x, rfl⟩; exact le_trans (hord x) (hubC x)⟩
+    (ubar_isViscositySubsolution hd hp hpd hΩo hC hu)
+    (lbar_isViscositySupersolution hd hp hpd hΩo hC hu)
+    (fun x hx => le_trans (hupper x hx) (hlower x hx))
+  -- the relaxed limits agree on the closure
+  have heq : ∀ x ∈ closure Ω, ubar u x = lbar u x := by
+    intro x hx
+    rw [closure_eq_self_union_frontier] at hx
+    rcases hx with hx | hx
+    · exact le_antisymm (hcomp x hx) (hord x)
+    · exact le_antisymm (le_trans (hupper x hx) (hlower x hx)) (hord x)
+  have heqF : ∀ x ∈ frontier Ω, ubar u x = F x := fun x hx =>
+    le_antisymm (hupper x hx) (le_trans (hlower x hx) (hord x))
+  refine ⟨heq, heqF, ?_⟩
+  -- uniform convergence, by contradiction
+  intro η hη
+  by_contra hcon
+  push Not at hcon
+  have hseq : ∀ n : ℕ, ∃ ε x, 0 < ε ∧ ε < 1 / ((n : ℝ) + 1) ∧ x ∈ closure Ω ∧
+      η < |u ε x - ubar u x| := by
+    intro n
+    obtain ⟨ε, hε0, hε1, x, hx, hbad⟩ := hcon (1 / ((n : ℝ) + 1)) (by positivity)
+    exact ⟨ε, x, hε0, hε1, hx, hbad⟩
+  choose εs xs hεs0 hεs1 hxs hbad using hseq
+  -- a convergent subsequence
+  obtain ⟨xstar, hxstar, φ, hφ, hxT⟩ := tendsto_subseq_of_bounded hΩb.closure hxs
+  rw [closure_closure] at hxstar
+  have hεT : Tendsto (fun n => εs (φ n)) atTop (𝓝[>] 0) := by
+    rw [tendsto_nhdsWithin_iff]
+    refine ⟨?_, Eventually.of_forall fun n => hεs0 (φ n)⟩
+    have h1 : Tendsto (fun n => 1 / ((φ n : ℝ) + 1)) atTop (𝓝 0) :=
+      tendsto_one_div_add_atTop_nhds_zero_nat.comp hφ.tendsto_atTop
+    exact squeeze_zero (fun n => (hεs0 (φ n)).le) (fun n => (hεs1 (φ n)).le) h1
+  have hqT : Tendsto (fun n => (εs (φ n), xs (φ n))) atTop (relaxFilter xstar) :=
+    hεT.prodMk hxT
+  -- four eventual bounds at x*
+  have hb : 0 < η / 3 := by positivity
+  have e1 : ∀ᶠ n in atTop, u (εs (φ n)) (xs (φ n)) < ubar u xstar + η / 3 :=
+    hqT.eventually (eventually_lt_of_ubar_lt u hC xstar (by linarith))
+  have e2 : ∀ᶠ n in atTop, -u (εs (φ n)) (xs (φ n)) < -lbar u xstar + η / 3 := by
+    have h : ubar (fun ε y => -u ε y) xstar < -lbar u xstar + η / 3 := by
+      rw [lbar_eq_neg_ubar_neg]; linarith
+    exact hqT.eventually (eventually_lt_of_ubar_lt _ hC' xstar h)
+  have e3 : ∀ᶠ n in atTop, ubar u (xs (φ n)) < ubar u xstar + η / 3 :=
+    hxT.eventually (upperSemicontinuous_ubar u hC xstar _ (by linarith))
+  have e4 : ∀ᶠ n in atTop, lbar u xstar - η / 3 < lbar u (xs (φ n)) :=
+    hxT.eventually (lowerSemicontinuous_lbar u hC xstar _ (by linarith))
+  obtain ⟨n, h1, h2, h3, h4⟩ := (e1.and (e2.and (e3.and e4))).exists
+  have h5 := heq (xs (φ n)) (hxs (φ n))
+  have h6 := heq xstar hxstar
+  have h7 := hbad (φ n)
+  have : |u (εs (φ n)) (xs (φ n)) - ubar u (xs (φ n))| < η := by
+    rw [abs_lt]; constructor <;> linarith
+  linarith
+
+==============================================================================
+Theorem 4.1: tugOfWarOp_expansion_final
+Plaplacian/Expansion.lean, lines 48-67
+==============================================================================
+
+/-- **The asymptotic expansion of the step operator.**
+
+For a `C³` test function with nonvanishing gradient, the step operator equals
+the value at the point plus the normalized `p`-Laplacian term, plus an error
+term. -/
+theorem tugOfWarOp_expansion_final [Nontrivial (EuclSpace d)] (hd : 0 < d)
+    (p : ℝ) (hpd : 0 < p + (d : ℝ)) {φ : EuclSpace d → ℝ}
+    (hφ : ContDiff ℝ 3 φ) {x : EuclSpace d} (hx : gradient φ x ≠ 0)
+    {ε : ℝ} (hε : 0 < ε) :
+    ∃ E : ℝ,
+      tugOfWarOp p ε φ x
+        = φ x + ε ^ 2 / (2 * (p + (d : ℝ)))
+            * normPLapOf p (gradient φ x) (fderiv ℝ (fderiv ℝ φ) x)
+          + E := by
+  obtain ⟨e₁, lo, hi, hS, hlo, hhi⟩ := extreme_avg_threaded hφ hx hε
+  have hA := setAverage_expansion hd (hφ.of_le (by norm_num)) x hε
+  refine ⟨(p - 2) / (p + (d : ℝ)) * e₁
+    + ((d : ℝ) + 2) / (p + (d : ℝ))
+        * (⨍ z in ball (0 : EuclSpace d) ε, taylorErr φ x z), ?_⟩
+  exact tugOfWarOp_expansion_normPLap p hpd ε φ x hS hA
+
+==============================================================================
+Theorem 5.1: ubar_isViscositySubsolution
+Plaplacian/ViscC2.lean, lines 290-302
+==============================================================================
+
+/-- **The upper relaxed limit is a viscosity subsolution** of the homogeneous
+normalized `p`-Laplace equation, in the sense of the layer-two predicate. -/
+theorem ubar_isViscositySubsolution [Nontrivial (EuclSpace d)] (hd : 0 < d)
+    {p : ℝ} (hp : 2 ≤ p) (hpd : 0 < p + (d : ℝ))
+    {Ω : Set (EuclSpace d)} (hΩ : IsOpen Ω) {F : EuclSpace d → ℝ}
+    {u : ℝ → EuclSpace d → ℝ} {C : ℝ} (hC : ∀ ε y, |u ε y| ≤ C)
+    (hu : ∀ ε > 0, IsPHarmonious p ε Ω F (u ε)) :
+    IsViscositySubsolution p Ω (fun _ => 0) (ubar u) :=
+  ⟨(upperSemicontinuous_ubar u hC).upperSemicontinuousOn _,
+   fun _φ hφ _x₀ hx₀ hmax hg =>
+     visc2_reg_sub hd hp hpd hΩ hC hu hφ hx₀ hmax hg,
+   fun _φ hφ _x₀ hx₀ hmax _ =>
+     visc2_sing_sub hd hp hpd hΩ hC hu hφ hx₀ hmax⟩
+
+==============================================================================
+Theorem 6.1: visc_comparison
+Plaplacian/CompFull.lean, lines 41-246
+==============================================================================
+
+/-- **The comparison principle** for the homogeneous normalized `p`-Laplacian. -/
+theorem visc_comparison (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p) {Ω : Set (EuclSpace d)}
+    (hΩo : IsOpen Ω) (hΩb : Bornology.IsBounded Ω) {U V : EuclSpace d → ℝ}
+    (hU : UpperSemicontinuous U) (hV : LowerSemicontinuous V)
+    (hUb : BddAbove (range U)) (hUb' : BddBelow (range U))
+    (hVb : BddBelow (range V)) (hVb' : BddAbove (range V))
+    (hsub : IsViscositySubsolution p Ω (fun _ => 0) U)
+    (hsup : IsViscositySupersolution p Ω (fun _ => 0) V)
+    (hbd : ∀ x ∈ frontier Ω, U x ≤ V x) :
+    ∀ x ∈ Ω, U x ≤ V x := by
+  intro xb hxb
+  by_contra hlt
+  push Not at hlt
+  set θ := U xb - V xb with hθdef
+  have hθ : 0 < θ := by linarith
+  -- the bounds
+  obtain ⟨SU, hSU'⟩ := hUb
+  obtain ⟨SL, hSL'⟩ := hUb'
+  obtain ⟨TL, hTL'⟩ := hVb
+  obtain ⟨TU, hTU'⟩ := hVb'
+  have hSU : ∀ x, U x ≤ SU := fun x => hSU' ⟨x, rfl⟩
+  have hSL : ∀ x, SL ≤ U x := fun x => hSL' ⟨x, rfl⟩
+  have hTL : ∀ x, TL ≤ V x := fun x => hTL' ⟨x, rfl⟩
+  have hTU : ∀ x, V x ≤ TU := fun x => hTU' ⟨x, rfl⟩
+  have hUbA : BddAbove (range U) := ⟨SU, hSU'⟩
+  have hVbB : BddBelow (range V) := ⟨TL, hTL'⟩
+  have hCU : 0 ≤ SU - SL := by linarith [hSU 0, hSL 0]
+  have hCV : 0 ≤ TU - TL := by linarith [hTU 0, hTL 0]
+  -- the complement, and the distance of x̄ to it
+  have hΩc := compl_nonempty hd hΩb
+  have hxbd : 0 < infDist xb Ωᶜ :=
+    (hΩo.isClosed_compl.notMem_iff_infDist_pos hΩc).1 (fun h => h hxb)
+  -- δ from the band estimate
+  obtain ⟨δ₀, hδ₀, Λ, hΛ, hband⟩ := band_est hΩb hΩc hU hV hUbA hVbB hSU hSL hTU hTL hbd
+    (θ := θ / 4) (by positivity)
+  set δ := min δ₀ (infDist xb Ωᶜ / 2) with hδdef
+  have hδ : 0 < δ := lt_min hδ₀ (by positivity)
+  have hδδ₀ : δ ≤ δ₀ := min_le_left _ _
+  have hδxb : δ < infDist xb Ωᶜ := by
+    have : δ ≤ infDist xb Ωᶜ / 2 := min_le_right _ _
+    linarith
+  -- λ
+  set C := (SU - SL) + (TU - TL) + 1 with hC
+  have hC0 : 0 < C := by linarith
+  set lam := Λ + 8 * C / δ ^ 2 + 1 with hlamdef
+  have hlamC : 8 * C / δ ^ 2 ≤ lam := by
+    have : 0 < Λ := hΛ
+    linarith
+  have hlam0 : 0 < lam := lt_of_lt_of_le (by positivity) hlamC
+  have hlamΛ : Λ ≤ lam := by
+    have : 0 ≤ 8 * C / δ ^ 2 := by positivity
+    linarith
+  have hρ2 : 2 * C < (δ / 2) ^ 2 * lam + 1 := by
+    have h1 : (δ / 2) ^ 2 * (8 * C / δ ^ 2) = 2 * C := by field_simp; ring
+    have h2 := mul_le_mul_of_nonneg_left hlamC (by positivity : (0 : ℝ) ≤ (δ / 2) ^ 2)
+    linarith
+  have hρU : 2 * (SU - SL) / lam < (δ / 2) ^ 2 := by
+    rw [div_lt_iff₀ hlam0]
+    have h1 : (δ / 2) ^ 2 * (8 * C / δ ^ 2) = 2 * C := by field_simp; ring
+    have h2 := mul_le_mul_of_nonneg_left hlamC (by positivity : (0 : ℝ) ≤ (δ / 2) ^ 2)
+    nlinarith
+  have hρV : 2 * (TU - TL) / lam < (δ / 2) ^ 2 := by
+    rw [div_lt_iff₀ hlam0]
+    have h1 : (δ / 2) ^ 2 * (8 * C / δ ^ 2) = 2 * C := by field_simp; ring
+    have h2 := mul_le_mul_of_nonneg_left hlamC (by positivity : (0 : ℝ) ≤ (δ / 2) ^ 2)
+    nlinarith
+  -- the bounds on V_λ, and η
+  have hVlam := regV_bounds hlam0.le hVbB hTU hTL
+  set B := |TL| + |TU| + 1 with hB
+  have hB0 : 0 < B := by positivity
+  have hVB : ∀ y, |regV lam V y| ≤ B := by
+    intro y
+    obtain ⟨_, h1, h2⟩ := hVlam y
+    rw [abs_le]
+    constructor
+    · have := neg_abs_le TL; linarith [abs_nonneg TU]
+    · have := le_abs_self TU; linarith [abs_nonneg TL]
+  set η := min (1 / (4 * B)) (θ / (8 * B ^ 2)) with hηdef
+  have hη : 0 < η := lt_min (by positivity) (by positivity)
+  have hηB : η * B ≤ 1 / 4 := by
+    have := mul_le_mul_of_nonneg_right (min_le_left (1 / (4 * B)) (θ / (8 * B ^ 2))) hB0.le
+    have e : 1 / (4 * B) * B = 1 / 4 := by field_simp
+    linarith
+  have hηB2 : η * B ^ 2 ≤ θ / 8 := by
+    have := mul_le_mul_of_nonneg_right (min_le_right (1 / (4 * B)) (θ / (8 * B ^ 2)))
+      (by positivity : (0 : ℝ) ≤ B ^ 2)
+    have e : θ / (8 * B ^ 2) * B ^ 2 = θ / 8 := by field_simp
+    linarith
+  have hcb : ∀ y, 1 / 2 ≤ 1 - 2 * η * regV lam V y ∧ 1 - 2 * η * regV lam V y ≤ 3 / 2 := by
+    intro y
+    obtain ⟨a1, a2⟩ := abs_le.1 (hVB y)
+    have k1 : η * regV lam V y ≤ η * B := mul_le_mul_of_nonneg_left a2 hη.le
+    have k2 : η * (-B) ≤ η * regV lam V y := mul_le_mul_of_nonneg_left a1 hη.le
+    constructor <;> nlinarith
+  have hsq : ∀ y, η * regV lam V y ^ 2 ≤ θ / 8 := by
+    intro y
+    have h1 : regV lam V y ^ 2 ≤ B ^ 2 := by
+      have := hVB y
+      rw [← sq_abs]
+      exact pow_le_pow_left₀ (abs_nonneg _) this 2
+    have := mul_le_mul_of_nonneg_left h1 hη.le
+    linarith
+  -- the function f, at x̄ and on the band
+  have hUc := regU_continuous hlam0.le hUbA
+  have hVc := regV_continuous hlam0.le hVbB
+  have hfc : Continuous (fun z => regU lam U z - (regV lam V z - η * regV lam V z ^ 2)) := by
+    fun_prop
+  have hfx : θ ≤ regU lam U xb - (regV lam V xb - η * regV lam V xb ^ 2) := by
+    have h1 := (regU_bounds hlam0.le hUbA hSU hSL xb).1
+    have h2 := (hVlam xb).1
+    have h3 : 0 ≤ η * regV lam V xb ^ 2 := by positivity
+    linarith
+  have hfband : ∀ x ∈ closure Ω, infDist x Ωᶜ ≤ 2 * δ →
+      regU lam U x - (regV lam V x - η * regV lam V x ^ 2) < θ / 2 := by
+    intro x hx hxd
+    have h1 := hband lam hlamΛ x hx (le_trans hxd (by linarith))
+    have h2 := hsq x
+    linarith
+  -- the set S and the component G
+  set S := {x | δ < infDist x Ωᶜ} ∩
+    {x | θ / 2 < regU lam U x - (regV lam V x - η * regV lam V x ^ 2)} with hSdef
+  have hSo : IsOpen S :=
+    (isOpen_lt continuous_const (continuous_infDist_pt _)).inter
+      (isOpen_lt continuous_const hfc)
+  have hxbS : xb ∈ S := ⟨hδxb, by change θ / 2 < _; linarith⟩
+  have hSΩ : S ⊆ Ω := by
+    intro x hx
+    by_contra hxΩ
+    have : infDist x Ωᶜ = 0 := infDist_zero_of_mem hxΩ
+    have h1 : δ < infDist x Ωᶜ := hx.1
+    linarith
+  set G := connectedComponentIn S xb with hGdef
+  have hGo : IsOpen G := hSo.connectedComponentIn
+  have hGc : IsPreconnected G := isPreconnected_connectedComponentIn
+  have hxbG : xb ∈ G := mem_connectedComponentIn hxbS
+  have hGne : G.Nonempty := ⟨xb, hxbG⟩
+  have hGS : G ⊆ S := connectedComponentIn_subset S xb
+  have hGb : Bornology.IsBounded G := hΩb.subset (hGS.trans hSΩ)
+  have hclG : closure G ⊆ {x | δ ≤ infDist x Ωᶜ} := by
+    apply closure_minimal _ (isClosed_le continuous_const (continuous_infDist_pt _))
+    intro x hx
+    have h : δ < infDist x Ωᶜ := (hGS hx).1
+    exact h.le
+  have hclGΩ : closure G ⊆ closure Ω := closure_mono (hGS.trans hSΩ)
+  -- the frontier of G lies where f ≤ θ/2
+  have hfr : ∀ z ∈ frontier G,
+      regU lam U z - (regV lam V z - η * regV lam V z ^ 2) ≤ θ / 2 := by
+    intro z hz
+    by_contra hgt
+    push Not at hgt
+    have hzcl : z ∈ closure G := frontier_subset_closure hz
+    rcases lt_or_ge δ (infDist z Ωᶜ) with hzd | hzd
+    · -- z ∈ S would put z inside G
+      have hzS : z ∈ S := ⟨hzd, hgt⟩
+      obtain ⟨r, hr, hrS⟩ := Metric.isOpen_iff.1 hSo z hzS
+      obtain ⟨w, hwG, hwz⟩ := Metric.mem_closure_iff.1 hzcl r hr
+      have hwball : w ∈ ball z r := by rw [mem_ball, dist_comm]; exact hwz
+      have hGw : G = connectedComponentIn S w := connectedComponentIn_eq hwG
+      have hball : ball z r ⊆ connectedComponentIn S w :=
+        (convex_ball z r).isPreconnected.subset_connectedComponentIn hwball hrS
+      have hzG : z ∈ G := by rw [hGw]; exact hball (mem_ball_self hr)
+      have hzint : z ∉ interior G := hz.2
+      rw [hGo.interior_eq] at hzint
+      exact hzint hzG
+    · -- z lies in the band
+      have h1 := hfband z (hclGΩ hzcl) (by linarith)
+      linarith
+  have hgap : ∀ z ∈ frontier G,
+      regU lam U z - (regV lam V z - η * regV lam V z ^ 2)
+        < regU lam U xb - (regV lam V xb - η * regV lam V xb ^ 2) := by
+    intro z hz
+    have := hfr z hz
+    linarith
+  -- the region O where the jet inequalities hold
+  set O := {x | δ / 2 < infDist x Ωᶜ} with hOdef
+  have hOball : ∀ y ∈ O, ball y (δ / 2) ⊆ Ω := by
+    intro y hy w hw
+    by_contra hwΩ
+    have h1 := infDist_le_dist_of_mem (x := y) (show w ∈ Ωᶜ from hwΩ)
+    have h2 : δ / 2 < infDist y Ωᶜ := hy
+    rw [mem_ball, dist_comm] at hw
+    linarith
+  have hUjet : ∀ y ∈ O, ∀ (q : EuclSpace d) (X : Bilin d),
+      (q, X) ∈ SuperJet (regU lam U) y → q ≠ 0 → viscF p q X ≤ 0 :=
+    fun y hy q X hj hq => regU_jet hd hp hsub hlam0 hU hUbA hSU hSL hρU (by positivity)
+      (hOball y hy) hj hq
+  have hVneg : ∀ y ∈ O, ∀ (q : EuclSpace d) (X : Bilin d),
+      (q, X) ∈ SuperJet (fun z => -regV lam V z) y → q ≠ 0 → viscF p q X ≤ 0 :=
+    fun y hy q X hj hq => regV_jet hd hp hsup hlam0 hV hVbB hTU hTL hρV (by positivity)
+      (hOball y hy) hj hq
+  have hGO : ∀ x ∈ closure G, ball x (δ / 2) ⊆ O := by
+    intro x hx y hy
+    have h1 : δ ≤ infDist x Ωᶜ := hclG hx
+    have h2 := infDist_le_infDist_add_dist (s := Ωᶜ) (x := x) (y := y)
+    rw [mem_ball, dist_comm] at hy
+    change δ / 2 < infDist y Ωᶜ
+    linarith
+  -- semiconvexity
+  have hUs := regU_semiconvex hlam0.le hUbA
+  have hVs := regV_semiconcave hlam0.le hVbB
+  have hWs := semiconcave_psi (Cc := 3 / 2) hlam0.le hη.le hVs
+    (fun y => by linarith [(hcb y).1]) (fun y => (hcb y).2)
+  -- the third step
+  exact step3 hd hp hlam0.le (by positivity) hη hUs hVs hWs hUc hVc hUjet hVneg
+    (fun y _ => by linarith [(hcb y).1]) (fun y _ => (hcb y).2)
+    hGo hGb hGne hGc (by positivity : (0 : ℝ) < δ / 2) hGO hxbG hgap
+
+==============================================================================
+Theorem 6.2: visc_unique
+Plaplacian/ViscUnique.lean, lines 35-57
+==============================================================================
+
+/-- **Uniqueness of viscosity solutions.** Two bounded continuous viscosity
+solutions of the homogeneous normalized `p`-Laplace equation in a bounded open
+set `Ω`, equal on `frontier Ω`, are equal in `Ω`. -/
+theorem visc_unique (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p)
+    {Ω : Set (EuclSpace d)} (hΩo : IsOpen Ω) (hΩb : Bornology.IsBounded Ω)
+    {u₁ u₂ : EuclSpace d → ℝ}
+    (h₁c : Continuous u₁) (h₂c : Continuous u₂)
+    (h₁a : BddAbove (range u₁)) (h₁b : BddBelow (range u₁))
+    (h₂a : BddAbove (range u₂)) (h₂b : BddBelow (range u₂))
+    (h₁sub : IsViscositySubsolution p Ω (fun _ => 0) u₁)
+    (h₁sup : IsViscositySupersolution p Ω (fun _ => 0) u₁)
+    (h₂sub : IsViscositySubsolution p Ω (fun _ => 0) u₂)
+    (h₂sup : IsViscositySupersolution p Ω (fun _ => 0) u₂)
+    (hbd : ∀ x ∈ frontier Ω, u₁ x = u₂ x) :
+    ∀ x ∈ Ω, u₁ x = u₂ x := by
+  intro x hx
+  apply le_antisymm
+  · exact visc_comparison hd hp hΩo hΩb h₁c.upperSemicontinuous
+      h₂c.lowerSemicontinuous h₁a h₁b h₂b h₂a h₁sub h₂sup
+      (fun y hy => (hbd y hy).le) x hx
+  · exact visc_comparison hd hp hΩo hΩb h₂c.upperSemicontinuous
+      h₁c.lowerSemicontinuous h₂a h₂b h₁b h₁a h₂sub h₁sup
+      (fun y hy => (hbd y hy).ge) x hx
+
+==============================================================================
+Theorem 6.3: alexandrov
+Plaplacian/Alexandrov.lean, lines 90-113
+==============================================================================
+
+/-- **Alexandrov's theorem.** -/
+theorem alexandrov : AlexandrovThm d := by
+  intro f hf
+  filter_upwards [ae_good hf] with x hx
+  obtain ⟨y, hJy, hdiff, hdet, hp0⟩ := hx
+  set B := fderiv ℝ (proxMap f) y with hB
+  have hd : HasFDerivAt (proxMap f) B y := hdiff.hasFDerivAt
+  obtain ⟨Binv, hinv, _⟩ := exists_inv_of_det hdet
+  set A : EuclSpace d →L[ℝ] EuclSpace d := Binv - ContinuousLinearMap.id ℝ (EuclSpace d)
+    with hA
+  have hAapp : ∀ v, A v = Binv v - v := fun v => by
+    rw [hA, sub_apply, ContinuousLinearMap.id_apply]
+  -- the linear approximation, for the chosen subgradients
+  have happrox : ∀ ε > 0, ∃ δ > 0, ∀ z, ‖z - x‖ < δ →
+      ‖subgradSel f z - (y - x) - A (z - x)‖ ≤ ε * ‖z - x‖ := by
+    intro ε hε
+    obtain ⟨δ, hδ, hb⟩ := subgrad_linear_approx hf hJy hd hinv hp0 hε
+    refine ⟨δ, hδ, fun z hz => ?_⟩
+    rw [hAapp]
+    exact hb z (subgradSel f z) hz (subgradSel_spec hf z)
+  -- the expansion, and the jet
+  have hexp := fun ε hε => peano_of_approx (subgradSel_spec hf) happrox (ε := ε) hε
+  exact ⟨y - x, formOfMatrix (fun i j => inner ℝ (A (obasis d i)) (obasis d j)),
+    twiceDiffAt_of_expansion (quad_formOfMatrix A) hexp⟩
+
+==============================================================================
+Theorem 6.4: jensen_positive_measure
+Plaplacian/JensenEucl.lean, lines 85-311
+==============================================================================
+
+/-- **Jensen's lemma on `ℝⁿ`** [CIL92, Lemma A.3], in the form of the
+*Superposition* formalization. -/
+theorem jensen_positive_measure {n : ℕ} (W : EuclSpace n → ℝ) (C : ℝ)
+    (hC : 0 ≤ C) (hconv : ConvexOn ℝ Set.univ (fun x => W x + C / 2 * ‖x‖ ^ 2))
+    (x₀ xs : EuclSpace n) (r δ : ℝ) (hr : 0 < r) (hδ : 0 < δ)
+    (hxs : xs ∈ closedBall x₀ r)
+    (hsphere : ∀ y, ‖y - x₀‖ = r → W y + 2 * δ * r < W xs) :
+    0 < volume {x | x ∈ ball x₀ r ∧ ∃ p : EuclSpace n, ‖p‖ ≤ δ ∧
+      ∀ y ∈ closedBall x₀ r, W y + inner ℝ p y ≤ W x + inner ℝ p x} := by
+  set K := {x | x ∈ ball x₀ r ∧ ∃ p : EuclSpace n, ‖p‖ ≤ δ ∧
+      ∀ y ∈ closedBall x₀ r, W y + inner ℝ p y ≤ W x + inner ℝ p x} with hKdef
+  -- Step 1: continuity
+  have hΦc : Continuous (fun x => W x + C / 2 * ‖x‖ ^ 2) := hconv.locallyLipschitz.continuous
+  have hWc : Continuous W := by
+    have := hΦc.sub ((continuous_const.mul (continuous_norm.pow 2)) :
+      Continuous (fun x : EuclSpace n => C / 2 * ‖x‖ ^ 2))
+    convert this using 1
+    funext x
+    simp
+  -- subgradients of Φ and the map g
+  have hsub := fun x => subgrad_exists hconv x
+  choose Q hQ0 using hsub
+  have hQ : ∀ x z, W x + C / 2 * ‖x‖ ^ 2 + inner ℝ (Q x) (z - x) ≤ W z + C / 2 * ‖z‖ ^ 2 :=
+    fun x z => hQ0 x z
+  let g : EuclSpace n → EuclSpace n := fun x => C • x - Q x
+  -- Step 3: uniqueness of the witness
+  have huniq : ∀ x ∈ ball x₀ r, ∀ p : EuclSpace n,
+      (∀ y ∈ closedBall x₀ r, W y + inner ℝ p y ≤ W x + inner ℝ p x) → p = g x := by
+    intro x hx p hp
+    set v := Q x - (C • x - p) with hv
+    have hxr : ‖x - x₀‖ < r := by rw [mem_ball, dist_eq_norm] at hx; exact hx
+    set t : ℝ := min (1 / (2 * (C + 1))) ((r - ‖x - x₀‖) / (‖v‖ + 1)) with ht
+    have ht0 : 0 < t := lt_min (by positivity) (div_pos (by linarith) (by positivity))
+    have ht1 : t ≤ 1 / (2 * (C + 1)) := min_le_left _ _
+    have ht2 : t ≤ (r - ‖x - x₀‖) / (‖v‖ + 1) := min_le_right _ _
+    have hyB : x + t • v ∈ closedBall x₀ r := by
+      rw [mem_closedBall, dist_eq_norm]
+      have e : x + t • v - x₀ = (x - x₀) + t • v := by abel
+      rw [e]
+      refine (norm_add_le _ _).trans ?_
+      rw [norm_smul, Real.norm_eq_abs, abs_of_pos ht0]
+      have h1 : t * (‖v‖ + 1) ≤ r - ‖x - x₀‖ := (le_div_iff₀ (by positivity)).mp ht2
+      nlinarith [norm_nonneg v]
+    have hup := hp _ hyB
+    have hlow := hQ x (x + t • v)
+    simp only [add_sub_cancel_left] at hlow
+    have hn : ‖x + t • v‖ ^ 2 = ‖x‖ ^ 2 + 2 * (t * inner ℝ x v) + t ^ 2 * ‖v‖ ^ 2 := by
+      rw [norm_add_sq_real, norm_smul, real_inner_smul_right, mul_pow, Real.norm_eq_abs, sq_abs]
+    rw [hn, real_inner_smul_right] at hlow
+    rw [inner_add_right, real_inner_smul_right] at hup
+    have hvv : ‖v‖ ^ 2 = inner ℝ (Q x) v - C * inner ℝ x v + inner ℝ p v := by
+      rw [← real_inner_self_eq_norm_sq]
+      conv_lhs => rw [hv]
+      rw [inner_sub_left, inner_sub_left, real_inner_smul_left]
+      ring
+    have hCt : C * t ≤ 1 / 2 := by
+      have : t * (2 * (C + 1)) ≤ 1 := (le_div_iff₀ (by positivity)).mp ht1
+      nlinarith
+    have htv := congrArg (fun z => t * z) hvv
+    have key : t * (‖v‖ ^ 2 - C / 2 * t * ‖v‖ ^ 2) ≤ 0 := by
+      have : t * (‖v‖ ^ 2 - C / 2 * t * ‖v‖ ^ 2)
+          = t * ‖v‖ ^ 2 - C / 2 * (t ^ 2 * ‖v‖ ^ 2) := by ring
+      rw [this]
+      nlinarith
+    have k2 : ‖v‖ ^ 2 - C / 2 * t * ‖v‖ ^ 2 ≤ 0 := by
+      by_contra hk
+      push Not at hk
+      linarith [mul_pos ht0 hk]
+    have k3 := mul_le_mul_of_nonneg_right hCt (sq_nonneg ‖v‖)
+    have hv0 : ‖v‖ ^ 2 ≤ 0 := by nlinarith [sq_nonneg ‖v‖]
+    have : v = 0 := by
+      have := pow_eq_zero_iff (n := 2) (two_ne_zero) |>.mp (le_antisymm hv0 (sq_nonneg _))
+      exact norm_eq_zero.mp this
+    rw [hv] at this
+    simp only [g]
+    rw [sub_eq_zero] at this
+    rw [this]; abel
+  -- Step 2: every small p is attained
+  have hattain : ∀ p : EuclSpace n, ‖p‖ ≤ δ → ∃ x ∈ K, g x = p := by
+    intro p hp
+    have hcont : ContinuousOn (fun x => W x + inner ℝ p x) (closedBall x₀ r) :=
+      (hWc.add (continuous_const.inner continuous_id)).continuousOn
+    obtain ⟨xp, hxpB, hxpmax⟩ := (isCompact_closedBall x₀ r).exists_isMaxOn
+      ⟨x₀, mem_closedBall_self hr.le⟩ hcont
+    have hmax : ∀ y ∈ closedBall x₀ r, W y + inner ℝ p y ≤ W xp + inner ℝ p xp :=
+      fun y hy => hxpmax hy
+    have hxpin : xp ∈ ball x₀ r := by
+      rw [mem_ball, dist_eq_norm]
+      rw [mem_closedBall, dist_eq_norm] at hxpB
+      rcases hxpB.lt_or_eq with h | h
+      · exact h
+      · exfalso
+        have h1 := hsphere xp h
+        have h2 := hmax xs hxs
+        rw [mem_closedBall, dist_eq_norm] at hxs
+        have c1 : |inner ℝ p (xp - x₀)| ≤ δ * r := by
+          refine (abs_real_inner_le_norm _ _).trans ?_
+          rw [h]; exact mul_le_mul_of_nonneg_right hp hr.le
+        have c2 : |inner ℝ p (xs - x₀)| ≤ δ * r :=
+          (abs_real_inner_le_norm _ _).trans (mul_le_mul hp hxs (norm_nonneg _) hδ.le)
+        rw [inner_sub_right] at c1 c2
+        have := (abs_le.mp c1).2
+        have := (abs_le.mp c2).1
+        linarith
+    refine ⟨xp, ⟨hxpin, p, hp, hmax⟩, (huniq xp hxpin p hmax).symm⟩
+  -- (U): upper quadratic bound at points of K
+  have hU : ∀ x ∈ K, ∀ y ∈ closedBall x₀ r,
+      W y + C / 2 * ‖y‖ ^ 2 ≤ W x + C / 2 * ‖x‖ ^ 2 + inner ℝ (Q x) (y - x)
+        + C / 2 * ‖y - x‖ ^ 2 := by
+    intro x hx y hy
+    obtain ⟨hxb, p, -, hwit⟩ := hx
+    have hpg := huniq x hxb p hwit
+    have h1 := hwit y hy
+    rw [hpg] at h1
+    have e1 : inner ℝ (g x) y - inner ℝ (g x) x
+        = C * inner ℝ x (y - x) - inner ℝ (Q x) (y - x) := by
+      rw [← inner_sub_right]
+      simp only [g]
+      rw [inner_sub_left, real_inner_smul_left]
+    have e2 : ‖y‖ ^ 2 = ‖x‖ ^ 2 + 2 * inner ℝ x (y - x) + ‖y - x‖ ^ 2 := by
+      have : y = x + (y - x) := by abel
+      conv_lhs => rw [this]
+      rw [norm_add_sq_real]
+    rw [e2]
+    nlinarith
+  -- Step 4: local Lipschitz bound for g on K
+  have hlip4 : ∀ θ > 0, ∀ x1 ∈ K, ∀ x2 ∈ K, ‖x1 - x₀‖ ≤ r - θ → ‖x2 - x₀‖ ≤ r - θ →
+      ‖x1 - x2‖ ≤ θ / 2 → ‖g x1 - g x2‖ ≤ 3 * C * ‖x1 - x2‖ := by
+    intro θ hθ x1 hx1 x2 hx2 h1 h2 hd
+    set dd := ‖x1 - x2‖ with hddef
+    set Δ := Q x2 - Q x1 with hΔ
+    have hg : g x1 - g x2 = C • (x1 - x2) + Δ := by
+      simp only [g, hΔ, smul_sub]; abel
+    have hΔb : ‖Δ‖ ≤ 2 * C * dd := by
+      rcases eq_or_ne Δ 0 with h0 | h0
+      · rw [h0, norm_zero]; positivity
+      have hΔpos : 0 < ‖Δ‖ := norm_pos_iff.mpr h0
+      have hdpos : 0 < dd := by
+        rcases (norm_nonneg (x1 - x2)).eq_or_lt with h | h
+        · exfalso
+          have : x1 = x2 := sub_eq_zero.mp (norm_eq_zero.mp h.symm)
+          exact h0 (by rw [hΔ, this, sub_self])
+        · exact h
+      set t := 2 * dd with htdef
+      set u := (t / ‖Δ‖) • Δ with hu
+      have hun : ‖u‖ = t := by
+        rw [hu, norm_smul, Real.norm_eq_abs, abs_of_nonneg (by positivity)]
+        field_simp
+      have hyB : x1 + u ∈ closedBall x₀ r := by
+        rw [mem_closedBall, dist_eq_norm]
+        have : x1 + u - x₀ = (x1 - x₀) + u := by abel
+        rw [this]
+        refine (norm_add_le _ _).trans ?_
+        rw [hun]; linarith
+      have L2 := hQ x2 (x1 + u)
+      have U1 := hU x1 hx1 (x1 + u) hyB
+      have L1 := hQ x1 x2
+      have e1 : x1 + u - x2 = u + (x1 - x2) := by abel
+      have e2 : x1 + u - x1 = u := by abel
+      have e3 : x2 - x1 = -(x1 - x2) := by abel
+      rw [e1, inner_add_right] at L2
+      rw [e2, hun] at U1
+      rw [e3, inner_neg_right] at L1
+      have hΔu : inner ℝ (Q x2) u - inner ℝ (Q x1) u = t * ‖Δ‖ := by
+        rw [← inner_sub_left, ← hΔ, hu, real_inner_smul_right, real_inner_self_eq_norm_sq]
+        field_simp
+      have hΔx : -(‖Δ‖ * dd) ≤ inner ℝ (Q x2) (x1 - x2) - inner ℝ (Q x1) (x1 - x2) := by
+        rw [← inner_sub_left, ← hΔ]
+        exact neg_le_of_abs_le (abs_real_inner_le_norm _ _)
+      have key : dd * ‖Δ‖ ≤ dd * (2 * C * dd) := by
+        rw [htdef] at hΔu U1
+        nlinarith
+      exact le_of_mul_le_mul_left key hdpos
+    rw [hg]
+    refine (norm_add_le _ _).trans ?_
+    rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg hC]
+    linarith
+  -- Step 5: conclusion
+  rw [pos_iff_ne_zero]
+  intro hK0
+  obtain ⟨c, hc⟩ := TopologicalSpace.exists_dense_seq (EuclSpace n)
+  let T : ℕ → ℕ → Set (EuclSpace n) := fun m j =>
+    K ∩ closedBall x₀ (r - 1 / ((m : ℝ) + 1)) ∩ closedBall (c j) (1 / (4 * ((m : ℝ) + 1)))
+  have hTK : ∀ m j, T m j ⊆ K := fun m j x hx => hx.1.1
+  have hTlip : ∀ m j, LipschitzOnWith (⟨3 * C, by positivity⟩ : NNReal) g (T m j) := by
+    intro m j
+    refine LipschitzOnWith.of_dist_le_mul fun x1 hx1 x2 hx2 => ?_
+    rw [dist_eq_norm, dist_eq_norm]
+    change ‖g x1 - g x2‖ ≤ 3 * C * ‖x1 - x2‖
+    have hm : (0 : ℝ) < 1 / ((m : ℝ) + 1) := by positivity
+    refine hlip4 (1 / ((m : ℝ) + 1)) hm x1 hx1.1.1 x2 hx2.1.1 ?_ ?_ ?_
+    · have := hx1.1.2; rwa [mem_closedBall, dist_eq_norm] at this
+    · have := hx2.1.2; rwa [mem_closedBall, dist_eq_norm] at this
+    · have a1 := hx1.2; have a2 := hx2.2
+      rw [mem_closedBall, dist_eq_norm] at a1 a2
+      have : x1 - x2 = (x1 - c j) - (x2 - c j) := by abel
+      rw [this]
+      refine (norm_sub_le _ _).trans ?_
+      have e : 1 / ((m : ℝ) + 1) / 2
+          = 1 / (4 * ((m : ℝ) + 1)) + 1 / (4 * ((m : ℝ) + 1)) := by
+        field_simp; ring
+      rw [e]; linarith
+  have hcover : K ⊆ ⋃ m, ⋃ j, T m j := by
+    intro x hx
+    have hxr : dist x x₀ < r := hx.1
+    obtain ⟨m, hm⟩ := exists_nat_one_div_lt (sub_pos.mpr hxr)
+    have hpos : (0 : ℝ) < 1 / (4 * ((m : ℝ) + 1)) := by positivity
+    obtain ⟨j, hj⟩ := hc.exists_dist_lt x hpos
+    refine mem_iUnion.mpr ⟨m, mem_iUnion.mpr ⟨j, ⟨hx, ?_⟩, ?_⟩⟩
+    · rw [mem_closedBall]; linarith
+    · rw [mem_closedBall]; exact hj.le
+  have hgK : volume (g '' K) = 0 := by
+    have hsubset : g '' K ⊆ ⋃ m, ⋃ j, g '' T m j := by
+      rintro _ ⟨x, hx, rfl⟩
+      obtain ⟨m, hm⟩ := mem_iUnion.mp (hcover hx)
+      obtain ⟨j, hj⟩ := mem_iUnion.mp hm
+      exact mem_iUnion.mpr ⟨m, mem_iUnion.mpr ⟨j, x, hj, rfl⟩⟩
+    refine measure_mono_null hsubset
+      (measure_iUnion_null fun m => measure_iUnion_null fun j => ?_)
+    exact lipschitzOn_image_null (hTlip m j) (measure_mono_null (hTK m j) hK0)
+  have hball : closedBall (0 : EuclSpace n) δ ⊆ g '' K := by
+    intro p hp
+    rw [mem_closedBall, dist_zero_right] at hp
+    obtain ⟨x, hxK, hgx⟩ := hattain p hp
+    exact ⟨x, hxK, hgx⟩
+  have := measure_mono_null hball hgK
+  exact (Metric.measure_closedBall_pos volume (0 : EuclSpace n) hδ).ne' this
+
+==============================================================================
+Theorem 7.1: ubar_le_bdry
+Plaplacian/BdryEst.lean, lines 323-340
+==============================================================================
+
+/-- **`ubar u ≤ F` at a boundary point with an exterior sphere.** -/
+theorem ubar_le_bdry [Nontrivial (EuclSpace d)] (hd : 0 < d) {p : ℝ} (hp : 2 ≤ p)
+    (hpd : 0 < p + (d : ℝ)) {Ω : Set (EuclSpace d)} {F : EuclSpace d → ℝ}
+    {u : ℝ → EuclSpace d → ℝ} {C : ℝ} (hC : ∀ ε y, |u ε y| ≤ C)
+    (hu : ∀ ε > 0, IsPHarmonious p ε Ω F (u ε))
+    (hout : ∀ ε > 0, ∀ x, x ∉ Ω → u ε x = F x)
+    {y₀ : EuclSpace d} (hFc : ContinuousAt F y₀)
+    {z₀ : EuclSpace d} {δ₀ : ℝ} (hδ₀ : 0 < δ₀) (hy₀z : ‖y₀ - z₀‖ = δ₀)
+    (hext : ∀ x ∈ Ω, δ₀ ≤ ‖x - z₀‖) :
+    ubar u y₀ ≤ F y₀ := by
+  apply le_of_forall_pos_le_add
+  intro η hη
+  obtain ⟨ε₁, hε₁, r₁, hr₁, hb⟩ := bdry_step hd hp hpd hC hu hout hFc hδ₀ hy₀z hext
+    (η₁ := η / 3) (by positivity)
+  have h := ubar_le_of_bound u hC (S := Ioo 0 ε₁) (Ioo_mem_nhdsGT hε₁)
+    (V := ball y₀ r₁) (b := F y₀ + 3 * (η / 3))
+    (fun ε hε x hx => hb ε hε.1 hε.2 x hx) (ball_mem_nhds y₀ hr₁)
+  linarith
+
+==============================================================================
+Theorem 7.2: exists_pharmonious
+Plaplacian/DirichletExistence.lean, lines 419-455
+==============================================================================
+
+/-- **Existence for the `ε`-problem with exterior data.** For bounded measurable
+data `F` with `|F| ≤ C`, there is a `p`-harmonious function in `Ω` with data `F`
+that equals `F` outside `Ω` and is bounded by `C`. -/
+theorem exists_pharmonious (p ε : ℝ) (hp : 2 ≤ p) (hε : 0 < ε) (hd : 0 < d)
+    (hpd : 0 < p + (d : ℝ)) {Ω : Set (EuclSpace d)} (hΩm : MeasurableSet Ω)
+    (hΩb : Bornology.IsBounded Ω)
+    {F : EuclSpace d → ℝ} (hFm : Measurable F) {C : ℝ}
+    (hFC : ∀ y, |F y| ≤ C) :
+    ∃ u : EuclSpace d → ℝ, IsPHarmonious p ε Ω F u
+      ∧ (∀ x, x ∉ Ω → u x = F x) ∧ ∀ y, |u y| ≤ C := by
+  have hC0 : 0 ≤ C := le_trans (abs_nonneg _) (hFC 0)
+  have hbd : ∀ y, |dirStart Ω F C y| ≤ C := by
+    intro y
+    by_cases hy : y ∈ Ω
+    · rw [dirStart_of_mem hy, abs_neg, abs_of_nonneg hC0]
+    · rw [dirStart_of_notMem hy]; exact hFC y
+  have hmeas : Measurable (dirStart Ω F C) := by
+    unfold dirStart
+    exact Measurable.ite hΩm measurable_const hFm
+  have hu₀ : BddMeas (dirStart Ω F C) := ⟨hmeas, ⟨C, hbd⟩⟩
+  have hstep : ∀ x, dirStart Ω F C x ≤ dppOp p ε Ω (dirStart Ω F C) x := by
+    intro x
+    by_cases hx : x ∈ Ω
+    · rw [dirStart_of_mem hx, dppOp_of_mem p ε hx]
+      exact (abs_le.1 (abs_tugOfWarOp_le p ε hp hε hpd hu₀ hbd x)).1
+    · exact (dppOp_of_notMem p ε hx _).symm.le
+  refine ⟨dirLimit p ε Ω (dirStart Ω F C), ⟨?_, ?_, ?_⟩, ?_, ?_⟩
+  · exact bddMeas_dirLimit p ε hp hε hd hpd hΩm hu₀ hbd hstep
+  · intro x hx
+    have h := dirLimit_fixed p ε hp hε hd hpd hΩm hΩb hu₀ hbd hstep x
+    rw [dppOp_of_mem p ε hx] at h
+    exact h.symm
+  · intro x hx
+    rw [dirLimit_eq_of_notMem p ε hx.1, dirStart_of_notMem hx.1]
+  · intro x hx
+    rw [dirLimit_eq_of_notMem p ε hx, dirStart_of_notMem hx]
+  · exact abs_dirLimit_le p ε hp hε hpd hΩm hu₀ hbd
+
+==============================================================================
+Theorem 7.3: pharmonious_unique
+Plaplacian/DiscUnique.lean, lines 300-314
+==============================================================================
+
+/-- **Uniqueness for the `ε`-problem.** Two `p`-harmonious functions in a bounded
+set `Ω` with data `F` that both equal `F` outside `Ω` are equal. -/
+theorem pharmonious_unique [Nontrivial (EuclSpace d)] (p ε : ℝ) (hp : 2 ≤ p)
+    (hε : 0 < ε) (hpd : 0 < p + (d : ℝ)) {Ω : Set (EuclSpace d)}
+    (hΩb : Bornology.IsBounded Ω) {F u v : EuclSpace d → ℝ}
+    (hu : IsPHarmonious p ε Ω F u) (hv : IsPHarmonious p ε Ω F v)
+    (huF : ∀ x, x ∉ Ω → u x = F x) (hvF : ∀ x, x ∉ Ω → v x = F x) :
+    u = v := by
+  have hout : ∀ x, x ∉ Ω → u x = v x := fun x hx => by rw [huF x hx, hvF x hx]
+  have h1 := sup_diff_nonpos p ε hp hε hpd hΩb hu.bddMeas hv.bddMeas
+    hu.interior hv.interior hout
+  have h2 := sup_diff_nonpos p ε hp hε hpd hΩb hv.bddMeas hu.bddMeas
+    hv.interior hu.interior (fun x hx => (hout x hx).symm)
+  funext x
+  exact le_antisymm (h2 x) (h1 x)
+
+
+PART II. DEFINITIONS USED IN THESE STATEMENTS
+
+==============================================================================
+Definition: BddMeas
+Plaplacian/StepOperator.lean, lines 75-80
+==============================================================================
+
+/-- Bounded and measurable: the class on which the step operator is defined.
+See the module docstring for why neither boundedness alone nor continuity is
+the right condition. -/
+structure BddMeas (v : EuclSpace d → ℝ) : Prop where
+  meas : Measurable v
+  bound : ∃ C, ∀ y, |v y| ≤ C
+
+==============================================================================
+Definition: tugOfWarOp
+Plaplacian/StepOperator.lean, lines 134-138
+==============================================================================
+
+/-- **The tug-of-war step operator.** -/
+def tugOfWarOp (p ε : ℝ) (v : EuclSpace d → ℝ) (x : EuclSpace d) : ℝ :=
+  (p - 2) / (p + (d : ℝ)) / 2 *
+      (sSup (v '' ball x ε) + sInf (v '' ball x ε))
+    + ((d : ℝ) + 2) / (p + (d : ℝ)) * (⨍ y in ball x ε, v y)
+
+==============================================================================
+Definition: dppOp
+Plaplacian/DppOperator.lean, lines 45-51
+==============================================================================
+
+open Classical in
+/-- The dynamic programming operator: the formula on `Ω`, the identity
+elsewhere. `open Classical in` supplies decidability of set membership; it is
+scoped to this definition so that no theorem statement below depends on it. -/
+def dppOp (p ε : ℝ) (Ω : Set (EuclSpace d)) (v : EuclSpace d → ℝ)
+    (x : EuclSpace d) : ℝ :=
+  if x ∈ Ω then tugOfWarOp p ε v x else v x
+
+==============================================================================
+Definition: bdryStrip
+Plaplacian/Domain.lean, lines 56-61
+==============================================================================
+
+/-- The boundary strip: points outside `Ω` within distance `ε` of it.
+
+Note the `≤`: see the module docstring for why strict inequality would leave
+the problem underdetermined. -/
+def bdryStrip (Ω : Set (EuclSpace d)) (ε : ℝ) : Set (EuclSpace d) :=
+  {x | x ∉ Ω ∧ Metric.infDist x Ω ≤ ε}
+
+==============================================================================
+Definition: IsPHarmonious
+Plaplacian/Domain.lean, lines 88-94
+==============================================================================
+
+/-- **The ε-Dirichlet problem.** The dynamic programming principle is taken as
+the definition of the discrete problem, not derived from a game. -/
+structure IsPHarmonious (p ε : ℝ) (Ω : Set (EuclSpace d))
+    (F : EuclSpace d → ℝ) (u : EuclSpace d → ℝ) : Prop where
+  bddMeas : BddMeas u
+  interior : ∀ x ∈ Ω, u x = tugOfWarOp p ε u x
+  boundary : ∀ x ∈ bdryStrip Ω ε, u x = F x
+
+==============================================================================
+Definition: IsViscositySubsolution
+Plaplacian/Viscosity.lean, lines 145-156
+==============================================================================
+
+/-- **Viscosity subsolution of `- Delta^N_p u = f`.** -/
+structure IsViscositySubsolution (p : ℝ) (Ω : Set (EuclSpace d))
+    (f : EuclSpace d → ℝ) (u : EuclSpace d → ℝ) : Prop where
+  usc : UpperSemicontinuousOn u Ω
+  regular : ∀ (φ : EuclSpace d → ℝ), ContDiff ℝ 2 φ →
+    ∀ x₀ ∈ Ω, IsLocalMax (fun y => u y - φ y) x₀ →
+      gradient φ x₀ ≠ 0 →
+      viscF p (gradient φ x₀) (hess φ x₀) ≤ f x₀
+  singular : ∀ (φ : EuclSpace d → ℝ), ContDiff ℝ 2 φ →
+    ∀ x₀ ∈ Ω, IsLocalMax (fun y => u y - φ y) x₀ →
+      gradient φ x₀ = 0 →
+      viscFLower p (hess φ x₀) ≤ f x₀
+
+==============================================================================
+Definition: IsViscositySupersolution
+Plaplacian/Viscosity.lean, lines 158-169
+==============================================================================
+
+/-- **Viscosity supersolution.** -/
+structure IsViscositySupersolution (p : ℝ) (Ω : Set (EuclSpace d))
+    (f : EuclSpace d → ℝ) (u : EuclSpace d → ℝ) : Prop where
+  lsc : LowerSemicontinuousOn u Ω
+  regular : ∀ (φ : EuclSpace d → ℝ), ContDiff ℝ 2 φ →
+    ∀ x₀ ∈ Ω, IsLocalMin (fun y => u y - φ y) x₀ →
+      gradient φ x₀ ≠ 0 →
+      f x₀ ≤ viscF p (gradient φ x₀) (hess φ x₀)
+  singular : ∀ (φ : EuclSpace d → ℝ), ContDiff ℝ 2 φ →
+    ∀ x₀ ∈ Ω, IsLocalMin (fun y => u y - φ y) x₀ →
+      gradient φ x₀ = 0 →
+      f x₀ ≤ viscFUpper p (hess φ x₀)
+
+==============================================================================
+Definition: ubar
+Plaplacian/Relaxed.lean, lines 57-59
+==============================================================================
+
+/-- The upper half-relaxed limit. -/
+def ubar (u : ℝ → EuclSpace d → ℝ) (x : EuclSpace d) : ℝ :=
+  Filter.limsup (fun q : ℝ × EuclSpace d => u q.1 q.2) (relaxFilter x)
+
+==============================================================================
+Definition: lbar
+Plaplacian/Relaxed.lean, lines 61-63
+==============================================================================
+
+/-- The lower half-relaxed limit. -/
+def lbar (u : ℝ → EuclSpace d → ℝ) (x : EuclSpace d) : ℝ :=
+  Filter.liminf (fun q : ℝ × EuclSpace d => u q.1 q.2) (relaxFilter x)
+
+==============================================================================
+AXIOMS
+==============================================================================
+
+The main theorems depend only on the axioms Classical.choice, Quot.sound, propext,
+which belong to Lean's core library and are not part of this development.
+To check: #print axioms PLaplacian.pharmonious_exists_converge
