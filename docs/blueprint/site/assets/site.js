@@ -55,3 +55,36 @@
     }
   }
 })();
+
+// ---- the library page: filtering, and formulas typeset when a declaration is opened
+(function () {
+  var filter = document.getElementById("lib-filter");
+  if (filter) {
+    var count = document.getElementById("lib-count");
+    var total = document.querySelectorAll("details.lib-decl").length;
+    filter.addEventListener("input", function () {
+      var q = filter.value.trim().toLowerCase(), shown = 0;
+      document.querySelectorAll("section.lib-file").forEach(function (sec) {
+        var any = false;
+        sec.querySelectorAll("details.lib-decl").forEach(function (d) {
+          var hit = !q || d.dataset.search.indexOf(q) >= 0;
+          d.classList.toggle("hidden", !hit);
+          if (hit) { any = true; shown++; }
+        });
+        sec.classList.toggle("hidden", !any);
+      });
+      if (count) count.textContent = q ? shown + " of " + total + " declarations match" :
+        count.dataset.all || count.textContent;
+    });
+    if (count) count.dataset.all = count.textContent;
+  }
+  document.querySelectorAll("details.lib-decl").forEach(function (d) {
+    d.addEventListener("toggle", function () {
+      var body = d.querySelector(".lib-body.mj-lazy");
+      if (!d.open || !body) return;
+      body.classList.remove("mj-lazy");
+      body.classList.add("mj-now");
+      if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([body]);
+    });
+  });
+})();

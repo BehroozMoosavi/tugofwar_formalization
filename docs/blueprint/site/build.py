@@ -418,7 +418,8 @@ def page(title, body, macros, extra_head=""):
                   "inlineMath": [["$", "$"], ["\\(", "\\)"]],
                   "displayMath": [["\\[", "\\]"], ["$$", "$$"]],
                   "processEnvironments": True},
-          "options": {"skipHtmlTags": ["script", "noscript", "style",
+          "options": {"ignoreHtmlClass": "mj-lazy", "processHtmlClass": "mj-now",
+                      "skipHtmlTags": ["script", "noscript", "style",
                                        "textarea", "pre", "code"]},
           "chtml": {"displayAlign": "center"}}
     return f"""<!DOCTYPE html>
@@ -442,7 +443,7 @@ def page(title, body, macros, extra_head=""):
 
 def nav(active):
     items = [("index.html", "Blueprint"), ("graph.html", "Dependency graph"),
-             ("graph3d.html", "3D map"),
+             ("graph3d.html", "3D map"), ("library.html", "All declarations"),
              (REPO_URL, "Repository"),
              (f"{REPO_URL}/blob/main/docs/blueprint/blueprint.pdf", "PDF")]
     links = "".join(
@@ -736,6 +737,73 @@ def build_graph3d(chapters, index, decls, macros):
     return page("3D dependency map \u2014 " + TITLE, body, macros), len(nodes), len(links)
 
 
+def decl_kind(code):
+    for line in code.split("\n"):
+        m = DECL_RE.match(line)
+        if m:
+            return m.group(1)
+    return "declaration"
+
+
+def build_library(index, decls, statements, sha, macros):
+    """Every declaration of the library, grouped by file, with its formal
+    statement generated from Lean and its source code."""
+    cited = {}
+    for n in index.values():
+        for name in n["lean"]:
+            d = find_decl(name, decls)
+            if d is not None:
+                cited.setdefault((d["file"], d["start"]), n)
+    by_file = {}
+    for name, d in decls.items():
+        by_file.setdefault(d["file"], []).append((d["start"], name, d))
+    n_stmt = sum(1 for name in decls if name in statements)
+    parts = [nav("All declarations"), '<main>',
+             '<header class="intro"><h1>All declarations</h1>',
+             f'<p>Every declaration of the development, {len(decls)} in {len(by_file)} files, '
+             f'with its formal statement generated from Lean and its source code at commit '
+             f'<a href="{REPO_URL}/tree/{sha}"><code>{sha[:7]}</code></a>. Declarations used '
+             f'in the blueprint link to their statement there. Open a declaration to see it.</p>',
+             '<input id="lib-filter" type="search" placeholder="Filter by name or file…" '
+             'aria-label="Filter declarations">',
+             f'<p id="lib-count">{len(decls)} declarations; {n_stmt} with an exported statement.</p>',
+             '</header>']
+    for f in sorted(by_file):
+        items = sorted(by_file[f])
+        parts.append(f'<section class="lib-file" data-file="{html.escape(f.lower())}">'
+                     f'<h2>{html.escape(f)}<span>{len(items)} declarations</span></h2>')
+        for start, name, d in items:
+            kind = decl_kind(d["code"])
+            short = name.replace("PLaplacian.", "")
+            node = cited.get((d["file"], d["start"]))
+            bp = (f'<a class="lib-bp" href="index.html#{html.escape(node["label"])}">'
+                  f'{KIND_NAMES[node["kind"]]} {node["number"]} in the blueprint</a>') if node else ''
+            st = statements.get(name)
+            if st is not None:
+                try:
+                    body, _ = lean2tex.render_statement(st)
+                except Exception:
+                    body = "<p><code>" + html.escape(st.get("conclusion", "")) + "</code></p>"
+                formal = ('<div class="formal"><div class="fs-head">Formal statement'
+                          '<span>generated from the Lean declaration</span></div>' + body + '</div>')
+            else:
+                formal = '<p class="lib-none">No exported statement.</p>'
+            url = f'{REPO_URL}/blob/{sha}/{d["file"]}#L{d["start"]}-L{d["end"]}'
+            parts.append(
+                f'<details class="lib-decl" data-search="{html.escape((short + " " + f).lower())}">'
+                f'<summary><span class="lib-kind {html.escape(kind)}">{html.escape(kind)}</span>'
+                f'<span class="lib-name">{html.escape(short)}</span>{bp}</summary>'
+                f'<div class="lib-body mj-lazy">{formal}'
+                f'<div class="decl"><div class="declhead"><code>{html.escape(name)}</code>'
+                f'<a class="where" href="{url}">{html.escape(d["file"])}, lines '
+                f'{d["start"]}–{d["end"]}</a></div>'
+                f'<pre class="lean"><code>{highlight_lean(d["code"])}</code></pre></div>'
+                f'</div></details>')
+        parts.append('</section>')
+    parts.append('</main>')
+    return page("All declarations — " + TITLE, "\n".join(parts), macros), len(decls), n_stmt
+
+
 def main():
     strict = "--strict" in sys.argv
     macros = read_macros()
@@ -748,7 +816,7 @@ def main():
     for asset in ("style.css", "site.js", "graph3d.js"):
         shutil.copy(SITE_SRC / "assets" / asset, OUT / "assets" / asset)
     # the names for ExportStatements.lean, and the statements it produced
-    names = sorted({x for n in index.values() for x in n["lean"]})
+    names = sorted({x for n in index.values() for x in n["lean"]} | set(decls))
     NAMES_FILE.write_text("\n".join(names) + "\n", encoding="utf-8")
     statements = load_statements()
     idx, missing = build_index(chapters, index, decls, sha, macros, statements)
@@ -758,6 +826,9 @@ def main():
     (OUT / "graph.dot").write_text(dot, encoding="utf-8")
     g3, n3, l3 = build_graph3d(chapters, index, decls, macros)
     (OUT / "graph3d.html").write_text(g3, encoding="utf-8")
+    lib, n_lib, n_lib_st = build_library(index, decls, statements, sha, macros)
+    (OUT / "library.html").write_text(lib, encoding="utf-8")
+    print(f"Library page: {n_lib} declarations, {n_lib_st} with a formal statement from Lean.")
     (OUT / ".nojekyll").write_text("")
     print(f"Read {len(index)} statements from the blueprint and "
           f"{len(decls)} declarations from {nfiles} Lean files.")
