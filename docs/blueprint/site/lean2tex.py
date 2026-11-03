@@ -48,7 +48,9 @@ def tokenize(s):
 # Identifiers
 # ---------------------------------------------------------------------------
 
-GREEK = {"α": r"\alpha", "β": r"\beta", "γ": r"\gamma", "δ": r"\delta",
+GREEK = {"ι": r"\iota", "υ": r"\upsilon", "ϵ": r"\epsilon", "ϑ": r"\vartheta",
+         "ϕ": r"\phi", "ς": r"\varsigma", "Υ": r"\Upsilon",
+         "α": r"\alpha", "β": r"\beta", "γ": r"\gamma", "δ": r"\delta",
          "ε": r"\varepsilon", "ζ": r"\zeta", "η": r"\eta", "θ": r"\theta",
          "κ": r"\kappa", "λ": r"\lambda", "μ": r"\mu", "ν": r"\nu", "ξ": r"\xi",
          "π": r"\pi", "ρ": r"\rho", "σ": r"\sigma", "τ": r"\tau", "φ": r"\varphi",
@@ -447,9 +449,16 @@ def math_or_code(lean):
         return "<code>" + html.escape(lean) + "</code>", False
 
 
+def is_universe(lean_type):
+    """Types of types: Type, Type u, Type*, Sort u."""
+    return re.fullmatch(r"(Type|Sort)(\s+\S+|\*)?", lean_type.strip()) is not None
+
+
 def type_clause(names, lean_type):
     """`p ε : ℝ` -> $p, ε \\in ℝ$;  `Ω : Set E` -> $Ω \\subseteq E$;  `u : E → ℝ` -> $u \\colon E \\to ℝ$."""
     vs = ", ".join(ident_tex(n) for n in names)
+    if is_universe(lean_type):
+        return ("$%s$ be types" if len(names) > 1 else "$%s$ be a type") % vs, True
     try:
         if lean_type.startswith("Set "):
             return "$%s \\subseteq %s$" % (vs, to_tex(lean_type[4:])), True
@@ -564,19 +573,32 @@ def tex_escape(s):
     return "".join(out)
 
 
+def ascii_only(tex):
+    return all(ord(c) < 128 for c in tex)
+
+
 def math_or_code_tex(lean):
     try:
-        return "$" + to_tex(lean) + "$", True
+        tex = to_tex(lean)
+        if not ascii_only(tex):            # e.g. a symbol missing from the tables
+            raise Unsupported("non-ASCII character in formula")
+        return "$" + tex + "$", True
     except (Unsupported, IndexError, RecursionError):
         return r"\texttt{" + tex_escape(lean) + "}", False
 
 
 def type_clause_tex(names, lean_type):
     vs = ", ".join(ident_tex(n) for n in names)
+    if is_universe(lean_type):
+        return ("$%s$ be types" if len(names) > 1 else "$%s$ be a type") % vs, ascii_only(vs)
     try:
+        if not ascii_only(vs):
+            raise Unsupported("non-ASCII variable")
         if lean_type.startswith("Set "):
             return "$%s \\subseteq %s$" % (vs, to_tex(lean_type[4:])), True
         tt = to_tex(lean_type)
+        if not ascii_only(tt):
+            raise Unsupported("non-ASCII character in formula")
         if "→" in lean_type:
             return "$%s \\colon %s$" % (vs, tt), True
         return "$%s \\in %s$" % (vs, tt), True
