@@ -8,20 +8,20 @@ import Plaplacian.StepOperator
 /-!
 # The boundary strip and the ε-Dirichlet problem
 
-The step operator at a point `x` reads the values of `v` on the closed ball
-`closedBall x ε`. So for the discrete problem on a domain `Ω` the data must be
+The step operator at a point `x` reads the values of `v` on the open ball
+`ball x ε`. So for the discrete problem on a domain `Ω` the data must be
 prescribed not on `∂Ω` but on a *strip* of width `ε` outside `Ω`. This file
 defines that strip, the ε-Dirichlet problem, and the containment lemma that
 makes the formulation well posed.
 
-## A correction forced by formalization
+## The inequality in the strip
 
-The informal literature typically defines the strip with a strict inequality,
-`Γ_ε = {x ∉ Ω : dist x Ω < ε}`, while the operator averages over the *closed*
-ball of radius `ε`. Those two choices are inconsistent: a point at distance
-exactly `ε` from `Ω` is read by the operator but receives no data, so `u` is
-underdetermined there. We therefore take `≤` in the strip, which makes
-`closedBall_subset_union` exact.
+For `x ∈ Ω`, every point `y` of the open ball `ball x ε` satisfies
+`dist y Ω ≤ dist y x < ε`, so the operator never reads a point at distance
+exactly `ε` from `Ω`, and a strip defined with `<` would determine it as well.
+We take `≤`, which makes the closed ball `closedBall x ε` lie in
+`Ω ∪ bdryStrip Ω ε` (`closedBall_subset_union`), since the points of its sphere
+may lie at distance exactly `ε`.
 
 ## Main definitions
 
@@ -55,8 +55,7 @@ namespace PLaplacian
 
 /-- The boundary strip: points outside `Ω` within distance `ε` of it.
 
-Note the `≤`: see the module docstring for why strict inequality would leave
-the problem underdetermined. -/
+The `≤` makes `closedBall_subset_union` hold; see the module docstring. -/
 def bdryStrip (Ω : Set (EuclSpace d)) (ε : ℝ) : Set (EuclSpace d) :=
   {x | x ∉ Ω ∧ Metric.infDist x Ω ≤ ε}
 

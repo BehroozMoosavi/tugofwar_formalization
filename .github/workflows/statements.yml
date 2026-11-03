@@ -1,0 +1,70 @@
+name: Lean statements
+
+# Builds the library, exports the statement of every declaration cited in the
+# blueprint from Lean, regenerates the website files and the blueprint PDF,
+# and commits the generated files back to the repository.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Plaplacian/**"
+      - "docs/blueprint/content.tex"
+      - "docs/blueprint/print.tex"
+      - "docs/blueprint/site/**"
+      - ".github/workflows/statements.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: statements
+  cancel-in-progress: true
+
+jobs:
+  statements:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - uses: actions/checkout@v5
+
+      - name: Build the library
+        uses: leanprover/lean-action@v1
+
+      - name: List the declarations cited in the blueprint
+        run: python3 docs/blueprint/site/build.py
+
+      - name: Export their statements from Lean
+        run: lake env lean docs/blueprint/site/ExportStatements.lean
+
+      - name: Install Graphviz and LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz latexmk texlive-latex-base \
+            texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+
+      - name: Build the website files and the blueprint LaTeX
+        run: python3 docs/blueprint/site/build.py
+
+      - name: Compile the blueprint PDF
+        run: |
+          cd docs/blueprint
+          latexmk -pdf -interaction=nonstopmode -halt-on-error print.tex
+          cp print.pdf blueprint.pdf
+
+      - name: Commit the generated files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/blueprint/site/statements.json docs/blueprint/site/lean_names.txt \
+                  docs/blueprint/content-formal.tex docs/blueprint/blueprint.pdf
+          if git diff --cached --quiet; then
+            echo "Generated files unchanged."
+          else
+            git commit -m "Regenerate statements from Lean, blueprint LaTeX and PDF [automated]"
+            git push
+          fi
