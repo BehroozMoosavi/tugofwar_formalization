@@ -468,7 +468,11 @@ def formal_block(n, statements):
         st = statements.get(name)
         if st is None:
             continue
-        body, ok = lean2tex.render_statement(st)
+        try:
+            body, ok = lean2tex.render_statement(st)
+        except Exception as e:                     # never let one statement stop the build
+            warn(f"could not typeset {name} ({type(e).__name__}); shown as Lean code")
+            body, ok = "<p><code>" + html.escape(st.get("conclusion", "")) + "</code></p>", False
         note = "" if ok else '<span class="fs-note">parts shown as Lean code</span>'
         blocks.append(f'<div class="fs-decl"><div class="fs-name"><code>'
                       f'{html.escape(name.replace("PLaplacian.", ""))}</code>{note}</div>'
@@ -499,7 +503,12 @@ def write_formal_blueprint(statements):
             st = statements.get(name)
             if st is None:
                 continue
-            body, ok = lean2tex.render_statement_tex(st)
+            try:
+                body, ok = lean2tex.render_statement_tex(st)
+            except Exception as e:                 # never let one statement stop the build
+                warn(f"could not typeset {name} for the PDF ({type(e).__name__})")
+                body = "\\texttt{" + lean2tex.tex_escape(st.get("conclusion", "")) + "}\n"
+                ok = False
             partial += not ok
             blocks.append("\\begin{formalstatement}{%s}\n%s\\end{formalstatement}\n"
                           % (lean2tex.tex_escape(name.replace("PLaplacian.", "")), body))
@@ -762,8 +771,12 @@ def main():
         n_tex, n_partial = write_formal_blueprint(statements)
         print(f"Blueprint LaTeX: {n_tex} formal statements generated from Lean "
               f"into docs/blueprint/content-formal.tex.")
-        partial = [name for name, st in statements.items()
-                   if not lean2tex.render_statement(st)[1]]
+        def _typeset(st):
+            try:
+                return lean2tex.render_statement(st)[1]
+            except Exception:
+                return False
+        partial = [name for name, st in statements.items() if not _typeset(st)]
         print(f"Formal statements: {len(statements)} declarations read from statements.json; "
               f"{len(statements) - len(partial)} fully typeset.")
         for name in partial:

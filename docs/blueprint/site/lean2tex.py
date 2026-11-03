@@ -12,7 +12,7 @@ import re
 # Tokens
 # ---------------------------------------------------------------------------
 
-SYMBOLS = ["∀ᶠ", "∃ᶠ", "=>", "⁻¹", "≤", "≥", "≠", "→", "↔", "∧", "∨", "¬", "∈", "∉", "⊆",
+SYMBOLS = ["∀ᶠ", "∃ᶠ", "=>", "⁻¹", "\\", "≤", "≥", "≠", "→", "↔", "∧", "∨", "¬", "∈", "∉", "⊆",
            "⊂", "∩", "∪", "∀", "∃", "⨍", "∫", "⨆", "⨅", "∑", "∏", "‖", "|",
            "↑", "•", "∘", "×", "(", ")", "[", "]", "{", "}", "⟨", "⟩", "⟪",
            "⟫", ",", ":", "+", "-", "*", "/", "^", "=", "<", ">", "∞", "''"]
@@ -72,6 +72,8 @@ def strip_ns(name):
 
 def ident_tex(name):
     name = strip_ns(name)
+    if len(name) > 1 and name.endswith("ᶜ"):         # the complement Ωᶜ
+        return ident_tex(name[:-1]) + "^{c}"
     if name in CONSTANTS:
         return CONSTANTS[name]
     m = re.fullmatch(r"([^\W\d_]+?)([₀-₉]+|'+)?", name)
@@ -171,7 +173,7 @@ SUFFIX_PREDICATES = {"Nonempty": "is nonempty"}
 INFIX = {"≤": r"\le", "≥": r"\ge", "<": "<", ">": ">", "=": "=", "≠": r"\ne",
          "→": r"\to", "↔": r"\iff", "∧": r"\wedge", "∨": r"\vee", "∈": r"\in",
          "∉": r"\notin", "⊆": r"\subseteq", "⊂": r"\subset", "∩": r"\cap",
-         "∪": r"\cup", "+": "+", "-": "-", "*": r"\cdot", "/": "/",
+         "∪": r"\cup", "\\": r"\setminus", "+": "+", "-": "-", "*": r"\cdot", "/": "/",
          "•": r"\cdot", "∘": r"\circ", "×": r"\times"}
 BINDERS = ("∀", "∃", "fun", "⨍", "∫", "⨆", "⨅")
 
@@ -394,9 +396,16 @@ def to_tex(lean):
 
 
 def split_conjunction(lean):
-    """Split a Lean proposition at its top-level conjunctions."""
+    """Split a Lean proposition at its top-level conjunctions.
+
+    Notation the tokenizer does not know is left to the renderer, which shows
+    it as Lean code, so the proposition is returned whole."""
+    try:
+        tokens = tokenize(lean)
+    except Unsupported:
+        return [lean]
     parts, depth, cur = [], 0, []
-    for tok in tokenize(lean):
+    for tok in tokens:
         if tok in ("(", "⟨", "{", "[", "⟪"):
             depth += 1
         elif tok in (")", "⟩", "}", "]", "⟫"):
