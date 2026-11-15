@@ -1,0 +1,148 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Convergence of the tug-of-war scheme for the normalized p-Laplacian"
+  description: |
+    A Lean 4 formalization, on top of Mathlib, of the convergence of
+    p-harmonious functions, the solutions of the dynamic programming principle
+    of tug-of-war with noise, to the viscosity solution of the Dirichlet problem
+    for the normalized p-Laplacian, 2 <= p < infinity, as the step size tends to
+    zero, on bounded open sets satisfying the exterior sphere condition with
+    continuous bounded boundary data. The compared theorem gives, for every step
+    size, a p-harmonious function with the given data, uniformly bounded, whose
+    half-relaxed limits agree on the closure of the domain, equal the data on
+    its boundary, and are the uniform limit of the family. The development also
+    proves the asymptotic expansion of the scheme, the viscosity property of the
+    half-relaxed limits, existence and uniqueness for the discrete problem, the
+    comparison principle and uniqueness for the limit equation, Aleksandrov's
+    theorem and Jensen's lemma.
+  authors:
+    - name: "Juan J. Manfredi"
+    - name: "Behrooz Moosavi"
+      github: "BehroozMoosavi"
+  responsible_maintainers:
+    - name: "Behrooz Moosavi"
+      github: "BehroozMoosavi"
+    - name: "Juan J. Manfredi"
+  license: "Apache-2.0"
+
+sources:
+  - title: "On the definition and properties of p-harmonious functions"
+    authors: ["Juan J. Manfredi", "Mikko Parviainen", "Julio D. Rossi"]
+    id: "Ann. Sc. Norm. Super. Pisa Cl. Sci. (5) 11 (2012), no. 2, 215-241"
+    type: "article"
+    location: "Theorem 1.6"
+    relationship: "adapts"
+    note: >-
+      The formalization proves a version of Theorem 1.6 for the normalized
+      p-Laplacian on bounded open sets with the exterior sphere condition at
+      every boundary point (the source assumes a uniform exterior ball
+      condition), with continuous data on all of R^d, and by an analytic route
+      (no games or martingales).
+    author_endorsement: "participated"
+  - title: "Convergence of approximation schemes for fully nonlinear second order equations"
+    authors: ["Guy Barles", "Panagiotis E. Souganidis"]
+    id: "Asymptotic Anal. 4 (1991), 271-283"
+    type: "article"
+    relationship: "background"
+    note: "The convergence argument through half-relaxed limits follows this paper."
+  - title: "On the existence and uniqueness of p-harmonious functions"
+    authors: ["Hannes Luiro", "Mikko Parviainen", "Eero Saksman"]
+    id: "Differential Integral Equations 27 (2014), no. 3-4, 201-216"
+    type: "article"
+    relationship: "background"
+    note: >-
+      The analytic existence argument and the uniqueness strategy (Theorem 2.2)
+      for the discrete problem follow this paper; the uniqueness proof is a
+      quantitative variant that propagates near-maxima instead of the maximal set.
+  - title: "Convergence of dynamic programming principles for the p-Laplacian"
+    authors: ["Felix del Teso", "Juan J. Manfredi", "Mikko Parviainen"]
+    id: "Adv. Calc. Var. 15 (2022), no. 2, 191-212"
+    type: "article"
+    relationship: "background"
+  - title: "A formally verified convergence theorem for the tug-of-war scheme of the normalized p-Laplacian"
+    authors: ["Juan J. Manfredi", "Behrooz Moosavi"]
+    type: "article"
+    relationship: "other"
+    note: "The article describing this formalization (submitted to arXiv, 2026)."
+
+related_formalizations: []
+
+classification:
+  arxiv: ["math.AP", "cs.LO"]
+  msc2020: ["35J92", "35D40", "49L20", "68V20"]
+
+status:
+  scope: >-
+    The full convergence theorem, with every result it uses proved in Lean:
+    the asymptotic expansion, the viscosity property of the relaxed limits,
+    the boundary estimate, existence and uniqueness for the discrete problem,
+    the comparison principle and uniqueness for the limit equation,
+    Aleksandrov's theorem and Jensen's lemma.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
+  main_results:
+    - declaration: "PLaplacian.pharmonious_exists_converge"
+      file: "Plaplacian/DirichletExistence.lean"
+      sorry_count: 0
+      axioms: ["propext", "Classical.choice", "Quot.sound"]
+      comparator_config: "comparator.json"
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["Claude (Anthropic)"]
+      framework: "claude.ai, with code execution"
+      tool_setup: >-
+        The model proposed formal statements and drafted Lean files under the
+        authors' direction; every draft was compiled against the pinned Lean
+        toolchain and Mathlib, and corrections were driven by the compiler's
+        output.
+      prompting_notes: >-
+        The mathematical route (definitions, statements and proof strategy) was
+        fixed by the authors; the model produced the Lean code, the blueprint
+        and the documentation.
+  notes: >-
+    As stated in the accompanying article, the formalization was carried out
+    with extensive use of a large language model under the authors' direction.
+    The Lean kernel checks every proof.
+
+fidelity:
+  divergences: >-
+    (1) The domain condition is the exterior sphere condition at every boundary
+    point, with a ball that may depend on the point; MPR12 assume a uniform
+    exterior ball condition. (2) The data F is a bounded continuous function on
+    all of R^d, and u_eps is required to equal F on the whole complement of the
+    domain, not only on the boundary strip. (3) The extreme values in the step
+    operator are taken over open balls, and the boundary strip is
+    {x outside the domain : dist(x, domain) <= eps}. (4) The equation is the
+    normalized p-Laplacian; for the homogeneous equation its viscosity
+    solutions coincide with those of the p-Laplace equation used in MPR12.
+    (5) The compared theorem asserts existence, boundedness, agreement of the
+    half-relaxed limits, the boundary values and uniform convergence; that the
+    limit is a viscosity solution, and the uniqueness results, are proved in the
+    library (ubar_isViscositySubsolution, lbar_isViscositySupersolution,
+    visc_unique, pharmonious_unique) but are not part of the compared
+    statement. (6) The hypotheses 0 < p + d and Nontrivial (EuclSpace d) are
+    redundant, following from 2 <= p and 0 < d.
+
+review:
+  status: "self-assessed"
+  reviewers: ["Juan J. Manfredi", "Behrooz Moosavi"]
+  notes: >-
+    The authors checked the formal statements against the informal ones; the
+    accompanying article states every theorem together with its Lean statement.
+
+alignment:
+  namespace: "PLaplacian"
+  statements:
+    - source: "Main Theorem of the article; MPR12, Theorem 1.6 (adapted)"
+      lean: "PLaplacian.pharmonious_exists_converge"
+      module: "Plaplacian/DirichletExistence.lean"
+      status: "proved"
+
+acknowledgements: >-
+  The Mathlib community and the developers of Lean. J. J. Manfredi was partially
+  supported by Simons Foundation gift no. 962828.
