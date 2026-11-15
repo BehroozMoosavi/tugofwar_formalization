@@ -46,11 +46,14 @@ equal `F` on its boundary; and `u_ε → ū` uniformly on the closure of `Ω` as
 * The statement asserts existence of the family, the bound, the agreement of
   the relaxed limits, the boundary values and uniform convergence. It does not
   itself assert that the limit is a viscosity solution of `-Δ_p^N u = 0`, nor
-  uniqueness. Those are proved in the library and used in the proof:
-  `ubar_isViscositySubsolution`, `lbar_isViscositySupersolution` (the limit is
-  a viscosity solution), `visc_comparison` and `visc_unique` (comparison and
-  uniqueness for the limit equation), and `pharmonious_unique` (uniqueness of
-  `u_ε` for each `ε`).
+  uniqueness. The proof combines `exists_pharmonious` (existence for each
+  `ε`) with `pharmonious_converge` (convergence), which uses
+  `ubar_isViscositySubsolution` and `lbar_isViscositySupersolution` (the
+  relaxed limits are viscosity sub- and supersolutions), `ubar_le_bdry` (the
+  boundary estimate) and `visc_comparison` (the comparison principle).
+  Uniqueness is proved separately in the library and is not used in this
+  proof: `visc_unique` for the limit equation, and `pharmonious_unique` for
+  `u_ε` with each `ε`.
 * The hypotheses `0 < p + d` and `Nontrivial (EuclSpace d)` follow from
   `2 ≤ p` and `0 < d`; they are stated explicitly, as in the library.
 * `u ε` is required to equal `F` on all of the complement of `Ω`, not only on

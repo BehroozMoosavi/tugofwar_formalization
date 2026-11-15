@@ -26,10 +26,15 @@ appear.
 - **Complete:** every theorem is fully proved; the library contains no `sorry`.
 - **Axioms:** the main theorems depend only on Lean's standard axioms,
   `propext`, `Classical.choice` and `Quot.sound`.
-- **Size:** 29,380 lines in 225 Lean files.
-- **Versions:** Lean `4.34.0-rc2` (toolchain `leanprover/lean4:v4.34.0-rc2`),
-  Mathlib commit `85e3a25e006c35636f0e53b0e9296caca2685bc0`.
-- **Release described in the papers:** tag [`v1.3`](../../tree/v1.3).
+- **Size:** 225 Lean files in `Plaplacian/` (29,380 lines at `v1.3`).
+- **Versions of this commit:** Lean `4.35.0` (toolchain `leanprover/lean4:v4.35.0`),
+  Mathlib `v4.35.0` (commit `56a005855ea17e0b0958f73ec801ae140b0a1679`). The library uses the Lean module
+  system, and `Challenge.lean`, `Solution.lean`, `comparator.json` and
+  `formalization.yaml` are the files for the Palomar registry.
+- **Release described in the papers:** tag [`v1.3`](../../tree/v1.3), built
+  with Lean `4.34.0-rc2` (toolchain `leanprover/lean4:v4.34.0-rc2`) and
+  Mathlib commit `85e3a25e006c35636f0e53b0e9296caca2685bc0`. The theorem
+  statements are the same in both versions.
 
 ## Main results
 
@@ -179,7 +184,7 @@ nothing.
 ## Paper
 
 J. J. Manfredi and B. Moosavi, *A formally verified convergence theorem for the
-tug-of-war scheme of the normalized p-Laplacian*, in preparation.
+tug-of-war scheme of the normalized p-Laplacian*, submitted to arXiv, 2026.
 
 ## How the development was produced
 
