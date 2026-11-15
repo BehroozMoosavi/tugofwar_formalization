@@ -1,3 +1,8 @@
+# Assembly
+
+Planning notes from the development, kept for reference. The Lean code below is not compiled.
+
+```lean
 /-
 Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -126,3 +131,4 @@ theorem ubar_regular [Nontrivial (EuclSpace d)] (hd : 0 < d) {p : ℝ}
 end
 
 end PLaplacian
+```

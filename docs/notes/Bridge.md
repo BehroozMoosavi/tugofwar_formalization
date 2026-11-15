@@ -1,3 +1,8 @@
+# Bridge
+
+Planning notes from the development, kept for reference. The Lean code below is not compiled.
+
+```lean
 import Mathlib
 
 open Set Topology Filter
@@ -52,3 +57,4 @@ theorem iteratedDerivWithin_two_eq (g : ℝ → ℝ) {a b t : ℝ}
   exact (derivWithin_eventuallyEq g ht).deriv_eq
 
 #check @Filter.EventuallyEq.deriv_eq
+```

@@ -1,3 +1,8 @@
+# Route3
+
+Planning notes from the development, kept for reference. The Lean code below is not compiled.
+
+```lean
 import Mathlib
 import Plaplacian.LineRestrict
 
@@ -75,3 +80,4 @@ example (φ : EuclSpace d → ℝ) (hφ : ContDiff ℝ 2 φ) :
 end
 
 end PLaplacian
+```

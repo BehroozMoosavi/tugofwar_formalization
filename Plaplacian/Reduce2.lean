@@ -3,8 +3,12 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
-import Plaplacian.Reduce1
+module
+
+public import Mathlib
+public import Plaplacian.Reduce1
+
+@[expose] public section
 
 /-! # The reduction, part two: the convolutions inherit the strict maximum
 

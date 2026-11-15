@@ -3,7 +3,11 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Plaplacian.DomainBounds
+module
+
+public import Plaplacian.DomainBounds
+
+@[expose] public section
 
 /-!
 # The three bounds of the uniform convergence argument

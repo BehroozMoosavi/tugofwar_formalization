@@ -3,19 +3,23 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
-import Plaplacian.MainConv
-import Plaplacian.DppOperator
-import Plaplacian.LimitMeas
-import Plaplacian.DeficitMono
-import Plaplacian.DomainBounds
-import Plaplacian.UniformLimit
-import Plaplacian.IndexSelection
-import Plaplacian.Dominated
-import Plaplacian.Bounds
-import Plaplacian.UniformIteration
-import Plaplacian.Discharge
-import Plaplacian.Selection
+module
+
+public import Mathlib
+public import Plaplacian.MainConv
+public import Plaplacian.DppOperator
+public import Plaplacian.LimitMeas
+public import Plaplacian.DeficitMono
+public import Plaplacian.DomainBounds
+public import Plaplacian.UniformLimit
+public import Plaplacian.IndexSelection
+public import Plaplacian.Dominated
+public import Plaplacian.Bounds
+public import Plaplacian.UniformIteration
+public import Plaplacian.Discharge
+public import Plaplacian.Selection
+
+@[expose] public section
 
 /-!
 # Existence for the `ε`-problem with exterior data, and unconditional convergence

@@ -3,8 +3,12 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
-import Plaplacian.SMPMin
+module
+
+public import Mathlib
+public import Plaplacian.SMPMin
+
+@[expose] public section
 
 /-! # The change of values, at the level of jets
 

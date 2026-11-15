@@ -3,8 +3,12 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
-import Plaplacian.BarrierPoly
+module
+
+public import Mathlib
+public import Plaplacian.BarrierPoly
+
+@[expose] public section
 
 /-! # The barrier is a strict discrete supersolution
 

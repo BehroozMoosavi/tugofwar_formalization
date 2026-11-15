@@ -3,8 +3,12 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
-import Plaplacian.Radius
+module
+
+public import Mathlib
+public import Plaplacian.Radius
+
+@[expose] public section
 
 /-!
 # The average of a quadratic form over a ball

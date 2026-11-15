@@ -3,8 +3,12 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Plaplacian.Domain
-import Plaplacian.BallMoments
+module
+
+public import Plaplacian.Domain
+public import Plaplacian.BallMoments
+
+@[expose] public section
 
 /-!
 # Extreme values of the norm on a ball, and averages of low-order polynomials

@@ -3,9 +3,13 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.Tactic.Positivity
+
+@[expose] public section
 
 /-!
 # Averages over balls

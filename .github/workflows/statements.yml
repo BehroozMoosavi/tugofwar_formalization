@@ -39,7 +39,7 @@ jobs:
         run: python3 docs/blueprint/site/build.py
 
       - name: Export their statements from Lean
-        run: lake env lean docs/blueprint/site/ExportStatements.lean
+        run: sh docs/blueprint/site/export.sh
 
       - name: Install Graphviz and LaTeX
         run: |

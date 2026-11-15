@@ -3,9 +3,13 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
-import Plaplacian.QuadAverage
-import Plaplacian.Taylor2D
+module
+
+public import Mathlib
+public import Plaplacian.QuadAverage
+public import Plaplacian.Taylor2D
+
+@[expose] public section
 
 /-!
 # The clean terms of the average expansion
