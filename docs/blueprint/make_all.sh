@@ -6,7 +6,7 @@ set -e
 echo "1/4  Listing the Lean declarations cited in the blueprint"
 python3 docs/blueprint/site/build.py > /dev/null
 echo "2/4  Exporting their statements from Lean (about a minute)"
-lake env lean docs/blueprint/site/ExportStatements.lean
+sh docs/blueprint/site/export.sh
 echo "3/4  Building the website and the blueprint LaTeX"
 python3 docs/blueprint/site/build.py
 echo "4/4  Compiling the blueprint PDF"

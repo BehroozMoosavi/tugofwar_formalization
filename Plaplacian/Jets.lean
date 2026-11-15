@@ -3,8 +3,12 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
-import Plaplacian.ViscC2
+module
+
+public import Mathlib
+public import Plaplacian.ViscC2
+
+@[expose] public section
 
 /-! # Jets, and the statement of the theorem of sums
 

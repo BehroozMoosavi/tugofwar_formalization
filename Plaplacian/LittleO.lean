@@ -3,8 +3,12 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
-import Plaplacian.LocalCmp
+module
+
+public import Mathlib
+public import Plaplacian.LocalCmp
+
+@[expose] public section
 
 /-!
 # Second-order Taylor with a little-o remainder, along a line

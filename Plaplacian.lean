@@ -1,225 +1,229 @@
-import Plaplacian.AddSmooth
-import Plaplacian.Alexandrov
-import Plaplacian.AllOrders
-import Plaplacian.Annulus
-import Plaplacian.ApproxCmp
-import Plaplacian.AsmCond
-import Plaplacian.AsmFreq
-import Plaplacian.AtPair
-import Plaplacian.Average
-import Plaplacian.AvgErrBound
-import Plaplacian.AvgExpansion
-import Plaplacian.AvgRate
-import Plaplacian.AvgTerms
-import Plaplacian.AvgUnif
-import Plaplacian.BallCont
-import Plaplacian.BallMoments
-import Plaplacian.BandEst
-import Plaplacian.BarrierPoly
-import Plaplacian.Basic
-import Plaplacian.BdryEst
-import Plaplacian.BdryPrep
-import Plaplacian.Bounds
-import Plaplacian.C2Diff
-import Plaplacian.C2Expand
-import Plaplacian.C2Taylor
-import Plaplacian.ClJetBridge
-import Plaplacian.Combine
-import Plaplacian.Comparison
-import Plaplacian.ComparisonFinal
-import Plaplacian.CompFull
-import Plaplacian.Compose
-import Plaplacian.Consistency
-import Plaplacian.ContactArg
-import Plaplacian.ConvexBasics
-import Plaplacian.CoreJA
-import Plaplacian.CoreLines
-import Plaplacian.CubicBound
-import Plaplacian.CubicTaylor
-import Plaplacian.CVJet
-import Plaplacian.Deficit
-import Plaplacian.DeficitMono
-import Plaplacian.DiffIneq
-import Plaplacian.DiffMin
-import Plaplacian.DirichletExistence
-import Plaplacian.DiscComp
-import Plaplacian.Discharge
-import Plaplacian.DiscUnique
-import Plaplacian.Domain
-import Plaplacian.DomainBounds
-import Plaplacian.Dominated
-import Plaplacian.Domination
-import Plaplacian.DppOperator
-import Plaplacian.ElimMax
-import Plaplacian.Err2Bound
-import Plaplacian.Err2Comb
-import Plaplacian.Err2Deriv
-import Plaplacian.ErrDiff
-import Plaplacian.ErrNeg
-import Plaplacian.ErrRate
-import Plaplacian.ErrSmall
-import Plaplacian.Exclude
-import Plaplacian.Existence
-import Plaplacian.Expansion
-import Plaplacian.ExpCompact
-import Plaplacian.ExpErr
-import Plaplacian.ExpUnif
-import Plaplacian.ExtAvgErr
-import Plaplacian.ExtErrRate
-import Plaplacian.ExtremeAttain
-import Plaplacian.ExtremeExpansion
-import Plaplacian.ExtremeValues
-import Plaplacian.FilterChar
-import Plaplacian.FinSup
-import Plaplacian.FormCompact
-import Plaplacian.FreqGen
-import Plaplacian.FreqProj
-import Plaplacian.FreqRate
-import Plaplacian.GoodSet
-import Plaplacian.GradDir
-import Plaplacian.GradEst
-import Plaplacian.GradInner
-import Plaplacian.HessCont
-import Plaplacian.HessCont2
-import Plaplacian.HessNorm
-import Plaplacian.IndexSelection
-import Plaplacian.InfAbs
-import Plaplacian.InfLower
-import Plaplacian.InfSide
-import Plaplacian.InfTransport
-import Plaplacian.InfUpper
-import Plaplacian.Invariance
-import Plaplacian.IshiiFoundations
-import Plaplacian.Iteration
-import Plaplacian.IterFDeriv
-import Plaplacian.JensenEucl
-import Plaplacian.JensenProduct
-import Plaplacian.JetAlgebra
-import Plaplacian.JetBridge
-import Plaplacian.Jets
-import Plaplacian.KeyStep
-import Plaplacian.LbarSub
-import Plaplacian.LimitMeas
-import Plaplacian.LimitPassage
-import Plaplacian.LineBounds
-import Plaplacian.LineDeriv
-import Plaplacian.LineRestrict
-import Plaplacian.LittleO
-import Plaplacian.LocalCmp
-import Plaplacian.Localize
-import Plaplacian.LocalizeDist
-import Plaplacian.LocalizeMax
-import Plaplacian.LocalMono
-import Plaplacian.LocDistUnif
-import Plaplacian.LocUnif
-import Plaplacian.LowerSemi
-import Plaplacian.MainConv
-import Plaplacian.MaxSub
-import Plaplacian.Measurability
-import Plaplacian.MinCmp
-import Plaplacian.NearFreq
-import Plaplacian.NearMin
-import Plaplacian.NearSup
-import Plaplacian.NegOp
-import Plaplacian.NullImage
-import Plaplacian.OneDim
-import Plaplacian.OpBounded
-import Plaplacian.OpCont
-import Plaplacian.OpContFull
-import Plaplacian.OpenClosed
-import Plaplacian.Operator
-import Plaplacian.OpEst
-import Plaplacian.OpExpansion
-import Plaplacian.OpLocal
-import Plaplacian.Order2
-import Plaplacian.PeanoUniq
-import Plaplacian.PenaltyP
-import Plaplacian.PenaltyTaylor
-import Plaplacian.Perturbation
-import Plaplacian.PredForm
-import Plaplacian.Prox
-import Plaplacian.PsiSemi
-import Plaplacian.QuadAverage
-import Plaplacian.QuadBound
-import Plaplacian.QuadCompare
-import Plaplacian.QuadForms
-import Plaplacian.QuadInf
-import Plaplacian.Quartic
-import Plaplacian.QuarticJets
-import Plaplacian.QuotZero
-import Plaplacian.Radius
-import Plaplacian.Reduce1
-import Plaplacian.Reduce2
-import Plaplacian.RegPair
-import Plaplacian.Regular
-import Plaplacian.Regularize
-import Plaplacian.Relaxed
-import Plaplacian.RiemannTaylor
-import Plaplacian.Sandwich
-import Plaplacian.SecondOrder
-import Plaplacian.Selection
-import Plaplacian.Semicont
-import Plaplacian.SeqExtract
-import Plaplacian.Shift
-import Plaplacian.SingEigen
-import Plaplacian.Singular
-import Plaplacian.SingularCase
-import Plaplacian.SMP
-import Plaplacian.SMPBarrier
-import Plaplacian.SMPMin
-import Plaplacian.Squeeze
-import Plaplacian.Stability
-import Plaplacian.Step2
-import Plaplacian.Step2Prelim
-import Plaplacian.Step3
-import Plaplacian.Step3M
-import Plaplacian.Step3Tools
-import Plaplacian.StepOperator
-import Plaplacian.Strict
-import Plaplacian.StrictComp
-import Plaplacian.Subgrad
-import Plaplacian.SubgradApprox
-import Plaplacian.SubJetAlg
-import Plaplacian.Subsol
-import Plaplacian.SumsFinal
-import Plaplacian.SumsSplit
-import Plaplacian.SumsTransfer
-import Plaplacian.SupAbs
-import Plaplacian.SupBound
-import Plaplacian.SupConv
-import Plaplacian.SupConvJet
-import Plaplacian.Super
-import Plaplacian.SuperForm
-import Plaplacian.SupErrUnif
-import Plaplacian.SupFreq
-import Plaplacian.SupMax
-import Plaplacian.SupUpper
-import Plaplacian.Taylor1D
-import Plaplacian.Taylor2D
-import Plaplacian.Taylor2Deriv
-import Plaplacian.TaylorBound
-import Plaplacian.TaylorInfra
-import Plaplacian.TaylorTest
-import Plaplacian.TendProd
-import Plaplacian.TendZero
-import Plaplacian.Thread
-import Plaplacian.Thread2
-import Plaplacian.ThreeRadii
-import Plaplacian.Transfer
-import Plaplacian.UbarSub
-import Plaplacian.UbarSubEq
-import Plaplacian.UnifBase
-import Plaplacian.UnifConst
-import Plaplacian.UnifContinuity
-import Plaplacian.UnifErr
-import Plaplacian.UnifEv
-import Plaplacian.Uniform
-import Plaplacian.UniformConvergence
-import Plaplacian.UniformIteration
-import Plaplacian.UniformLimit
-import Plaplacian.UpperEv
-import Plaplacian.ViscC2
-import Plaplacian.ViscC3
-import Plaplacian.Viscosity
-import Plaplacian.ViscUnique
-import Plaplacian.WeightErr
+module
+
+public import Plaplacian.AddSmooth
+public import Plaplacian.Alexandrov
+public import Plaplacian.AllOrders
+public import Plaplacian.Annulus
+public import Plaplacian.ApproxCmp
+public import Plaplacian.AsmCond
+public import Plaplacian.AsmFreq
+public import Plaplacian.AtPair
+public import Plaplacian.Average
+public import Plaplacian.AvgErrBound
+public import Plaplacian.AvgExpansion
+public import Plaplacian.AvgRate
+public import Plaplacian.AvgTerms
+public import Plaplacian.AvgUnif
+public import Plaplacian.BallCont
+public import Plaplacian.BallMoments
+public import Plaplacian.BandEst
+public import Plaplacian.BarrierPoly
+public import Plaplacian.Basic
+public import Plaplacian.BdryEst
+public import Plaplacian.BdryPrep
+public import Plaplacian.Bounds
+public import Plaplacian.C2Diff
+public import Plaplacian.C2Expand
+public import Plaplacian.C2Taylor
+public import Plaplacian.ClJetBridge
+public import Plaplacian.Combine
+public import Plaplacian.Comparison
+public import Plaplacian.ComparisonFinal
+public import Plaplacian.CompFull
+public import Plaplacian.Compose
+public import Plaplacian.Consistency
+public import Plaplacian.ContactArg
+public import Plaplacian.ConvexBasics
+public import Plaplacian.CoreJA
+public import Plaplacian.CoreLines
+public import Plaplacian.CubicBound
+public import Plaplacian.CubicTaylor
+public import Plaplacian.CVJet
+public import Plaplacian.Deficit
+public import Plaplacian.DeficitMono
+public import Plaplacian.DiffIneq
+public import Plaplacian.DiffMin
+public import Plaplacian.DirichletExistence
+public import Plaplacian.DiscComp
+public import Plaplacian.Discharge
+public import Plaplacian.DiscUnique
+public import Plaplacian.Domain
+public import Plaplacian.DomainBounds
+public import Plaplacian.Dominated
+public import Plaplacian.Domination
+public import Plaplacian.DppOperator
+public import Plaplacian.ElimMax
+public import Plaplacian.Err2Bound
+public import Plaplacian.Err2Comb
+public import Plaplacian.Err2Deriv
+public import Plaplacian.ErrDiff
+public import Plaplacian.ErrNeg
+public import Plaplacian.ErrRate
+public import Plaplacian.ErrSmall
+public import Plaplacian.Exclude
+public import Plaplacian.Existence
+public import Plaplacian.Expansion
+public import Plaplacian.ExpCompact
+public import Plaplacian.ExpErr
+public import Plaplacian.ExpUnif
+public import Plaplacian.ExtAvgErr
+public import Plaplacian.ExtErrRate
+public import Plaplacian.ExtremeAttain
+public import Plaplacian.ExtremeExpansion
+public import Plaplacian.ExtremeValues
+public import Plaplacian.FilterChar
+public import Plaplacian.FinSup
+public import Plaplacian.FormCompact
+public import Plaplacian.FreqGen
+public import Plaplacian.FreqProj
+public import Plaplacian.FreqRate
+public import Plaplacian.GoodSet
+public import Plaplacian.GradDir
+public import Plaplacian.GradEst
+public import Plaplacian.GradInner
+public import Plaplacian.HessCont
+public import Plaplacian.HessCont2
+public import Plaplacian.HessNorm
+public import Plaplacian.IndexSelection
+public import Plaplacian.InfAbs
+public import Plaplacian.InfLower
+public import Plaplacian.InfSide
+public import Plaplacian.InfTransport
+public import Plaplacian.InfUpper
+public import Plaplacian.Invariance
+public import Plaplacian.IshiiFoundations
+public import Plaplacian.Iteration
+public import Plaplacian.IterFDeriv
+public import Plaplacian.JensenEucl
+public import Plaplacian.JensenProduct
+public import Plaplacian.JetAlgebra
+public import Plaplacian.JetBridge
+public import Plaplacian.Jets
+public import Plaplacian.KeyStep
+public import Plaplacian.LbarSub
+public import Plaplacian.LimitMeas
+public import Plaplacian.LimitPassage
+public import Plaplacian.LineBounds
+public import Plaplacian.LineDeriv
+public import Plaplacian.LineRestrict
+public import Plaplacian.LittleO
+public import Plaplacian.LocalCmp
+public import Plaplacian.Localize
+public import Plaplacian.LocalizeDist
+public import Plaplacian.LocalizeMax
+public import Plaplacian.LocalMono
+public import Plaplacian.LocDistUnif
+public import Plaplacian.LocUnif
+public import Plaplacian.LowerSemi
+public import Plaplacian.MainConv
+public import Plaplacian.MaxSub
+public import Plaplacian.Measurability
+public import Plaplacian.MinCmp
+public import Plaplacian.NearFreq
+public import Plaplacian.NearMin
+public import Plaplacian.NearSup
+public import Plaplacian.NegOp
+public import Plaplacian.NullImage
+public import Plaplacian.OneDim
+public import Plaplacian.OpBounded
+public import Plaplacian.OpCont
+public import Plaplacian.OpContFull
+public import Plaplacian.OpenClosed
+public import Plaplacian.Operator
+public import Plaplacian.OpEst
+public import Plaplacian.OpExpansion
+public import Plaplacian.OpLocal
+public import Plaplacian.Order2
+public import Plaplacian.PeanoUniq
+public import Plaplacian.PenaltyP
+public import Plaplacian.PenaltyTaylor
+public import Plaplacian.Perturbation
+public import Plaplacian.PredForm
+public import Plaplacian.Prox
+public import Plaplacian.PsiSemi
+public import Plaplacian.QuadAverage
+public import Plaplacian.QuadBound
+public import Plaplacian.QuadCompare
+public import Plaplacian.QuadForms
+public import Plaplacian.QuadInf
+public import Plaplacian.Quartic
+public import Plaplacian.QuarticJets
+public import Plaplacian.QuotZero
+public import Plaplacian.Radius
+public import Plaplacian.Reduce1
+public import Plaplacian.Reduce2
+public import Plaplacian.RegPair
+public import Plaplacian.Regular
+public import Plaplacian.Regularize
+public import Plaplacian.Relaxed
+public import Plaplacian.RiemannTaylor
+public import Plaplacian.Sandwich
+public import Plaplacian.SecondOrder
+public import Plaplacian.Selection
+public import Plaplacian.Semicont
+public import Plaplacian.SeqExtract
+public import Plaplacian.Shift
+public import Plaplacian.SingEigen
+public import Plaplacian.Singular
+public import Plaplacian.SingularCase
+public import Plaplacian.SMP
+public import Plaplacian.SMPBarrier
+public import Plaplacian.SMPMin
+public import Plaplacian.Squeeze
+public import Plaplacian.Stability
+public import Plaplacian.Step2
+public import Plaplacian.Step2Prelim
+public import Plaplacian.Step3
+public import Plaplacian.Step3M
+public import Plaplacian.Step3Tools
+public import Plaplacian.StepOperator
+public import Plaplacian.Strict
+public import Plaplacian.StrictComp
+public import Plaplacian.Subgrad
+public import Plaplacian.SubgradApprox
+public import Plaplacian.SubJetAlg
+public import Plaplacian.Subsol
+public import Plaplacian.SumsFinal
+public import Plaplacian.SumsSplit
+public import Plaplacian.SumsTransfer
+public import Plaplacian.SupAbs
+public import Plaplacian.SupBound
+public import Plaplacian.SupConv
+public import Plaplacian.SupConvJet
+public import Plaplacian.Super
+public import Plaplacian.SuperForm
+public import Plaplacian.SupErrUnif
+public import Plaplacian.SupFreq
+public import Plaplacian.SupMax
+public import Plaplacian.SupUpper
+public import Plaplacian.Taylor1D
+public import Plaplacian.Taylor2D
+public import Plaplacian.Taylor2Deriv
+public import Plaplacian.TaylorBound
+public import Plaplacian.TaylorInfra
+public import Plaplacian.TaylorTest
+public import Plaplacian.TendProd
+public import Plaplacian.TendZero
+public import Plaplacian.Thread
+public import Plaplacian.Thread2
+public import Plaplacian.ThreeRadii
+public import Plaplacian.Transfer
+public import Plaplacian.UbarSub
+public import Plaplacian.UbarSubEq
+public import Plaplacian.UnifBase
+public import Plaplacian.UnifConst
+public import Plaplacian.UnifContinuity
+public import Plaplacian.UnifErr
+public import Plaplacian.UnifEv
+public import Plaplacian.Uniform
+public import Plaplacian.UniformConvergence
+public import Plaplacian.UniformIteration
+public import Plaplacian.UniformLimit
+public import Plaplacian.UpperEv
+public import Plaplacian.ViscC2
+public import Plaplacian.ViscC3
+public import Plaplacian.Viscosity
+public import Plaplacian.ViscUnique
+public import Plaplacian.WeightErr
+
+@[expose] public section

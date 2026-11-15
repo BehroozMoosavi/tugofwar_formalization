@@ -3,7 +3,11 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Plaplacian.Existence
+module
+
+public import Plaplacian.Existence
+
+@[expose] public section
 
 /-!
 # The normalized p-Laplacian as a second-order operator

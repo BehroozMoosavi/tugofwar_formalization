@@ -3,9 +3,13 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Mathlib
-import Plaplacian.SecondOrder
-import Plaplacian.Viscosity
+module
+
+public import Mathlib
+public import Plaplacian.SecondOrder
+public import Plaplacian.Viscosity
+
+@[expose] public section
 
 /-!
 # The multivariate second-order necessary condition

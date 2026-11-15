@@ -3,8 +3,12 @@ Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Behrooz Moosavi
 -/
-import Plaplacian.ExtremeValues
-import Plaplacian.StepOperator
+module
+
+public import Plaplacian.ExtremeValues
+public import Plaplacian.StepOperator
+
+@[expose] public section
 
 /-!
 # The strictly concave perturbation
