@@ -1,3 +1,8 @@
+# TaylorPlan
+
+Planning notes from the development, kept for reference. The Lean code below is not compiled.
+
+```lean
 /-
 Copyright (c) 2026 Behrooz Moosavi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -146,3 +151,4 @@ which is the analytic heart of the convergence theorem.
 end PLaplacian
 
 end
+```
